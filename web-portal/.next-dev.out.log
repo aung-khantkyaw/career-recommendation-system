@@ -1,0 +1,16 @@
+
+> web-portal@0.1.0 dev
+> next dev --port 3000
+
+▲ Next.js 16.2.12 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.100.28:3000
+- Environments: .env.local
+✓ Ready in 2.6s
+Creating turbopack project {
+  dir: 'D:\\Project\\freelance\\CareerRecommendationSystem\\web-portal',
+  testMode: true
+}
+
+ GET / 200 in 7.7s (next.js: 3.4s, application-code: 4.3s)
+[?25h

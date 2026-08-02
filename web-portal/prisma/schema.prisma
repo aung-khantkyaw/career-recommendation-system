@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Enable pgvector extension
+// This will be added via raw SQL in migration
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String?
+  role          UserRole  @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  resumes       Resume[]
+  
+  @@index([email])
+}
+
+model Resume {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileName          String
+  originalName      String
+  fileSize          Int
+  mimeType          String
+  minioPath         String
+  processingStatus  ProcessingStatus @default(PENDING)
+  skills            Json?     // Stores extracted skills as JSON
+  embedding         Unsupported("vector(1536)")? // pgvector embedding
+  experience        Json?     // Stores extracted experience as JSON
+  education         Json?     // Stores extracted education as JSON
+  processedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  recommendations   CareerRecommendation[]
+  
+  @@index([userId])
+  @@index([processingStatus])
+}
+
+model CareerRecommendation {
+  id             String   @id @default(uuid())
+  resumeId       String
+  resume         Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobTitle       String
+  company        String?
+  matchScore     Float
+  skillsMatched  String[] // Array of matched skills
+  description    String
+  careerPath     String?  // RAG-based career path
+  category       String?  // Career category
+  createdAt      DateTime @default(now())
+  
+  @@index([resumeId])
+  @@index([matchScore])
+}
