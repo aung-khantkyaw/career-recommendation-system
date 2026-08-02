@@ -11,4 +11,5 @@
 export type * from './models/User'
 export type * from './models/Resume'
 export type * from './models/CareerRecommendation'
+export type * from './models/CareerPath'
 export type * from './commonInputTypes'

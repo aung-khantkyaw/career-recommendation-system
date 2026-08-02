@@ -74,3 +74,22 @@ model CareerRecommendation {
   @@index([resumeId])
   @@index([matchScore])
 }
+
+model CareerPath {
+  id             String   @id @default(uuid())
+  title          String   @unique
+  category       String
+  description    String
+  requiredSkills String[]
+  softSkills     String[] @default([])
+  roadmap        Json?
+  averageSalary  String
+  jobOpenings    Int      @default(0)
+  growthRate     Float    @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category])
+  @@index([active])
+}

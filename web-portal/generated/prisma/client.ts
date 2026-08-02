@@ -56,3 +56,8 @@ export type Resume = Prisma.ResumeModel
  * 
  */
 export type CareerRecommendation = Prisma.CareerRecommendationModel
+/**
+ * Model CareerPath
+ * 
+ */
+export type CareerPath = Prisma.CareerPathModel

@@ -9,7 +9,7 @@ type CareerPayload = {
   description?: string
   requiredSkills?: string[] | string
   softSkills?: string[] | string
-  roadmap?: unknown
+  roadmap?: Record<string, unknown> | null
   averageSalary?: string
   jobOpenings?: number | string
   growthRate?: number | string
@@ -68,7 +68,7 @@ function validateCareerPayload(body: CareerPayload) {
       description,
       requiredSkills,
       softSkills,
-      roadmap: body.roadmap ?? null,
+      roadmap: body.roadmap,
       averageSalary,
       jobOpenings: Math.max(0, Math.round(toNumber(body.jobOpenings))),
       growthRate: toNumber(body.growthRate),
@@ -77,64 +77,28 @@ function validateCareerPayload(body: CareerPayload) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { searchParams } = new URL(req.url)
-    const search = searchParams.get('search')?.trim() || ''
-    const status = searchParams.get('status') || 'all'
+    const { id } = await params
 
-    const where = {
-      ...(search
-        ? {
-            OR: [
-              { title: { contains: search, mode: 'insensitive' as const } },
-              { category: { contains: search, mode: 'insensitive' as const } },
-              {
-                description: {
-                  contains: search,
-                  mode: 'insensitive' as const,
-                },
-              },
-            ],
-          }
-        : {}),
-      ...(status === 'active'
-        ? { active: true }
-        : status === 'inactive'
-          ? { active: false }
-          : {}),
+    const career = await prisma.careerPath.findUnique({
+      where: { id },
+    })
+
+    if (!career) {
+      return NextResponse.json({ error: 'Career path not found' }, { status: 404 })
     }
 
-    const [careers, total, active, inactive, aggregate] = await Promise.all([
-      prisma.careerPath.findMany({
-        where,
-        orderBy: [{ active: 'desc' }, { updatedAt: 'desc' }],
-      }),
-      prisma.careerPath.count(),
-      prisma.careerPath.count({ where: { active: true } }),
-      prisma.careerPath.count({ where: { active: false } }),
-      prisma.careerPath.aggregate({
-        _sum: { jobOpenings: true },
-        _avg: { growthRate: true },
-      }),
-    ])
-
-    return NextResponse.json({
-      careers,
-      stats: {
-        total,
-        active,
-        inactive,
-        totalJobs: aggregate._sum.jobOpenings || 0,
-        avgGrowth: `${Math.round(aggregate._avg.growthRate || 0)}%`,
-      },
-    })
+    return NextResponse.json({ career })
   } catch (error) {
-    console.error('Careers fetch error:', error)
+    console.error('Career fetch error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -142,12 +106,16 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = (await req.json()) as CareerPayload
     const result = validateCareerPayload(body)
 
@@ -155,16 +123,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 })
     }
 
-    const career = await prisma.careerPath.create({
-      data: result.data,
+    const career = await prisma.careerPath.update({
+      where: { id },
+      data: result.data as any,
     })
 
-    return NextResponse.json(
-      { message: 'Career path created successfully', career },
-      { status: 201 }
-    )
+    return NextResponse.json({
+      message: 'Career path updated successfully',
+      career,
+    })
   } catch (error) {
-    console.error('Career creation error:', error)
+    console.error('Career update error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    if (!(await requireAdmin())) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id } = await params
+
+    await prisma.careerPath.delete({
+      where: { id },
+    })
+
+    return NextResponse.json({
+      message: 'Career path deleted successfully',
+    })
+  } catch (error) {
+    console.error('Career deletion error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

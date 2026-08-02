@@ -8,47 +8,45 @@ import { Button } from '@/components/ui/button'
 
 export default function SystemMonitorPage() {
   const [systemStats, setSystemStats] = useState({
-    cpu: { usage: 45, cores: 8, temperature: 65 },
-    memory: { usage: 62, total: 16, available: 6 },
-    disk: { usage: 78, total: 500, free: 110 },
-    network: { upload: 12.5, download: 45.2, latency: 23 },
+    cpu: { usage: 0, cores: 0, temperature: 0 },
+    memory: { usage: 0, total: 0, available: 0 },
+    disk: { usage: 0, total: 0, free: 0 },
+    network: { upload: 0, download: 0, latency: 0 },
   })
-  const [services, setServices] = useState([
-    { name: 'PostgreSQL', status: 'running', uptime: '15d 4h 23m', cpu: '5%', memory: '2.1GB' },
-    { name: 'Redis', status: 'running', uptime: '15d 4h 23m', cpu: '2%', memory: '512MB' },
-    { name: 'MinIO', status: 'running', uptime: '15d 4h 23m', cpu: '3%', memory: '1.2GB' },
-    { name: 'AI Processor', status: 'running', uptime: '15d 4h 23m', cpu: '35%', memory: '4.5GB' },
-    { name: 'Web Portal', status: 'running', uptime: '15d 4h 23m', cpu: '8%', memory: '1.8GB' },
-  ])
-  const [recentLogs, setRecentLogs] = useState([
-    { id: 1, level: 'info', message: 'AI job JOB-002 completed successfully', time: '2 min ago' },
-    { id: 2, level: 'warning', message: 'High memory usage on AI processor (85%)', time: '5 min ago' },
-    { id: 3, level: 'info', message: 'Database backup completed', time: '15 min ago' },
-    { id: 4, level: 'error', message: 'Failed to process resume for user #1234', time: '20 min ago' },
-    { id: 5, level: 'info', message: 'New user registered: john@example.com', time: '30 min ago' },
-  ])
+  const [services, setServices] = useState([])
+  const [recentLogs, setRecentLogs] = useState([])
   const [storageStats, setStorageStats] = useState({ totalObjects: 0, totalSize: '0 GB', resumeFiles: 0 })
   const [dbStats, setDbStats] = useState({ databaseSize: '0 GB', activeConnections: 0, queryPerformance: '0ms' })
   const [overview, setOverview] = useState({ totalUsers: 0, totalResumes: 0, completedResumes: 0, processingResumes: 0, failedResumes: 0 })
   const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const fetchSystemData = async () => {
+  const fetchSystemData = async (isManualRefresh = false) => {
+    if (isManualRefresh) {
+      setIsRefreshing(true)
+    }
     try {
-      const response = await fetch('/api/admin/system')
+      const response = await fetch('/api/admin/system', { cache: 'no-store' })
       const data = await response.json()
 
       if (response.ok) {
-        setSystemStats(data.systemStats)
-        setServices(data.services)
-        setRecentLogs(data.recentLogs)
-        setStorageStats(data.storageStats)
-        setDbStats(data.dbStats)
-        setOverview(data.overview)
+        setSystemStats(data.systemStats || {
+          cpu: { usage: 0, cores: 0, temperature: 0 },
+          memory: { usage: 0, total: 0, available: 0 },
+          disk: { usage: 0, total: 0, free: 0 },
+          network: { upload: 0, download: 0, latency: 0 },
+        })
+        setServices(data.services || [])
+        setRecentLogs(data.recentLogs || [])
+        setStorageStats(data.storageStats || { totalObjects: 0, totalSize: '0 GB', resumeFiles: 0 })
+        setDbStats(data.dbStats || { databaseSize: '0 GB', activeConnections: 0, queryPerformance: '0ms' })
+        setOverview(data.overview || { totalUsers: 0, totalResumes: 0, completedResumes: 0, processingResumes: 0, failedResumes: 0 })
       }
     } catch (error) {
       console.error('Failed to fetch system data:', error)
     } finally {
       setIsLoading(false)
+      setIsRefreshing(false)
     }
   }
 
@@ -88,8 +86,8 @@ export default function SystemMonitorPage() {
           <h1 className="text-3xl font-bold">System Monitoring</h1>
           <p className="text-gray-600 mt-2">Real-time system health and performance metrics</p>
         </div>
-        <Button onClick={fetchSystemData} disabled={isLoading}>
-          <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+        <Button onClick={() => fetchSystemData(true)} disabled={isRefreshing}>
+          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
       </div>

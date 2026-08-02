@@ -53,7 +53,8 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   User: 'User',
   Resume: 'Resume',
-  CareerRecommendation: 'CareerRecommendation'
+  CareerRecommendation: 'CareerRecommendation',
+  CareerPath: 'CareerPath'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -119,6 +120,25 @@ export const CareerRecommendationScalarFieldEnum = {
 } as const
 
 export type CareerRecommendationScalarFieldEnum = (typeof CareerRecommendationScalarFieldEnum)[keyof typeof CareerRecommendationScalarFieldEnum]
+
+
+export const CareerPathScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  description: 'description',
+  requiredSkills: 'requiredSkills',
+  softSkills: 'softSkills',
+  roadmap: 'roadmap',
+  averageSalary: 'averageSalary',
+  jobOpenings: 'jobOpenings',
+  growthRate: 'growthRate',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CareerPathScalarFieldEnum = (typeof CareerPathScalarFieldEnum)[keyof typeof CareerPathScalarFieldEnum]
 
 
 export const SortOrder = {

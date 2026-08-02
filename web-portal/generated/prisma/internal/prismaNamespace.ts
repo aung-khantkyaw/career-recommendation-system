@@ -399,7 +399,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   User: 'User',
   Resume: 'Resume',
-  CareerRecommendation: 'CareerRecommendation'
+  CareerRecommendation: 'CareerRecommendation',
+  CareerPath: 'CareerPath'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -415,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "resume" | "careerRecommendation"
+    modelProps: "user" | "resume" | "careerRecommendation" | "careerPath"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -641,6 +642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CareerPath: {
+      payload: Prisma.$CareerPathPayload<ExtArgs>
+      fields: Prisma.CareerPathFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CareerPathFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CareerPathFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        findFirst: {
+          args: Prisma.CareerPathFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CareerPathFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        findMany: {
+          args: Prisma.CareerPathFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        create: {
+          args: Prisma.CareerPathCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        createMany: {
+          args: Prisma.CareerPathCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CareerPathCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        delete: {
+          args: Prisma.CareerPathDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        update: {
+          args: Prisma.CareerPathUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        deleteMany: {
+          args: Prisma.CareerPathDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CareerPathUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CareerPathUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        upsert: {
+          args: Prisma.CareerPathUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        aggregate: {
+          args: Prisma.CareerPathAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCareerPath>
+        }
+        groupBy: {
+          args: Prisma.CareerPathGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CareerPathCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -727,6 +802,25 @@ export const CareerRecommendationScalarFieldEnum = {
 } as const
 
 export type CareerRecommendationScalarFieldEnum = (typeof CareerRecommendationScalarFieldEnum)[keyof typeof CareerRecommendationScalarFieldEnum]
+
+
+export const CareerPathScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  description: 'description',
+  requiredSkills: 'requiredSkills',
+  softSkills: 'softSkills',
+  roadmap: 'roadmap',
+  averageSalary: 'averageSalary',
+  jobOpenings: 'jobOpenings',
+  growthRate: 'growthRate',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CareerPathScalarFieldEnum = (typeof CareerPathScalarFieldEnum)[keyof typeof CareerPathScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -871,6 +965,13 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
  * Reference to a field of type 'Float[]'
  */
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Boolean'
+ */
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 /**
@@ -1027,6 +1128,7 @@ export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   resume?: Prisma.ResumeOmit
   careerRecommendation?: Prisma.CareerRecommendationOmit
+  careerPath?: Prisma.CareerPathOmit
 }
 
 /* Types for Logging */
