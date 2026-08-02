@@ -45,3 +45,13 @@ export const JobStatus = {
 } as const
 
 export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]
+
+
+export const AIProvider = {
+  OPENAI: 'OPENAI',
+  ANTHROPIC: 'ANTHROPIC',
+  GOOGLE: 'GOOGLE',
+  CUSTOM: 'CUSTOM'
+} as const
+
+export type AIProvider = (typeof AIProvider)[keyof typeof AIProvider]

@@ -36,6 +36,13 @@ enum JobStatus {
   DRAFT
 }
 
+enum AIProvider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+  CUSTOM
+}
+
 model User {
   id            String    @id @default(uuid())
   email         String    @unique
@@ -131,4 +138,20 @@ model Job {
   @@index([status])
   @@index([careerPathId])
   @@index([type])
+}
+
+model ApiKey {
+  id          String      @id @default(uuid())
+  provider    AIProvider
+  modelName   String
+  apiKey      String
+  limit       Int         @default(0) // 0 means unlimited
+  used        Int         @default(0)
+  expiresAt   DateTime?
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([provider])
+  @@index([active])
 }

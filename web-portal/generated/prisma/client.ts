@@ -66,3 +66,8 @@ export type CareerPath = Prisma.CareerPathModel
  * 
  */
 export type Job = Prisma.JobModel
+/**
+ * Model ApiKey
+ * 
+ */
+export type ApiKey = Prisma.ApiKeyModel
