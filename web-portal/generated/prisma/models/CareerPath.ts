@@ -272,6 +272,7 @@ export type CareerPathWhereInput = {
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
+  jobs?: Prisma.JobListRelationFilter
 }
 
 export type CareerPathOrderByWithRelationInput = {
@@ -288,6 +289,7 @@ export type CareerPathOrderByWithRelationInput = {
   active?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  jobs?: Prisma.JobOrderByRelationAggregateInput
 }
 
 export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
@@ -307,6 +309,7 @@ export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
+  jobs?: Prisma.JobListRelationFilter
 }, "id" | "title">
 
 export type CareerPathOrderByWithAggregationInput = {
@@ -363,6 +366,7 @@ export type CareerPathCreateInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  jobs?: Prisma.JobCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathUncheckedCreateInput = {
@@ -379,6 +383,7 @@ export type CareerPathUncheckedCreateInput = {
   active?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  jobs?: Prisma.JobUncheckedCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathUpdateInput = {
@@ -395,6 +400,7 @@ export type CareerPathUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobs?: Prisma.JobUpdateManyWithoutCareerPathNestedInput
 }
 
 export type CareerPathUncheckedUpdateInput = {
@@ -411,6 +417,7 @@ export type CareerPathUncheckedUpdateInput = {
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobs?: Prisma.JobUncheckedUpdateManyWithoutCareerPathNestedInput
 }
 
 export type CareerPathCreateManyInput = {
@@ -513,6 +520,11 @@ export type CareerPathSumOrderByAggregateInput = {
   growthRate?: Prisma.SortOrder
 }
 
+export type CareerPathNullableScalarRelationFilter = {
+  is?: Prisma.CareerPathWhereInput | null
+  isNot?: Prisma.CareerPathWhereInput | null
+}
+
 export type CareerPathCreaterequiredSkillsInput = {
   set: string[]
 }
@@ -535,6 +547,131 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type CareerPathCreateNestedOneWithoutJobsInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutJobsInput, Prisma.CareerPathUncheckedCreateWithoutJobsInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutJobsInput
+  connect?: Prisma.CareerPathWhereUniqueInput
+}
+
+export type CareerPathUpdateOneWithoutJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutJobsInput, Prisma.CareerPathUncheckedCreateWithoutJobsInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutJobsInput
+  upsert?: Prisma.CareerPathUpsertWithoutJobsInput
+  disconnect?: Prisma.CareerPathWhereInput | boolean
+  delete?: Prisma.CareerPathWhereInput | boolean
+  connect?: Prisma.CareerPathWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CareerPathUpdateToOneWithWhereWithoutJobsInput, Prisma.CareerPathUpdateWithoutJobsInput>, Prisma.CareerPathUncheckedUpdateWithoutJobsInput>
+}
+
+export type CareerPathCreateWithoutJobsInput = {
+  id?: string
+  title: string
+  category: string
+  description: string
+  requiredSkills?: Prisma.CareerPathCreaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary: string
+  jobOpenings?: number
+  growthRate?: number
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CareerPathUncheckedCreateWithoutJobsInput = {
+  id?: string
+  title: string
+  category: string
+  description: string
+  requiredSkills?: Prisma.CareerPathCreaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary: string
+  jobOpenings?: number
+  growthRate?: number
+  active?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type CareerPathCreateOrConnectWithoutJobsInput = {
+  where: Prisma.CareerPathWhereUniqueInput
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutJobsInput, Prisma.CareerPathUncheckedCreateWithoutJobsInput>
+}
+
+export type CareerPathUpsertWithoutJobsInput = {
+  update: Prisma.XOR<Prisma.CareerPathUpdateWithoutJobsInput, Prisma.CareerPathUncheckedUpdateWithoutJobsInput>
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutJobsInput, Prisma.CareerPathUncheckedCreateWithoutJobsInput>
+  where?: Prisma.CareerPathWhereInput
+}
+
+export type CareerPathUpdateToOneWithWhereWithoutJobsInput = {
+  where?: Prisma.CareerPathWhereInput
+  data: Prisma.XOR<Prisma.CareerPathUpdateWithoutJobsInput, Prisma.CareerPathUncheckedUpdateWithoutJobsInput>
+}
+
+export type CareerPathUpdateWithoutJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requiredSkills?: Prisma.CareerPathUpdaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
+  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
+  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type CareerPathUncheckedUpdateWithoutJobsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requiredSkills?: Prisma.CareerPathUpdaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
+  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
+  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type CareerPathCountOutputType
+ */
+
+export type CareerPathCountOutputType = {
+  jobs: number
+}
+
+export type CareerPathCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  jobs?: boolean | CareerPathCountOutputTypeCountJobsArgs
+}
+
+/**
+ * CareerPathCountOutputType without action
+ */
+export type CareerPathCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CareerPathCountOutputType
+   */
+  select?: Prisma.CareerPathCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CareerPathCountOutputType without action
+ */
+export type CareerPathCountOutputTypeCountJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JobWhereInput
+}
 
 
 export type CareerPathSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -551,6 +688,8 @@ export type CareerPathSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   active?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
+  _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerPath"]>
 
 export type CareerPathSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -602,10 +741,18 @@ export type CareerPathSelectScalar = {
 }
 
 export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "description" | "requiredSkills" | "softSkills" | "roadmap" | "averageSalary" | "jobOpenings" | "growthRate" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["careerPath"]>
+export type CareerPathInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
+  _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type CareerPathIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type CareerPathIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $CareerPathPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "CareerPath"
-  objects: {}
+  objects: {
+    jobs: Prisma.$JobPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     title: string
@@ -1014,6 +1161,7 @@ readonly fields: CareerPathFieldRefs;
  */
 export interface Prisma__CareerPathClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  jobs<T extends Prisma.CareerPath$jobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CareerPath$jobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1073,6 +1221,10 @@ export type CareerPathFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * Filter, which CareerPath to fetch.
    */
   where: Prisma.CareerPathWhereUniqueInput
@@ -1091,6 +1243,10 @@ export type CareerPathFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * Filter, which CareerPath to fetch.
    */
   where: Prisma.CareerPathWhereUniqueInput
@@ -1108,6 +1264,10 @@ export type CareerPathFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the CareerPath
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
   /**
    * Filter, which CareerPath to fetch.
    */
@@ -1157,6 +1317,10 @@ export type CareerPathFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensi
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * Filter, which CareerPath to fetch.
    */
   where?: Prisma.CareerPathWhereInput
@@ -1204,6 +1368,10 @@ export type CareerPathFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the CareerPath
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
   /**
    * Filter, which CareerPaths to fetch.
    */
@@ -1253,6 +1421,10 @@ export type CareerPathCreateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * The data needed to create a CareerPath.
    */
   data: Prisma.XOR<Prisma.CareerPathCreateInput, Prisma.CareerPathUncheckedCreateInput>
@@ -1300,6 +1472,10 @@ export type CareerPathUpdateArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the CareerPath
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
   /**
    * The data needed to update a CareerPath.
    */
@@ -1367,6 +1543,10 @@ export type CareerPathUpsertArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * The filter to search for the CareerPath to update in case it exists.
    */
   where: Prisma.CareerPathWhereUniqueInput
@@ -1393,6 +1573,10 @@ export type CareerPathDeleteArgs<ExtArgs extends runtime.Types.Extensions.Intern
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
+  /**
    * Filter which CareerPath to delete.
    */
   where: Prisma.CareerPathWhereUniqueInput
@@ -1413,6 +1597,30 @@ export type CareerPathDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * CareerPath.jobs
+ */
+export type CareerPath$jobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Job
+   */
+  select?: Prisma.JobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Job
+   */
+  omit?: Prisma.JobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobInclude<ExtArgs> | null
+  where?: Prisma.JobWhereInput
+  orderBy?: Prisma.JobOrderByWithRelationInput | Prisma.JobOrderByWithRelationInput[]
+  cursor?: Prisma.JobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JobScalarFieldEnum | Prisma.JobScalarFieldEnum[]
+}
+
+/**
  * CareerPath without action
  */
 export type CareerPathDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1424,4 +1632,8 @@ export type CareerPathDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the CareerPath
    */
   omit?: Prisma.CareerPathOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CareerPathInclude<ExtArgs> | null
 }

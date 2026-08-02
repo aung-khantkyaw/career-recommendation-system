@@ -9,7 +9,8 @@ import {
   Cpu, 
   Activity, 
   LogOut,
-  TrendingUp
+  TrendingUp,
+  Building2
 } from 'lucide-react'
 import {
   Sidebar,
@@ -32,6 +33,7 @@ const navItems = [
   { href: '/admin/users', icon: Users, label: 'User Management' },
   { href: '/admin/careers', icon: Briefcase, label: 'Career Data' },
   { href: '/admin/recommendations', icon: TrendingUp, label: 'Recommendations' },
+  { href: '/admin/job-postings', icon: Building2, label: 'Job Postings' },
   { href: '/admin/jobs', icon: Cpu, label: 'AI Jobs' },
   { href: '/admin/system', icon: Activity, label: 'System Monitor' },
 ]

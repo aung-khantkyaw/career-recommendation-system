@@ -25,3 +25,23 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const JobType = {
+  FULL_TIME: 'FULL_TIME',
+  PART_TIME: 'PART_TIME',
+  CONTRACT: 'CONTRACT',
+  INTERNSHIP: 'INTERNSHIP',
+  REMOTE: 'REMOTE'
+} as const
+
+export type JobType = (typeof JobType)[keyof typeof JobType]
+
+
+export const JobStatus = {
+  ACTIVE: 'ACTIVE',
+  CLOSED: 'CLOSED',
+  DRAFT: 'DRAFT'
+} as const
+
+export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]

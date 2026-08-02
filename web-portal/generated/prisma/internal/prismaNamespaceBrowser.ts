@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Resume: 'Resume',
   CareerRecommendation: 'CareerRecommendation',
-  CareerPath: 'CareerPath'
+  CareerPath: 'CareerPath',
+  Job: 'Job'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,6 +140,28 @@ export const CareerPathScalarFieldEnum = {
 } as const
 
 export type CareerPathScalarFieldEnum = (typeof CareerPathScalarFieldEnum)[keyof typeof CareerPathScalarFieldEnum]
+
+
+export const JobScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  company: 'company',
+  location: 'location',
+  type: 'type',
+  status: 'status',
+  description: 'description',
+  requirements: 'requirements',
+  salary: 'salary',
+  salaryRange: 'salaryRange',
+  experienceLevel: 'experienceLevel',
+  careerPathId: 'careerPathId',
+  postedAt: 'postedAt',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JobScalarFieldEnum = (typeof JobScalarFieldEnum)[keyof typeof JobScalarFieldEnum]
 
 
 export const SortOrder = {

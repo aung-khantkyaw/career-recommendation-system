@@ -37,3 +37,8 @@ export type CareerRecommendation = Prisma.CareerRecommendationModel
  * 
  */
 export type CareerPath = Prisma.CareerPathModel
+/**
+ * Model Job
+ * 
+ */
+export type Job = Prisma.JobModel
