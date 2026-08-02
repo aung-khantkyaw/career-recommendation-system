@@ -315,7 +315,7 @@ export default function ApiKeysPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="provider">Provider</Label>
-                  <Select value={form.provider} onValueChange={(value) => updateForm('provider', value)}>
+                  <Select value={form.provider} onValueChange={(value) => updateForm('provider', value || 'OPENAI')}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
