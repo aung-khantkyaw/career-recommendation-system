@@ -414,7 +414,7 @@ export default function ApiKeysPage() {
                   </Button>
                 ))}
               </div>
-              <Select value={providerFilter} onValueChange={(value) => setProviderFilter(value)}>
+              <Select value={providerFilter} onValueChange={(value) => setProviderFilter(value || 'all')}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Provider" />
                 </SelectTrigger>

@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { User, Mail, Briefcase, Save, ArrowLeft, Camera } from 'lucide-react'
+import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, LogOut } from 'lucide-react'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -87,21 +88,29 @@ export default function ProfilePage() {
     fetchProfileData()
   }
 
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/login' })
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
-            </Link>
-            <h1 className="text-2xl font-bold">Profile Management</h1>
+      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <span className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-xs">
+              <BriefcaseBusiness className="size-4" aria-hidden="true" />
+            </span>
+            <span>Career AI</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" onClick={handleLogout}>
+              <LogOut className="size-4 mr-2" />
+              Logout
+            </Button>
           </div>
-        </div>
+        </nav>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
@@ -112,8 +121,8 @@ export default function ProfilePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-4">
-                    <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="w-16 h-16 text-gray-400" />
+                    <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center">
+                      <UserRound className="w-16 h-16 text-muted-foreground" />
                     </div>
                     <Button
                       size="sm"

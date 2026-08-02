@@ -83,7 +83,7 @@ export default function AIJobsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">AI Job Monitoring</h1>
-          <p className="text-gray-600 mt-2">Monitor and manage AI processing jobs</p>
+          <p className="text-muted-foreground mt-2">Monitor and manage AI processing jobs</p>
         </div>
         <Button onClick={handleRefresh}>
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -96,31 +96,31 @@ export default function AIJobsPage() {
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold">{stats.total}</div>
-            <div className="text-sm text-gray-500">Total Jobs</div>
+            <div className="text-sm text-muted-foreground">Total Jobs</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-            <div className="text-sm text-gray-500">Pending</div>
+            <div className="text-sm text-muted-foreground">Pending</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-blue-600">{stats.processing}</div>
-            <div className="text-sm text-gray-500">Processing</div>
+            <div className="text-sm text-muted-foreground">Processing</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-            <div className="text-sm text-gray-500">Completed</div>
+            <div className="text-sm text-muted-foreground">Completed</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-red-600">{stats.failed}</div>
-            <div className="text-sm text-gray-500">Failed</div>
+            <div className="text-sm text-muted-foreground">Failed</div>
           </CardContent>
         </Card>
       </div>
@@ -172,9 +172,9 @@ export default function AIJobsPage() {
                           <div className="flex items-center justify-between text-xs mb-1">
                             <span>{job.progress}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div 
-                              className="bg-blue-600 h-2 rounded-full transition-all" 
+                              className="bg-primary h-2 rounded-full transition-all" 
                               style={{ width: `${job.progress}%` }}
                             />
                           </div>

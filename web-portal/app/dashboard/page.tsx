@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Briefcase, TrendingUp, Upload, User, LogOut, RefreshCw } from 'lucide-react'
+import { Label } from '@/components/ui/label'
+import { ResumeDropzone } from '@/components/ui/dropzone'
+import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
@@ -33,6 +35,10 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ totalResumes: 0, completedResumes: 0, processingResumes: 0, totalSkills: 0 })
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle')
+  const [uploadError, setUploadError] = useState('')
 
   const fetchDashboardData = async () => {
     try {
@@ -65,28 +71,82 @@ export default function DashboardPage() {
     await signOut({ callbackUrl: '/login' })
   }
 
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file)
+    setUploadStatus('idle')
+    setUploadError('')
+  }
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null)
+    setUploadStatus('idle')
+    setUploadError('')
+  }
+
+  const handleUpload = async () => {
+    if (!selectedFile) return
+
+    setIsUploading(true)
+    setUploadStatus('uploading')
+    setUploadError('')
+
+    try {
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
+      const response = await fetch('/api/resumes/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setUploadStatus('error')
+        setUploadError(data.error || 'Upload failed. Please try again.')
+        return
+      }
+
+      setUploadStatus('success')
+      setSelectedFile(null)
+
+      setTimeout(() => {
+        setUploadStatus('idle')
+        fetchDashboardData()
+      }, 1500)
+    } catch (error) {
+      setUploadStatus('error')
+      setUploadError('Upload failed. Please try again.')
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Briefcase className="w-8 h-8 text-blue-600" />
-            <h1 className="text-2xl font-bold">Career Dashboard</h1>
-          </div>
-          <div className="flex items-center space-x-4">
+      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <span className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-xs">
+              <BriefcaseBusiness className="size-4" aria-hidden="true" />
+            </span>
+            <span>Career AI</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
             <Link href="/profile">
-              <Button variant="outline" size="sm">
-                <User className="w-4 h-4 mr-2" />
+              <Button variant="ghost">
+                <UserRound className="size-4 mr-2" />
                 Profile
               </Button>
             </Link>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
+            <Button variant="ghost" onClick={handleLogout}>
+              <LogOut className="size-4 mr-2" />
               Logout
             </Button>
           </div>
-        </div>
+        </nav>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -95,7 +155,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Resumes</CardTitle>
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
+              <BriefcaseBusiness className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalResumes}</div>
@@ -115,7 +175,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Skills Identified</CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
+              <UserRound className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalSkills}</div>
@@ -201,18 +261,56 @@ export default function DashboardPage() {
 
             {/* Upload New Resume Card */}
             <Card className="mt-6">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold">Upload New Resume</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Update your profile with a new resume for better recommendations
-                    </p>
+              <CardHeader>
+                <CardTitle>Upload New Resume</CardTitle>
+                <CardDescription>
+                  Update your profile with a new resume for better recommendations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Resume File</Label>
+                  <ResumeDropzone
+                    onFileSelect={handleFileSelect}
+                    selectedFile={selectedFile}
+                    onRemoveFile={handleRemoveFile}
+                  />
+                </div>
+
+                {uploadError && (
+                  <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
+                    {uploadError}
                   </div>
-                  <Button>
-                    <Upload className="w-4 h-4 mr-2" />
-                    Upload
-                  </Button>
+                )}
+
+                {uploadStatus === 'success' && (
+                  <div className="bg-green-50 text-green-600 p-4 rounded-md flex items-center space-x-2">
+                    <CheckCircle2 className="w-5 h-5" />
+                    <span>Resume uploaded successfully! Refreshing dashboard...</span>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleUpload}
+                  disabled={!selectedFile || isUploading || uploadStatus === 'success'}
+                  className="w-full"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Resume
+                    </>
+                  )}
+                </Button>
+
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>• Supported formats: PDF, DOCX, DOC, TXT</p>
+                  <p>• Maximum file size: 10MB</p>
                 </div>
               </CardContent>
             </Card>

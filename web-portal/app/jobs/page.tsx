@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, Briefcase, MapPin, DollarSign, Clock, Building2, Filter } from 'lucide-react'
+import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 interface Job {
   id: string
@@ -105,32 +107,56 @@ export default function JobsPage() {
     )
   }
 
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/login' })
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Career Opportunities</h1>
-              <p className="text-gray-600 mt-2">Find your perfect career match</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-lg px-4 py-2">
-                {jobs.length} Active Jobs
-              </Badge>
-            </div>
+      <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
+        <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-semibold">
+            <span className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-xs">
+              <BriefcaseBusiness className="size-4" aria-hidden="true" />
+            </span>
+            <span>Career AI</span>
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <Link href="/profile">
+              <Button variant="ghost">
+                <UserRound className="size-4 mr-2" />
+                Profile
+              </Button>
+            </Link>
+            <Button variant="ghost" onClick={handleLogout}>
+              <LogOut className="size-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </nav>
+      </header>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Career Opportunities</h1>
+            <p className="text-muted-foreground mt-2">Find your perfect career match</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-lg px-4 py-2">
+              {jobs.length} Active Jobs
+            </Badge>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters */}
         <Card className="mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col gap-4 md:flex-row">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   placeholder="Search by job title, company..."
                   value={searchQuery}
@@ -139,7 +165,7 @@ export default function JobsPage() {
                 />
               </div>
               <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   placeholder="Location"
                   value={locationFilter}
@@ -168,15 +194,15 @@ export default function JobsPage() {
         <div className="grid gap-6">
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">Loading job opportunities...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading job opportunities...</p>
             </div>
           ) : jobs.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
-                <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No jobs found</h3>
-                <p className="text-gray-600">Try adjusting your search criteria or check back later.</p>
+                <BriefcaseBusiness className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No jobs found</h3>
+                <p className="text-muted-foreground">Try adjusting your search criteria or check back later.</p>
               </CardContent>
             </Card>
           ) : (
@@ -186,14 +212,14 @@ export default function JobsPage() {
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Building2 className="w-6 h-6 text-blue-600" />
+                        <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Building2 className="w-6 h-6" />
                         </div>
                         <div className="flex-1">
                           <CardTitle className="text-xl mb-2">{job.title}</CardTitle>
                           <CardDescription className="flex flex-wrap items-center gap-3 text-sm">
-                            <span className="font-medium text-gray-900">{job.company}</span>
-                            <span className="flex items-center gap-1 text-gray-600">
+                            <span className="font-medium">{job.company}</span>
+                            <span className="flex items-center gap-1 text-muted-foreground">
                               <MapPin className="w-4 h-4" />
                               {job.location}
                             </span>
@@ -208,8 +234,8 @@ export default function JobsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{job.description}</p>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                  <p className="text-muted-foreground mb-4 line-clamp-2">{job.description}</p>
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <DollarSign className="w-4 h-4" />
                       {job.salaryRange || job.salary || 'Competitive'}
@@ -234,10 +260,9 @@ export default function JobsPage() {
                   )}
                 </CardContent>
               </Card>
-            ))
-          )}
+            )))}
         </div>
-      </div>
+      </main>
 
       {/* Job Detail Modal */}
       {selectedJob && (
@@ -248,8 +273,8 @@ export default function JobsPage() {
                 <div>
                   <CardTitle className="text-2xl mb-2">{selectedJob.title}</CardTitle>
                   <CardDescription className="flex flex-wrap items-center gap-3">
-                    <span className="font-medium text-gray-900">{selectedJob.company}</span>
-                    <span className="flex items-center gap-1 text-gray-600">
+                    <span className="font-medium">{selectedJob.company}</span>
+                    <span className="flex items-center gap-1 text-muted-foreground">
                       <MapPin className="w-4 h-4" />
                       {selectedJob.location}
                     </span>
@@ -268,12 +293,12 @@ export default function JobsPage() {
 
               <div>
                 <h3 className="font-semibold mb-2">Description</h3>
-                <p className="text-gray-600 whitespace-pre-wrap">{selectedJob.description}</p>
+                <p className="text-muted-foreground whitespace-pre-wrap">{selectedJob.description}</p>
               </div>
 
               <div>
                 <h3 className="font-semibold mb-2">Requirements</h3>
-                <ul className="list-disc list-inside space-y-1 text-gray-600">
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                   {selectedJob.requirements.map((req, index) => (
                     <li key={index}>{req}</li>
                   ))}
@@ -282,29 +307,29 @@ export default function JobsPage() {
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-500">Salary:</span>
+                  <span className="text-muted-foreground">Salary:</span>
                   <span className="ml-2 font-medium">{selectedJob.salaryRange || selectedJob.salary || 'Competitive'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Experience:</span>
+                  <span className="text-muted-foreground">Experience:</span>
                   <span className="ml-2 font-medium">{selectedJob.experienceLevel || 'Not specified'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Posted:</span>
+                  <span className="text-muted-foreground">Posted:</span>
                   <span className="ml-2 font-medium">{new Date(selectedJob.postedAt).toLocaleDateString()}</span>
                 </div>
                 {selectedJob.expiresAt && (
                   <div>
-                    <span className="text-gray-500">Expires:</span>
+                    <span className="text-muted-foreground">Expires:</span>
                     <span className="ml-2 font-medium">{new Date(selectedJob.expiresAt).toLocaleDateString()}</span>
                   </div>
                 )}
               </div>
 
               {selectedJob.careerPath && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-2 text-blue-900">Related Career Path</h3>
-                  <p className="text-blue-700">{selectedJob.careerPath.category} • {selectedJob.careerPath.title}</p>
+                <div className="bg-muted/50 p-4 rounded-lg">
+                  <h3 className="font-semibold mb-2">Related Career Path</h3>
+                  <p className="text-muted-foreground">{selectedJob.careerPath.category} • {selectedJob.careerPath.title}</p>
                 </div>
               )}
 

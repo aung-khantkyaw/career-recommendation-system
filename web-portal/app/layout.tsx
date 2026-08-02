@@ -3,7 +3,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { Providers } from "./providers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -20,15 +22,17 @@ export const metadata: Metadata = {
   description: "AI-based Student Career Recommendation System",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased`}>
-         <TooltipProvider>{children}</TooltipProvider>
+         <Providers session={session}>{children}</Providers>
       </body>
     </html>
   );

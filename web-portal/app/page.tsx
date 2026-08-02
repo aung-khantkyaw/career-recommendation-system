@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
+import { useSession, signOut } from "next-auth/react"
 import {
   ArrowDown,
   ArrowRight,
@@ -14,6 +15,7 @@ import {
   LayoutDashboard,
   LockKeyhole,
   LogIn,
+  LogOut,
   Map,
   Radar,
   ShieldCheck,
@@ -111,6 +113,7 @@ const recommendedCareers = [
 ]
 
 export default function Home() {
+  const { data: session } = useSession()
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -148,12 +151,29 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href="/login">
-              <Button variant="ghost">Login</Button>
-            </Link>
-            <Link href="/register">
-              <Button>Register</Button>
-            </Link>
+            {session ? (
+              <>
+                <Link href="/profile">
+                  <Button variant="ghost">
+                    <UserRound className="size-4 mr-2" />
+                    Profile
+                  </Button>
+                </Link>
+                <Button variant="ghost" onClick={() => signOut({ callbackUrl: '/login' })}>
+                  <LogOut className="size-4 mr-2" />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost">Login</Button>
+                </Link>
+                <Link href="/register">
+                  <Button>Register</Button>
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       </header>
@@ -175,7 +195,7 @@ export default function Home() {
               personalized career recommendations designed for your future.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/register">
+              <Link href={session ? "/dashboard" : "/register"}>
                 <Button size="lg" className="w-full sm:w-auto">
                   Get Started
                   <ArrowRight className="size-4" aria-hidden="true" />
