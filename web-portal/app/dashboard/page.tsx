@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Label } from '@/components/ui/label'
 import { ResumeDropzone } from '@/components/ui/dropzone'
-import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock } from 'lucide-react'
+import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock, FileText, Download, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { NotificationBell } from '@/components/notification-bell'
 
 interface Recommendation {
   id: string
@@ -39,11 +40,27 @@ interface RecentJob {
   postedAt: string
 }
 
+interface Resume {
+  id: string
+  fileName: string
+  originalName: string
+  fileSize: number
+  mimeType: string
+  processingStatus: string
+  skills: any
+  experience: any
+  education: any
+  processedAt: string | null
+  createdAt: string
+  recommendations: any[]
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
   const [recentJobs, setRecentJobs] = useState<RecentJob[]>([])
+  const [resumes, setResumes] = useState<Resume[]>([])
   const [stats, setStats] = useState({ totalResumes: 0, completedResumes: 0, processingResumes: 0, totalSkills: 0 })
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -69,6 +86,19 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchResumes = async () => {
+    try {
+      const response = await fetch('/api/user/resumes')
+      const data = await response.json()
+
+      if (response.ok) {
+        setResumes(data.resumes || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch resumes:', error)
+    }
+  }
+
   const fetchRecentJobs = async () => {
     try {
       const response = await fetch('/api/jobs?status=active')
@@ -85,12 +115,42 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchDashboardData()
     fetchRecentJobs()
+    fetchResumes()
   }, [])
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
     await fetchDashboardData()
+    await fetchResumes()
     setIsRefreshing(false)
+  }
+
+  const handleDownloadResume = async (resumeId: string) => {
+    try {
+      const response = await fetch(`/api/user/resumes/${resumeId}/download`)
+      const data = await response.json()
+
+      if (response.ok) {
+        window.open(data.downloadUrl, '_blank')
+      }
+    } catch (error) {
+      console.error('Failed to download resume:', error)
+    }
+  }
+
+  const handleDeleteResume = async (resumeId: string) => {
+    if (!confirm('Are you sure you want to delete this resume?')) return
+
+    try {
+      const response = await fetch(`/api/user/resumes/${resumeId}`, { method: 'DELETE' })
+
+      if (response.ok) {
+        setResumes(prev => prev.filter(r => r.id !== resumeId))
+        fetchDashboardData()
+      }
+    } catch (error) {
+      console.error('Failed to delete resume:', error)
+    }
   }
 
   const handleLogout = async () => {
@@ -161,6 +221,7 @@ export default function DashboardPage() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <NotificationBell />
             <Link href="/profile">
               <Button variant="ghost">
                 <UserRound className="size-4 mr-2" />
@@ -262,6 +323,65 @@ export default function DashboardPage() {
                 ))}
                 {recentJobs.length === 0 && (
                   <p className="text-sm text-muted-foreground text-center py-4">No recent jobs available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Resume History Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Resume History</CardTitle>
+                <CardDescription>Your uploaded resumes and their processing status</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {resumes.map((resume) => (
+                  <div key={resume.id} className="border-b pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm mb-1">{resume.originalName}</h4>
+                        <p className="text-xs text-muted-foreground">
+                          {(resume.fileSize / 1024).toFixed(2)} KB • {new Date(resume.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={
+                          resume.processingStatus === 'COMPLETED' ? 'default' :
+                          resume.processingStatus === 'PROCESSING' ? 'secondary' :
+                          resume.processingStatus === 'FAILED' ? 'destructive' : 'outline'
+                        }>
+                          {resume.processingStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownloadResume(resume.id)}
+                        disabled={resume.processingStatus !== 'COMPLETED'}
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Download
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteResume(resume.id)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                    {resume.processingStatus === 'COMPLETED' && resume.recommendations.length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {resume.recommendations.length} recommendations generated
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {resumes.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No resumes uploaded yet</p>
                 )}
               </CardContent>
             </Card>

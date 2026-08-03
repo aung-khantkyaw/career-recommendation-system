@@ -3,10 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut, Phone, Mail, Bookmark, BookmarkCheck } from 'lucide-react'
+import { BookmarkCheck, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
@@ -34,96 +32,45 @@ interface Job {
   } | null
 }
 
-export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [typeFilter, setTypeFilter] = useState('all')
-  const [locationFilter, setLocationFilter] = useState('')
+interface Bookmark {
+  id: string
+  job: Job
+  createdAt: string
+}
+
+export default function BookmarksPage() {
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [selectedJob, setSelectedJob] = useState<Job | null>(null)
-  const [bookmarkedJobs, setBookmarkedJobs] = useState<Set<string>>(new Set())
-
-  const fetchJobs = async () => {
-    setIsLoading(true)
-    try {
-      const params = new URLSearchParams()
-      params.set('status', 'active') // Only show active jobs
-      if (searchQuery.trim()) params.set('search', searchQuery.trim())
-      if (typeFilter !== 'all') params.set('type', typeFilter)
-      if (locationFilter.trim()) params.set('search', locationFilter.trim())
-
-      const url = params.size
-        ? `/api/jobs?${params.toString()}`
-        : '/api/jobs?status=active'
-
-      const response = await fetch(url, { cache: 'no-store' })
-      const data = await response.json()
-
-      if (response.ok) {
-        setJobs(data.jobs)
-      }
-    } catch (error) {
-      console.error('Failed to fetch jobs:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const fetchBookmarks = async () => {
+    setIsLoading(true)
     try {
       const response = await fetch('/api/user/bookmarks')
       const data = await response.json()
 
       if (response.ok) {
-        const bookmarkedIds: Set<string> = new Set(data.bookmarks.map((b: any) => b.jobId as string))
-        setBookmarkedJobs(bookmarkedIds)
+        setBookmarks(data.bookmarks)
       }
     } catch (error) {
       console.error('Failed to fetch bookmarks:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const toggleBookmark = async (jobId: string) => {
+  const removeBookmark = async (bookmarkId: string) => {
     try {
-      if (bookmarkedJobs.has(jobId)) {
-        // Remove bookmark
-        const bookmark = await fetch('/api/user/bookmarks').then(res => res.json())
-        const existingBookmark = bookmark.bookmarks.find((b: any) => b.jobId === jobId)
-        
-        if (existingBookmark) {
-          await fetch(`/api/user/bookmarks/${existingBookmark.id}`, { method: 'DELETE' })
-          setBookmarkedJobs(prev => {
-            const newSet = new Set(prev)
-            newSet.delete(jobId)
-            return newSet
-          })
-        }
-      } else {
-        // Add bookmark
-        await fetch('/api/user/bookmarks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jobId })
-        })
-        setBookmarkedJobs(prev => new Set([...prev, jobId]))
-      }
+      await fetch(`/api/user/bookmarks/${bookmarkId}`, { method: 'DELETE' })
+      setBookmarks(prev => prev.filter(b => b.id !== bookmarkId))
     } catch (error) {
-      console.error('Failed to toggle bookmark:', error)
+      console.error('Failed to remove bookmark:', error)
     }
   }
 
   useEffect(() => {
-    fetchJobs()
     fetchBookmarks()
   }, [])
-
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      fetchJobs()
-    }, 300)
-
-    return () => clearTimeout(debounceTimer)
-  }, [searchQuery, typeFilter, locationFilter])
 
   const getJobTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
@@ -164,7 +111,7 @@ export default function JobsPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center gap-2 font-semibold">
+          <Link href="/jobs" className="flex items-center gap-2 font-semibold">
             <span className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-xs">
               <BriefcaseBusiness className="size-4" aria-hidden="true" />
             </span>
@@ -172,12 +119,6 @@ export default function JobsPage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <Link href="/jobs">
-              <Button variant="ghost">
-                <BriefcaseBusiness className="size-4 mr-2" />
-                Jobs
-              </Button>
-            </Link>
             <NotificationBell />
             <Link href="/profile">
               <Button variant="ghost">
@@ -196,79 +137,37 @@ export default function JobsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Career Opportunities</h1>
-            <p className="text-muted-foreground mt-2">Find your perfect career match</p>
+            <h1 className="text-3xl font-bold">Saved Jobs</h1>
+            <p className="text-muted-foreground mt-2">Your bookmarked career opportunities</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/bookmarks">
-              <Button variant="outline">
-                <BookmarkCheck className="w-4 h-4 mr-2" />
-                Bookmarks
-              </Button>
-            </Link>
             <Badge variant="outline" className="text-lg px-4 py-2">
-              {jobs.length} Active Jobs
+              {bookmarks.length} Bookmarked Jobs
             </Badge>
           </div>
         </div>
-
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col gap-4 md:flex-row">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search by job title, company..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-12"
-                />
-              </div>
-              <div className="relative flex-1">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <Input
-                  placeholder="Location"
-                  value={locationFilter}
-                  onChange={(e) => setLocationFilter(e.target.value)}
-                  className="pl-10 h-12"
-                />
-              </div>
-              <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value || 'all')}>
-                <SelectTrigger className="w-full md:w-48 h-12">
-                  <SelectValue placeholder="Job Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="full_time">Full-time</SelectItem>
-                  <SelectItem value="part_time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="internship">Internship</SelectItem>
-                  <SelectItem value="remote">Remote</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Job Listings */}
         <div className="grid gap-6">
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading job opportunities...</p>
+              <p className="mt-4 text-muted-foreground">Loading saved jobs...</p>
             </div>
-          ) : jobs.length === 0 ? (
+          ) : bookmarks.length === 0 ? (
             <Card>
               <CardContent className="p-12 text-center">
-                <BriefcaseBusiness className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No jobs found</h3>
-                <p className="text-muted-foreground">Try adjusting your search criteria or check back later.</p>
+                <BookmarkCheck className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">No saved jobs yet</h3>
+                <p className="text-muted-foreground mb-4">Start bookmarking jobs from the careers page to see them here.</p>
+                <Link href="/jobs">
+                  <Button>Browse Jobs</Button>
+                </Link>
               </CardContent>
             </Card>
           ) : (
-            jobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedJob(job)}>
+            bookmarks.map((bookmark) => (
+              <Card key={bookmark.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedJob(bookmark.job)}>
                 <CardHeader>
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1">
@@ -277,59 +176,55 @@ export default function JobsPage() {
                           <Building2 className="w-6 h-6" />
                         </div>
                         <div className="flex-1">
-                          <CardTitle className="text-xl mb-2">{job.title}</CardTitle>
+                          <CardTitle className="text-xl mb-2">{bookmark.job.title}</CardTitle>
                           <CardDescription className="flex flex-wrap items-center gap-3 text-sm">
-                            <span className="font-medium">{job.company}</span>
+                            <span className="font-medium">{bookmark.job.company}</span>
                             <span className="flex items-center gap-1 text-muted-foreground">
                               <MapPin className="w-4 h-4" />
-                              {job.location}
+                              {bookmark.job.location}
                             </span>
                           </CardDescription>
                         </div>
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      {getJobTypeBadge(job.type)}
-                      {getExperienceBadge(job.experienceLevel)}
+                      {getJobTypeBadge(bookmark.job.type)}
+                      {getExperienceBadge(bookmark.job.experienceLevel)}
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation()
-                          toggleBookmark(job.id)
+                          removeBookmark(bookmark.id)
                         }}
                       >
-                        {bookmarkedJobs.has(job.id) ? (
-                          <BookmarkCheck className="w-4 h-4 text-blue-500" />
-                        ) : (
-                          <Bookmark className="w-4 h-4" />
-                        )}
+                        <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-2">{job.description}</p>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">{bookmark.job.description}</p>
                   <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <DollarSign className="w-4 h-4" />
-                      {job.salaryRange || job.salary || 'Competitive'}
+                      {bookmark.job.salaryRange || bookmark.job.salary || 'Competitive'}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      Posted {new Date(job.postedAt).toLocaleDateString()}
+                      Saved {new Date(bookmark.createdAt).toLocaleDateString()}
                     </span>
-                    {job.expiresAt && (
+                    {bookmark.job.expiresAt && (
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        Expires {new Date(job.expiresAt).toLocaleDateString()}
+                        Expires {new Date(bookmark.job.expiresAt).toLocaleDateString()}
                       </span>
                     )}
                   </div>
-                  {job.careerPath && (
+                  {bookmark.job.careerPath && (
                     <div className="mt-3">
                       <Badge variant="outline" className="text-xs">
-                        {job.careerPath.category} • {job.careerPath.title}
+                        {bookmark.job.careerPath.category} • {bookmark.job.careerPath.title}
                       </Badge>
                     </div>
                   )}
@@ -400,34 +295,6 @@ export default function JobsPage() {
                   </div>
                 )}
               </div>
-
-              {selectedJob.phoneNumbers && selectedJob.phoneNumbers.length > 0 && (
-                <div>
-                  <h3 className="font-semibold mb-2">Contact Numbers</h3>
-                  <div className="space-y-1">
-                    {selectedJob.phoneNumbers.map((phone, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Phone className="w-4 h-4" />
-                        <span>{phone}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedJob.emails && selectedJob.emails.length > 0 && (
-                <div>
-                  <h3 className="font-semibold mb-2">Email Addresses</h3>
-                  <div className="space-y-1">
-                    {selectedJob.emails.map((email, index) => (
-                      <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Mail className="w-4 h-4" />
-                        <span>{email}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {selectedJob.careerPath && (
                 <div className="bg-muted/50 p-4 rounded-lg">

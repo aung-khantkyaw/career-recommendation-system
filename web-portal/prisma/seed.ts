@@ -28,6 +28,7 @@ async function main() {
       bio: 'System administrator managing the career recommendation platform.',
       location: 'Remote',
       website: 'https://career-system.com',
+      isActive: true,
     },
   })
   console.log(`✅ Created admin user: ${admin.email}`)
@@ -45,6 +46,7 @@ async function main() {
       bio: 'Passionate software developer with 5 years of experience in full-stack development.',
       location: 'San Francisco, CA',
       website: 'https://johndoe.dev',
+      isActive: true,
     },
   })
   console.log(`✅ Created regular user: ${user.email}`)
