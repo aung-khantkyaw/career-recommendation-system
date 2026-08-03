@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Label } from '@/components/ui/label'
 import { ResumeDropzone } from '@/components/ui/dropzone'
-import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock, FileText, Download, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock, FileText, Download, Trash2, LayoutDashboard, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
@@ -221,17 +221,25 @@ export default function DashboardPage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <NotificationBell />
+            <Link href="/dashboard">
+              <Button variant="ghost">
+                <LayoutDashboard className="size-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/jobs">
+              <Button variant="ghost">
+                <Briefcase className="size-4 mr-2" />
+                Jobs
+              </Button>
+            </Link>
             <Link href="/profile">
               <Button variant="ghost">
                 <UserRound className="size-4 mr-2" />
                 Profile
               </Button>
             </Link>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="size-4 mr-2" />
-              Logout
-            </Button>
+            <NotificationBell />
           </div>
         </nav>
       </header>
@@ -295,8 +303,17 @@ export default function DashboardPage() {
             {/* Recent Jobs Section */}
             <Card>
               <CardHeader>
-                <CardTitle>Recent Jobs</CardTitle>
-                <CardDescription>Latest career opportunities</CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Recent Jobs</CardTitle>
+                    <CardDescription>Latest career opportunities</CardDescription>
+                  </div>
+                  <Link href="/jobs">
+                    <Button variant="outline" size="sm">
+                      View All
+                    </Button>
+                  </Link>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {recentJobs.map((job) => (

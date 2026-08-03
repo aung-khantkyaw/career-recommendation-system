@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 type CareerPayload = {
   title?: string
@@ -68,7 +69,7 @@ function validateCareerPayload(body: CareerPayload) {
       description,
       requiredSkills,
       softSkills,
-      roadmap: body.roadmap ?? null,
+      roadmap: body.roadmap as any,
       averageSalary,
       jobOpenings: Math.max(0, Math.round(toNumber(body.jobOpenings))),
       growthRate: toNumber(body.growthRate),
@@ -142,10 +143,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PUT(req: NextRequest) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Career path ID is required' }, { status: 400 })
     }
 
     const body = (await req.json()) as CareerPayload
@@ -155,16 +163,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 })
     }
 
-    const career = await prisma.careerPath.create({
+    const career = await prisma.careerPath.update({
+      where: { id },
       data: result.data,
     })
 
     return NextResponse.json(
-      { message: 'Career path created successfully', career },
-      { status: 201 }
+      { message: 'Career path updated successfully', career },
+      { status: 200 }
     )
   } catch (error) {
-    console.error('Career creation error:', error)
+    console.error('Career update error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  try {
+    if (!(await requireAdmin())) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json({ error: 'Career path ID is required' }, { status: 400 })
+    }
+
+    await prisma.careerPath.delete({
+      where: { id },
+    })
+
+    return NextResponse.json({ message: 'Career path deleted successfully' })
+  } catch (error) {
+    console.error('Career deletion error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

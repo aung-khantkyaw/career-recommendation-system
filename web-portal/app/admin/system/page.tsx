@@ -6,6 +6,21 @@ import { Badge } from '@/components/ui/badge'
 import { Activity, Cpu, HardDrive, Database, Wifi, Server, AlertTriangle, CheckCircle2, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
+interface Service {
+  name: string
+  uptime: string
+  status: string
+  cpu: string
+  memory: string
+}
+
+interface Log {
+  id: string
+  level: string
+  message: string
+  time: string
+}
+
 export default function SystemMonitorPage() {
   const [systemStats, setSystemStats] = useState({
     cpu: { usage: 0, cores: 0, temperature: 0 },
@@ -13,8 +28,8 @@ export default function SystemMonitorPage() {
     disk: { usage: 0, total: 0, free: 0 },
     network: { upload: 0, download: 0, latency: 0 },
   })
-  const [services, setServices] = useState([])
-  const [recentLogs, setRecentLogs] = useState([])
+  const [services, setServices] = useState<Service[]>([])
+  const [recentLogs, setRecentLogs] = useState<Log[]>([])
   const [storageStats, setStorageStats] = useState({ totalObjects: 0, totalSize: '0 GB', resumeFiles: 0 })
   const [dbStats, setDbStats] = useState({ databaseSize: '0 GB', activeConnections: 0, queryPerformance: '0ms' })
   const [overview, setOverview] = useState({ totalUsers: 0, totalResumes: 0, completedResumes: 0, processingResumes: 0, failedResumes: 0 })

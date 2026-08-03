@@ -20,6 +20,8 @@ enum ProcessingStatus {
 enum UserRole {
   USER
   ADMIN
+  MODERATOR
+  RECRUITER
 }
 
 enum JobType {
@@ -61,6 +63,9 @@ model User {
   resumes       Resume[]
   bookmarks     JobBookmark[]
   notifications  Notification[]
+  activityLogs  ActivityLog[]
+  auditLogs     AuditLog[]
+  feedbacks     Feedback[]
   
   @@index([email])
 }
@@ -178,6 +183,99 @@ model Notification {
 
   @@index([userId])
   @@index([isRead])
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action      String   // LOGIN, LOGOUT, UPLOAD_RESUME, BOOKMARK_JOB, VIEW_JOB, UPDATE_PROFILE
+  entityType  String?  // RESUME, JOB, PROFILE
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  admin       User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action      String   // CREATE_USER, DELETE_USER, UPDATE_USER_STATUS, DELETE_RESUME, UPDATE_CAREER_PATH, DELETE_JOB
+  entityType  String?  // USER, RESUME, CAREER_PATH, JOB, SKILL
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model Feedback {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // BUG_REPORT, FEATURE_REQUEST, COMPLAINT, SUGGESTION
+  subject     String
+  message     String
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+  adminNotes  String?
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Skill {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  category    String   // TECHNICAL, SOFT, LANGUAGE, TOOL
+  description String?
+  difficulty  String   @default("INTERMEDIATE") // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([active])
+}
+
+model SystemConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  category    String   // AI, RATE_LIMIT, GENERAL, NOTIFICATION
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+}
+
+model EmailConfig {
+  id          String   @id @default(uuid())
+  provider    String   @default("SMTP") // SMTP, SENDGRID, MAILGUN, AWS_SES
+  host        String?
+  port        Int?
+  username    String?
+  password    String?
+  fromEmail   String?
+  fromName    String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ApiKey {

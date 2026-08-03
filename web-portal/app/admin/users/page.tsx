@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff } from 'lucide-react'
+import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff, Download, CheckSquare, Square, Loader2 } from 'lucide-react'
 
 interface User {
   id: string
@@ -24,6 +24,9 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+  const [isBulkUpdating, setIsBulkUpdating] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   const fetchUsers = async (query?: string) => {
     try {
@@ -56,15 +59,26 @@ export default function UserManagementPage() {
   const filteredUsers = users
 
   const getRoleBadge = (role: string) => {
-    return role === 'admin' ? (
-      <Badge variant="default" className="bg-purple-600">
-        <Shield className="w-3 h-3 mr-1" />
-        Admin
-      </Badge>
-    ) : (
-      <Badge variant="secondary">
-        <User className="w-3 h-3 mr-1" />
-        User
+    const variants: Record<string, any> = {
+      admin: 'default bg-purple-600',
+      moderator: 'default bg-blue-600',
+      recruiter: 'default bg-green-600',
+      user: 'secondary',
+    }
+    
+    const icons: Record<string, any> = {
+      admin: Shield,
+      moderator: Shield,
+      recruiter: User,
+      user: User,
+    }
+    
+    const Icon = icons[role.toLowerCase()] || User
+    
+    return (
+      <Badge variant={variants[role.toLowerCase()] || 'secondary'}>
+        <Icon className="w-3 h-3 mr-1" />
+        {role.charAt(0) + role.slice(1).toLowerCase()}
       </Badge>
     )
   }
@@ -90,6 +104,105 @@ export default function UserManagementPage() {
       }
     } catch (error) {
       console.error('Failed to toggle user status:', error)
+    }
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedUsers.size === users.length) {
+      setSelectedUsers(new Set())
+    } else {
+      setSelectedUsers(new Set(users.map(u => u.id)))
+    }
+  }
+
+  const toggleSelectUser = (userId: string) => {
+    const newSelected = new Set(selectedUsers)
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId)
+    } else {
+      newSelected.add(userId)
+    }
+    setSelectedUsers(newSelected)
+  }
+
+  const bulkActivate = async () => {
+    if (selectedUsers.size === 0) return
+    
+    setIsBulkUpdating(true)
+    try {
+      await Promise.all(
+        Array.from(selectedUsers).map(userId =>
+          fetch(`/api/admin/users/${userId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isActive: true }),
+          })
+        )
+      )
+      
+      setUsers(users.map(u => selectedUsers.has(u.id) ? { ...u, isActive: true } : u))
+      setSelectedUsers(new Set())
+    } catch (error) {
+      console.error('Failed to bulk activate users:', error)
+    } finally {
+      setIsBulkUpdating(false)
+    }
+  }
+
+  const bulkDeactivate = async () => {
+    if (selectedUsers.size === 0) return
+    
+    if (!confirm(`Are you sure you want to deactivate ${selectedUsers.size} user(s)?`)) return
+    
+    setIsBulkUpdating(true)
+    try {
+      await Promise.all(
+        Array.from(selectedUsers).map(userId =>
+          fetch(`/api/admin/users/${userId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isActive: false }),
+          })
+        )
+      )
+      
+      setUsers(users.map(u => selectedUsers.has(u.id) ? { ...u, isActive: false } : u))
+      setSelectedUsers(new Set())
+    } catch (error) {
+      console.error('Failed to bulk deactivate users:', error)
+    } finally {
+      setIsBulkUpdating(false)
+    }
+  }
+
+  const exportUsers = async () => {
+    setIsExporting(true)
+    try {
+      const csvContent = [
+        ['Name', 'Email', 'Role', 'Status', 'Resumes', 'Created At'].join(','),
+        ...users.map(u => [
+          u.name || '',
+          u.email,
+          u.role,
+          u.isActive ? 'Active' : 'Inactive',
+          u._count.resumes,
+          new Date(u.createdAt).toLocaleDateString()
+        ].join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `users_export_${new Date().toISOString().split('T')[0]}.csv`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Failed to export users:', error)
+    } finally {
+      setIsExporting(false)
     }
   }
 
@@ -142,21 +255,87 @@ export default function UserManagementPage() {
               <CardTitle>All Users</CardTitle>
               <CardDescription>View and manage all registered users</CardDescription>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64"
-              />
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64"
+                />
+              </div>
+              <Button
+                variant="outline"
+                onClick={exportUsers}
+                disabled={isExporting || users.length === 0}
+              >
+                {isExporting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Download className="w-4 h-4 mr-2" />
+                )}
+                Export CSV
+              </Button>
             </div>
           </div>
+          {selectedUsers.size > 0 && (
+            <div className="flex items-center gap-2 mt-4 p-3 bg-muted rounded-lg">
+              <span className="text-sm font-medium">{selectedUsers.size} user(s) selected</span>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={bulkActivate}
+                disabled={isBulkUpdating}
+              >
+                {isBulkUpdating ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <PowerOff className="w-4 h-4 mr-2" />
+                )}
+                Activate All
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={bulkDeactivate}
+                disabled={isBulkUpdating}
+              >
+                {isBulkUpdating ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Power className="w-4 h-4 mr-2" />
+                )}
+                Deactivate All
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedUsers(new Set())}
+              >
+                Clear Selection
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead className="w-12">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleSelectAll}
+                    disabled={users.length === 0}
+                  >
+                    {selectedUsers.size === users.length && users.length > 0 ? (
+                      <CheckSquare className="w-4 h-4" />
+                    ) : (
+                      <Square className="w-4 h-4" />
+                    )}
+                  </Button>
+                </TableHead>
                 <TableHead>User</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Resumes</TableHead>
@@ -168,6 +347,19 @@ export default function UserManagementPage() {
             <TableBody>
               {filteredUsers.map((user) => (
                 <TableRow key={user.id}>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleSelectUser(user.id)}
+                    >
+                      {selectedUsers.has(user.id) ? (
+                        <CheckSquare className="w-4 h-4" />
+                      ) : (
+                        <Square className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </TableCell>
                   <TableCell>
                     <div>
                       <div className="font-medium">{user.name || 'No name'}</div>

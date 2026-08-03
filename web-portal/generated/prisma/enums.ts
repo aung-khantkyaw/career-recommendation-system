@@ -21,7 +21,9 @@ export type ProcessingStatus = (typeof ProcessingStatus)[keyof typeof Processing
 
 export const UserRole = {
   USER: 'USER',
-  ADMIN: 'ADMIN'
+  ADMIN: 'ADMIN',
+  MODERATOR: 'MODERATOR',
+  RECRUITER: 'RECRUITER'
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]

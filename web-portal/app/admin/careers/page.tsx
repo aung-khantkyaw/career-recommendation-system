@@ -229,10 +229,10 @@ export default function CareerDataPage() {
     try {
       const response = await fetch(
         editingCareer
-          ? `/api/admin/careers/${editingCareer.id}`
+          ? `/api/admin/careers?id=${editingCareer.id}`
           : '/api/admin/careers',
         {
-          method: editingCareer ? 'PATCH' : 'POST',
+          method: editingCareer ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         }
@@ -268,7 +268,7 @@ export default function CareerDataPage() {
     setSuccess('')
 
     try {
-      const response = await fetch(`/api/admin/careers/${career.id}`, {
+      const response = await fetch(`/api/admin/careers?id=${career.id}`, {
         method: 'DELETE',
       })
       const data = (await response.json()) as { error?: string }

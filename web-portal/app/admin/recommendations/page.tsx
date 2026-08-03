@@ -180,10 +180,10 @@ export default function RecommendationsManagementPage() {
                 placeholder="Search by career, user email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-12"
               />
             </div>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <Select value={categoryFilter}  onValueChange={(value) => setCategoryFilter(value || 'all')}>
               <SelectTrigger className="w-full md:w-48">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -197,7 +197,7 @@ export default function RecommendationsManagementPage() {
                 <SelectItem value="Data">Data</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={matchScoreFilter} onValueChange={setMatchScoreFilter}>
+            <Select value={matchScoreFilter} onValueChange={(value) => setMatchScoreFilter(value || 'all')}>
               <SelectTrigger className="w-full md:w-48">
                 <SelectValue placeholder="Match Score" />
               </SelectTrigger>

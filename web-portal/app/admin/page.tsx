@@ -7,7 +7,7 @@ import {
   AlertCircle,
   ArrowRight,
   BarChart3,
-  Briefcase,
+  BriefcaseBusiness,
   CheckCircle2,
   Cpu,
   FileText,
@@ -175,7 +175,7 @@ export default function AdminDashboardPage() {
         title: 'Recommendations',
         value: dashboard.stats.totalRecommendations.toLocaleString(),
         detail: `${dashboard.stats.averageMatchScore}% avg match score`,
-        icon: Briefcase,
+        icon: BriefcaseBusiness,
       },
       {
         title: 'System Health',
@@ -428,7 +428,7 @@ export default function AdminDashboardPage() {
         />
         <QuickAction
           href="/admin/careers"
-          icon={Briefcase}
+          icon={BriefcaseBusiness}
           title="Career Data"
           description="Maintain career categories and recommendation data."
         />

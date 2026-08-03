@@ -77,6 +77,36 @@ export type JobBookmark = Prisma.JobBookmarkModel
  */
 export type Notification = Prisma.NotificationModel
 /**
+ * Model ActivityLog
+ * 
+ */
+export type ActivityLog = Prisma.ActivityLogModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Feedback
+ * 
+ */
+export type Feedback = Prisma.FeedbackModel
+/**
+ * Model Skill
+ * 
+ */
+export type Skill = Prisma.SkillModel
+/**
+ * Model SystemConfig
+ * 
+ */
+export type SystemConfig = Prisma.SystemConfigModel
+/**
+ * Model EmailConfig
+ * 
+ */
+export type EmailConfig = Prisma.EmailConfigModel
+/**
  * Model ApiKey
  * 
  */

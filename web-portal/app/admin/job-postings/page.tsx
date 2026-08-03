@@ -567,7 +567,7 @@ export default function JobPostingsPage() {
                   placeholder="Search jobs..."
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  className="pl-9 sm:w-72"
+                  className="pl-9 sm:w-72 h-12"
                 />
               </div>
               <div className="flex rounded-lg border bg-background p-1">

@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut, Phone, Mail, Bookmark, BookmarkCheck } from 'lucide-react'
+import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, Phone, Mail, Bookmark, BookmarkCheck, LayoutDashboard, Briefcase } from 'lucide-react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
 
 interface Job {
@@ -127,15 +126,16 @@ export default function JobsPage() {
 
   const getJobTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      FULL_TIME: 'bg-blue-500',
-      PART_TIME: 'bg-green-500',
-      CONTRACT: 'bg-purple-500',
-      INTERNSHIP: 'bg-yellow-500',
-      REMOTE: 'bg-teal-500',
+      FULL_TIME: 'bg-blue-100 text-blue-700 border-blue-300',
+      PART_TIME: 'bg-green-100 text-green-700 border-green-300',
+      CONTRACT: 'bg-purple-100 text-purple-700 border-purple-300',
+      INTERNSHIP: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      REMOTE: 'bg-teal-100 text-teal-700 border-teal-300',
     }
+    const label = type.replace('_', ' ')
     return (
-      <Badge variant="default" className={colors[type] || 'bg-gray-500'}>
-        {type.replace('_', ' ')}
+      <Badge variant="outline" className={`${colors[type] || 'bg-gray-100 text-gray-700 border-gray-300'} font-medium`}>
+        {label}
       </Badge>
     )
   }
@@ -143,21 +143,18 @@ export default function JobsPage() {
   const getExperienceBadge = (level: string | null) => {
     if (!level) return null
     const colors: Record<string, string> = {
-      'Entry Level': 'bg-green-500',
-      'Mid Level': 'bg-blue-500',
-      'Senior Level': 'bg-purple-500',
-      'Executive': 'bg-red-500',
+      'Entry Level': 'bg-emerald-100 text-emerald-700 border-emerald-300',
+      'Mid Level': 'bg-blue-100 text-blue-700 border-blue-300',
+      'Senior Level': 'bg-violet-100 text-violet-700 border-violet-300',
+      'Executive': 'bg-red-100 text-red-700 border-red-300',
     }
     return (
-      <Badge variant="secondary" className={colors[level] || 'bg-gray-500'}>
+      <Badge variant="outline" className={`${colors[level] || 'bg-gray-100 text-gray-700 border-gray-300'} font-medium`}>
         {level}
       </Badge>
     )
   }
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/login' })
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -172,23 +169,25 @@ export default function JobsPage() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <Link href="/dashboard">
+              <Button variant="ghost">
+                <LayoutDashboard className="size-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
             <Link href="/jobs">
               <Button variant="ghost">
-                <BriefcaseBusiness className="size-4 mr-2" />
+                <Briefcase className="size-4 mr-2" />
                 Jobs
               </Button>
             </Link>
-            <NotificationBell />
             <Link href="/profile">
               <Button variant="ghost">
                 <UserRound className="size-4 mr-2" />
                 Profile
               </Button>
             </Link>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="size-4 mr-2" />
-              Logout
-            </Button>
+            <NotificationBell />
           </div>
         </nav>
       </header>
@@ -206,9 +205,9 @@ export default function JobsPage() {
                 Bookmarks
               </Button>
             </Link>
-            <Badge variant="outline" className="text-lg px-4 py-2">
+            <Button variant="outline" className="rounded-full">
               {jobs.length} Active Jobs
-            </Badge>
+            </Button>
           </div>
         </div>
 
@@ -234,19 +233,21 @@ export default function JobsPage() {
                   className="pl-10 h-12"
                 />
               </div>
-              <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value || 'all')}>
-                <SelectTrigger className="w-full md:w-48 h-12">
-                  <SelectValue placeholder="Job Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="full_time">Full-time</SelectItem>
-                  <SelectItem value="part_time">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                  <SelectItem value="internship">Internship</SelectItem>
-                  <SelectItem value="remote">Remote</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="relative flex-1">
+                <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value || 'all')}>
+                  <SelectTrigger className="w-full border-input bg-background">
+                    <SelectValue placeholder="Job Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem className="h-8" value="all">All Types</SelectItem>
+                    <SelectItem className="h-8" value="full_time">Full-time</SelectItem>
+                    <SelectItem className="h-8" value="part_time">Part-time</SelectItem>
+                    <SelectItem className="h-8" value="contract">Contract</SelectItem>
+                    <SelectItem className="h-8" value="internship">Internship</SelectItem>
+                    <SelectItem className="h-8" value="remote">Remote</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -292,15 +293,16 @@ export default function JobsPage() {
                       {getJobTypeBadge(job.type)}
                       {getExperienceBadge(job.experienceLevel)}
                       <Button
-                        variant="ghost"
+                        variant={bookmarkedJobs.has(job.id) ? "default" : "outline"}
                         size="sm"
+                        className={bookmarkedJobs.has(job.id) ? "bg-blue-600 hover:bg-blue-700" : "border-2 hover:bg-blue-50"}
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleBookmark(job.id)
                         }}
                       >
                         {bookmarkedJobs.has(job.id) ? (
-                          <BookmarkCheck className="w-4 h-4 text-blue-500" />
+                          <BookmarkCheck className="w-4 h-4" />
                         ) : (
                           <Bookmark className="w-4 h-4" />
                         )}

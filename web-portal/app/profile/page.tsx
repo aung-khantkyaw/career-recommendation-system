@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, LogOut, MapPin, Globe, Clock, Phone, Mail } from 'lucide-react'
+import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, MapPin, Globe, Clock, Phone, Mail, LayoutDashboard, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
+import { NotificationBell } from '@/components/notification-bell'
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
@@ -157,10 +158,25 @@ export default function ProfilePage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="size-4 mr-2" />
-              Logout
-            </Button>
+            <Link href="/dashboard">
+              <Button variant="ghost">
+                <LayoutDashboard className="size-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/jobs">
+              <Button variant="ghost">
+                <Briefcase className="size-4 mr-2" />
+                Jobs
+              </Button>
+            </Link>
+            <Link href="/profile">
+              <Button variant="ghost">
+                <UserRound className="size-4 mr-2" />
+                Profile
+              </Button>
+            </Link>
+            <NotificationBell />
           </div>
         </nav>
       </header>
@@ -379,6 +395,15 @@ export default function ProfilePage() {
                   </div>
                   <Button variant="outline" size="sm">
                     Change
+                  </Button>
+                </div>
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h4 className="font-medium">Logout</h4>
+                    <p className="text-sm text-muted-foreground">Sign out of your account</p>
+                  </div>
+                  <Button variant="destructive" size="sm" onClick={handleLogout}>
+                    Logout
                   </Button>
                 </div>
                 <div className="flex items-center justify-between p-4 border rounded-lg">

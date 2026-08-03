@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { BookmarkCheck, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut, Trash2 } from 'lucide-react'
+import { BookmarkCheck, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, Trash2, LayoutDashboard, Briefcase, Bookmark } from 'lucide-react'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
 
 interface Job {
@@ -74,15 +73,16 @@ export default function BookmarksPage() {
 
   const getJobTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      FULL_TIME: 'bg-blue-500',
-      PART_TIME: 'bg-green-500',
-      CONTRACT: 'bg-purple-500',
-      INTERNSHIP: 'bg-yellow-500',
-      REMOTE: 'bg-teal-500',
+      FULL_TIME: 'bg-blue-100 text-blue-700 border-blue-300',
+      PART_TIME: 'bg-green-100 text-green-700 border-green-300',
+      CONTRACT: 'bg-purple-100 text-purple-700 border-purple-300',
+      INTERNSHIP: 'bg-yellow-100 text-yellow-700 border-yellow-300',
+      REMOTE: 'bg-teal-100 text-teal-700 border-teal-300',
     }
+    const label = type.replace('_', ' ')
     return (
-      <Badge variant="default" className={colors[type] || 'bg-gray-500'}>
-        {type.replace('_', ' ')}
+      <Badge variant="outline" className={`${colors[type] || 'bg-gray-100 text-gray-700 border-gray-300'} font-medium`}>
+        {label}
       </Badge>
     )
   }
@@ -90,21 +90,18 @@ export default function BookmarksPage() {
   const getExperienceBadge = (level: string | null) => {
     if (!level) return null
     const colors: Record<string, string> = {
-      'Entry Level': 'bg-green-500',
-      'Mid Level': 'bg-blue-500',
-      'Senior Level': 'bg-purple-500',
-      'Executive': 'bg-red-500',
+      'Entry Level': 'bg-emerald-100 text-emerald-700 border-emerald-300',
+      'Mid Level': 'bg-blue-100 text-blue-700 border-blue-300',
+      'Senior Level': 'bg-violet-100 text-violet-700 border-violet-300',
+      'Executive': 'bg-red-100 text-red-700 border-red-300',
     }
     return (
-      <Badge variant="secondary" className={colors[level] || 'bg-gray-500'}>
+      <Badge variant="outline" className={`${colors[level] || 'bg-gray-100 text-gray-700 border-gray-300'} font-medium`}>
         {level}
       </Badge>
     )
   }
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: '/login' })
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -119,17 +116,25 @@ export default function BookmarksPage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <NotificationBell />
+            <Link href="/dashboard">
+              <Button variant="ghost">
+                <LayoutDashboard className="size-4 mr-2" />
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/jobs">
+              <Button variant="ghost">
+                <Briefcase className="size-4 mr-2" />
+                Jobs
+              </Button>
+            </Link>
             <Link href="/profile">
               <Button variant="ghost">
                 <UserRound className="size-4 mr-2" />
                 Profile
               </Button>
             </Link>
-            <Button variant="ghost" onClick={handleLogout}>
-              <LogOut className="size-4 mr-2" />
-              Logout
-            </Button>
+            <NotificationBell />
           </div>
         </nav>
       </header>
@@ -141,9 +146,9 @@ export default function BookmarksPage() {
             <p className="text-muted-foreground mt-2">Your bookmarked career opportunities</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-lg px-4 py-2">
+            <Button variant="outline" className="rounded-full">
               {bookmarks.length} Bookmarked Jobs
-            </Badge>
+            </Button>
           </div>
         </div>
 
@@ -191,14 +196,14 @@ export default function BookmarksPage() {
                       {getJobTypeBadge(bookmark.job.type)}
                       {getExperienceBadge(bookmark.job.experienceLevel)}
                       <Button
-                        variant="ghost"
+                        variant="destructive"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation()
                           removeBookmark(bookmark.id)
                         }}
                       >
-                        <Trash2 className="w-4 h-4 text-red-500" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>

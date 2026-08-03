@@ -71,6 +71,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Validate role
+    const validRoles = ['USER', 'ADMIN', 'MODERATOR', 'RECRUITER']
+    if (role && !validRoles.includes(role.toUpperCase())) {
+      return NextResponse.json(
+        { error: 'Invalid role' },
+        { status: 400 }
+      )
+    }
+
     const bcrypt = require('bcryptjs')
     const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -79,7 +88,7 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name: name || null,
-        role: role || 'USER',
+        role: (role || 'USER').toUpperCase() as any,
       }
     })
 

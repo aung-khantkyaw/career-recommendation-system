@@ -132,8 +132,8 @@ export default function Home() {
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Link href="#home" className="flex items-center gap-2 font-semibold">
-            <span className="flex size-9 items-center justify-center rounded-lg border bg-card shadow-xs">
-              <BriefcaseBusiness className="size-4" aria-hidden="true" />
+            <span className="flex size-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
+              <BriefcaseBusiness className="size-5" aria-hidden="true" />
             </span>
             <span>Career AI</span>
           </Link>

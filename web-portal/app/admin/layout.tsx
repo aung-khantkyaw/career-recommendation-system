@@ -5,14 +5,23 @@ import { usePathname } from 'next/navigation'
 import { 
   LayoutDashboard, 
   Users, 
-  Briefcase, 
+  BriefcaseBusiness, 
   Cpu, 
   Activity, 
   LogOut,
   TrendingUp,
   Building2,
   Settings,
-  Key
+  Key,
+  FileText,
+  Database,
+  MessageSquare,
+  Bell,
+  Mail,
+  Tag,
+  Shield,
+  BarChart3,
+  ScrollText
 } from 'lucide-react'
 import {
   Sidebar,
@@ -41,8 +50,10 @@ const navGroups = [
     label: 'Management',
     items: [
       { href: '/admin/users', icon: Users, label: 'User Management' },
-      { href: '/admin/careers', icon: Briefcase, label: 'Career Data' },
+      { href: '/admin/careers', icon: BriefcaseBusiness, label: 'Career Data' },
       { href: '/admin/job-postings', icon: Building2, label: 'Job Postings' },
+      { href: '/admin/resumes', icon: FileText, label: 'Resumes' },
+      { href: '/admin/skills', icon: Tag, label: 'Skills' },
     ]
   },
   {
@@ -50,6 +61,22 @@ const navGroups = [
     items: [
       { href: '/admin/recommendations', icon: TrendingUp, label: 'Recommendations' },
       { href: '/admin/jobs', icon: Cpu, label: 'AI Jobs' },
+      { href: '/admin/analytics', icon: BarChart3, label: 'Analytics' },
+    ]
+  },
+  {
+    label: 'Monitoring',
+    items: [
+      { href: '/admin/activity-logs', icon: Activity, label: 'Activity Logs' },
+      { href: '/admin/audit-logs', icon: Shield, label: 'Audit Logs' },
+    ]
+  },
+  {
+    label: 'Communication',
+    items: [
+      { href: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
+      { href: '/admin/email-config', icon: Mail, label: 'Email Config' },
+      { href: '/admin/notification-settings', icon: Bell, label: 'Notifications' },
     ]
   },
   {
@@ -57,6 +84,7 @@ const navGroups = [
     items: [
       { href: '/admin/api-keys', icon: Key, label: 'API Keys' },
       { href: '/admin/system', icon: Activity, label: 'System Monitor' },
+      { href: '/admin/system-config', icon: Database, label: 'System Config' },
     ]
   },
 ]
@@ -75,7 +103,7 @@ export default function AdminLayout({
           <SidebarHeader>
             <div className="flex items-center gap-3 px-2 py-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg">
-                <Briefcase className="h-5 w-5" />
+                <BriefcaseBusiness className="h-5 w-5" />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-semibold tracking-tight">Career AI</span>
