@@ -76,6 +76,8 @@ export async function POST(req: NextRequest) {
       salary,
       salaryRange,
       experienceLevel,
+      phoneNumbers,
+      emails,
       careerPathId,
       expiresAt,
     } = body
@@ -100,6 +102,8 @@ export async function POST(req: NextRequest) {
         salary,
         salaryRange,
         experienceLevel,
+        phoneNumbers: Array.isArray(phoneNumbers) ? phoneNumbers : [],
+        emails: Array.isArray(emails) ? emails : [],
         careerPathId,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
       },

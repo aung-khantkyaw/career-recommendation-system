@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut } from 'lucide-react'
+import { Search, BriefcaseBusiness, MapPin, DollarSign, Clock, Building2, UserRound, LogOut, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
@@ -22,6 +22,8 @@ interface Job {
   salary: string | null
   salaryRange: string | null
   experienceLevel: string | null
+  phoneNumbers: string[]
+  emails: string[]
   postedAt: string
   expiresAt: string | null
   careerPath: {
@@ -325,6 +327,34 @@ export default function JobsPage() {
                   </div>
                 )}
               </div>
+
+              {selectedJob.phoneNumbers && selectedJob.phoneNumbers.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Contact Numbers</h3>
+                  <div className="space-y-1">
+                    {selectedJob.phoneNumbers.map((phone, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Phone className="w-4 h-4" />
+                        <span>{phone}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedJob.emails && selectedJob.emails.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-2">Email Addresses</h3>
+                  <div className="space-y-1">
+                    {selectedJob.emails.map((email, index) => (
+                      <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Mail className="w-4 h-4" />
+                        <span>{email}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {selectedJob.careerPath && (
                 <div className="bg-muted/50 p-4 rounded-lg">

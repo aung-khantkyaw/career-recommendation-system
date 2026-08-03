@@ -543,10 +543,6 @@ export type CareerPathUpdatesoftSkillsInput = {
   push?: string | string[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type CareerPathCreateNestedOneWithoutJobsInput = {
   create?: Prisma.XOR<Prisma.CareerPathCreateWithoutJobsInput, Prisma.CareerPathUncheckedCreateWithoutJobsInput>
   connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutJobsInput

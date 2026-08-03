@@ -23,6 +23,8 @@ interface Job {
   salary: string | null
   salaryRange: string | null
   experienceLevel: string | null
+  phoneNumbers: string[]
+  emails: string[]
   postedAt: string
   expiresAt: string | null
   careerPath: {
@@ -43,6 +45,8 @@ type JobForm = {
   salary: string
   salaryRange: string
   experienceLevel: string
+  phoneNumbers: string
+  emails: string
   careerPathId: string
   expiresAt: string
 }
@@ -58,6 +62,8 @@ const emptyForm: JobForm = {
   salary: '',
   salaryRange: '',
   experienceLevel: '',
+  phoneNumbers: '',
+  emails: '',
   careerPathId: '',
   expiresAt: '',
 }
@@ -139,6 +145,8 @@ export default function JobPostingsPage() {
       salary: job.salary || '',
       salaryRange: job.salaryRange || '',
       experienceLevel: job.experienceLevel || '',
+      phoneNumbers: job.phoneNumbers.join('\n'),
+      emails: job.emails.join('\n'),
       careerPathId: job.careerPath?.id || '',
       expiresAt: job.expiresAt ? new Date(job.expiresAt).toISOString().split('T')[0] : '',
     })
@@ -169,6 +177,8 @@ export default function JobPostingsPage() {
     const payload = {
       ...form,
       requirements: form.requirements.split('\n').filter(r => r.trim()),
+      phoneNumbers: form.phoneNumbers.split('\n').filter(p => p.trim()),
+      emails: form.emails.split('\n').filter(e => e.trim()),
       careerPathId: form.careerPathId || null,
       expiresAt: form.expiresAt || null,
     }
@@ -498,8 +508,24 @@ export default function JobPostingsPage() {
                 label="Requirements (one per line)"
                 value={form.requirements}
                 onChange={(value) => updateForm('requirements', value)}
-                placeholder="JavaScript&#10;React&#10;3+ years experience"
+                placeholder="JavaScript\nReact\n3+ years experience"
                 required
+              />
+
+              <TextAreaField
+                id="phoneNumbers"
+                label="Phone Numbers (one per line)"
+                value={form.phoneNumbers}
+                onChange={(value) => updateForm('phoneNumbers', value)}
+                placeholder="+1 555-123-4567\n+1 555-987-6543"
+              />
+
+              <TextAreaField
+                id="emails"
+                label="Email Addresses (one per line)"
+                value={form.emails}
+                onChange={(value) => updateForm('emails', value)}
+                placeholder="hr@company.com\nrecruiting@company.com"
               />
 
               <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">

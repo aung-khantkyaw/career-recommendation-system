@@ -42,14 +42,34 @@ export default withAuth(
       error: '/auth/error',
     },
     callbacks: {
-      authorized: ({ req, token }) => {
+      authorized: async ({ req, token }) => {
         const pathname = req.nextUrl.pathname
         const isPublicAuthPage =
           pathname.startsWith('/login') ||
           pathname.startsWith('/register') ||
           pathname.startsWith('/auth/error')
 
-        return isPublicAuthPage || !!token
+        if (isPublicAuthPage) return true
+        if (!token) return false
+
+        // Check if user is still active in database
+        try {
+          const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/check-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: token.id }),
+          })
+
+          if (!response.ok) {
+            return false
+          }
+
+          const data = await response.json()
+          return data.isActive
+        } catch (error) {
+          console.error('Error checking user status:', error)
+          return true // Allow access if check fails to avoid breaking the app
+        }
       },
     },
   }

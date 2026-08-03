@@ -607,10 +607,6 @@ export type EnumProcessingStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProcessingStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ResumeCreateNestedOneWithoutRecommendationsInput = {
   create?: Prisma.XOR<Prisma.ResumeCreateWithoutRecommendationsInput, Prisma.ResumeUncheckedCreateWithoutRecommendationsInput>
   connectOrCreate?: Prisma.ResumeCreateOrConnectWithoutRecommendationsInput

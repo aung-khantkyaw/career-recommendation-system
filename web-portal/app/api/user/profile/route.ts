@@ -22,6 +22,13 @@ export async function GET(req: NextRequest) {
         email: true,
         name: true,
         role: true,
+        phoneNumbers: true,
+        avatar: true,
+        bio: true,
+        location: true,
+        website: true,
+        isActive: true,
+        lastLoginAt: true,
         createdAt: true,
         resumes: {
           select: {
@@ -65,16 +72,30 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name } = body
+    const { name, phoneNumbers, avatar, bio, location, website } = body
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { name },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(phoneNumbers !== undefined && { phoneNumbers: Array.isArray(phoneNumbers) ? phoneNumbers : [] }),
+        ...(avatar !== undefined && { avatar }),
+        ...(bio !== undefined && { bio }),
+        ...(location !== undefined && { location }),
+        ...(website !== undefined && { website }),
+      },
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
+        phoneNumbers: true,
+        avatar: true,
+        bio: true,
+        location: true,
+        website: true,
+        isActive: true,
+        lastLoginAt: true,
       }
     })
 

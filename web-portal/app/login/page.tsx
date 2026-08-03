@@ -29,7 +29,11 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        if (result.error === 'Account is deactivated. Please contact administrator.') {
+          setError('Account is deactivated. Please contact administrator.')
+        } else {
+          setError('Invalid email or password')
+        }
       } else {
         // Redirect based on user role
         const session = await fetch('/api/auth/session').then(res => res.json())

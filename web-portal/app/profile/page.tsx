@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, LogOut } from 'lucide-react'
+import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, LogOut, MapPin, Globe, Clock, Phone, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
@@ -14,15 +14,19 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isFetching, setIsFetching] = useState(true)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    phoneNumbers: '',
+    avatar: '',
     location: '',
     bio: '',
-    linkedin: '',
-    github: ''
+    website: ''
   })
+  const [lastLoginAt, setLastLoginAt] = useState<string | null>(null)
   const [stats, setStats] = useState({ resumes: 0, skills: 0, recommendations: 0 })
 
   const fetchProfileData = async () => {
@@ -34,12 +38,13 @@ export default function ProfilePage() {
         setFormData({
           name: data.user.name || '',
           email: data.user.email || '',
-          phone: '',
-          location: '',
-          bio: '',
-          linkedin: '',
-          github: ''
+          phoneNumbers: data.user.phoneNumbers?.join('\n') || '',
+          avatar: data.user.avatar || '',
+          location: data.user.location || '',
+          bio: data.user.bio || '',
+          website: data.user.website || ''
         })
+        setLastLoginAt(data.user.lastLoginAt || null)
         setStats({
           resumes: data.user.resumes?.length || 0,
           skills: 0,
@@ -67,10 +72,18 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsLoading(true)
     try {
+      const payload = {
+        name: formData.name,
+        phoneNumbers: formData.phoneNumbers.split('\n').filter(p => p.trim()),
+        avatar: formData.avatar,
+        location: formData.location,
+        bio: formData.bio,
+        website: formData.website
+      }
       const response = await fetch('/api/user/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formData.name }),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {
@@ -85,7 +98,46 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     setIsEditing(false)
+    setAvatarFile(null)
+    setAvatarPreview(null)
     fetchProfileData()
+  }
+
+  const handleAvatarFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setAvatarFile(file)
+      setAvatarPreview(URL.createObjectURL(file))
+    }
+  }
+
+  const handleAvatarUpload = async () => {
+    if (!avatarFile) return
+
+    setIsUploadingAvatar(true)
+    try {
+      const uploadFormData = new FormData()
+      uploadFormData.append('file', avatarFile)
+
+      const response = await fetch('/api/user/avatar/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setFormData({ ...formData, avatar: data.avatarUrl })
+        setAvatarFile(null)
+        setAvatarPreview(null)
+      } else {
+        console.error('Avatar upload failed:', data.error)
+      }
+    } catch (error) {
+      console.error('Failed to upload avatar:', error)
+    } finally {
+      setIsUploadingAvatar(false)
+    }
   }
 
   const handleLogout = async () => {
@@ -121,19 +173,61 @@ export default function ProfilePage() {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-4">
-                    <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center">
-                      <UserRound className="w-16 h-16 text-muted-foreground" />
+                    <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                      {avatarPreview ? (
+                        <img src={avatarPreview} alt="Avatar preview" className="w-full h-full object-cover" />
+                      ) : formData.avatar ? (
+                        <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <UserRound className="w-16 h-16 text-muted-foreground" />
+                      )}
                     </div>
-                    <Button
-                      size="sm"
-                      className="absolute bottom-0 right-0 rounded-full"
-                      variant="secondary"
-                    >
-                      <Camera className="w-4 h-4" />
-                    </Button>
+                    {isEditing && (
+                      <>
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                          onChange={handleAvatarFileChange}
+                          className="hidden"
+                          id="avatar-upload"
+                        />
+                        <Button
+                          size="sm"
+                          className="absolute bottom-0 right-0 rounded-full cursor-pointer"
+                          variant="secondary"
+                          onClick={() => document.getElementById('avatar-upload')?.click()}
+                        >
+                          <Camera className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
                   </div>
-                  <h2 className="text-xl font-semibold">{formData.name}</h2>
+                  {avatarFile && isEditing && (
+                    <div className="flex gap-2 mt-2">
+                      <Button
+                        size="sm"
+                        onClick={handleAvatarUpload}
+                        disabled={isUploadingAvatar}
+                      >
+                        {isUploadingAvatar ? 'Uploading...' : 'Upload'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setAvatarFile(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
+                  <h2 className="text-xl font-semibold">{formData.name || 'User'}</h2>
                   <p className="text-sm text-muted-foreground">{formData.email}</p>
+                  {formData.location && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
+                      <MapPin className="w-3 h-3" />
+                      {formData.location}
+                    </div>
+                  )}
                   <Badge variant="secondary" className="mt-2">
                     Software Developer
                   </Badge>
@@ -208,32 +302,34 @@ export default function ProfilePage() {
                       type="email"
                       value={formData.email}
                       onChange={handleChange}
-                      disabled={!isEditing}
+                      disabled
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    placeholder="New York, NY"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumbers">Phone Numbers (one per line)</Label>
+                  <textarea
+                    id="phoneNumbers"
+                    name="phoneNumbers"
+                    value={formData.phoneNumbers}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]"
+                    placeholder="+1 555-123-4567\n+1 555-987-6543"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -249,26 +345,23 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="linkedin">LinkedIn</Label>
+                  <Label htmlFor="website">Website</Label>
                   <Input
-                    id="linkedin"
-                    name="linkedin"
-                    value={formData.linkedin}
+                    id="website"
+                    name="website"
+                    value={formData.website}
                     onChange={handleChange}
                     disabled={!isEditing}
+                    placeholder="https://yourwebsite.com"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="github">GitHub</Label>
-                  <Input
-                    id="github"
-                    name="github"
-                    value={formData.github}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                  />
-                </div>
+                {lastLoginAt && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted rounded-lg">
+                    <Clock className="w-4 h-4" />
+                    <span>Last login: {new Date(lastLoginAt).toLocaleString()}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

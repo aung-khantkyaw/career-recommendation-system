@@ -56,6 +56,8 @@ export const ModelName = {
   CareerRecommendation: 'CareerRecommendation',
   CareerPath: 'CareerPath',
   Job: 'Job',
+  JobBookmark: 'JobBookmark',
+  Notification: 'Notification',
   ApiKey: 'ApiKey'
 } as const
 
@@ -81,6 +83,13 @@ export const UserScalarFieldEnum = {
   password: 'password',
   name: 'name',
   role: 'role',
+  phoneNumbers: 'phoneNumbers',
+  avatar: 'avatar',
+  bio: 'bio',
+  location: 'location',
+  website: 'website',
+  isActive: 'isActive',
+  lastLoginAt: 'lastLoginAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -155,6 +164,8 @@ export const JobScalarFieldEnum = {
   salary: 'salary',
   salaryRange: 'salaryRange',
   experienceLevel: 'experienceLevel',
+  phoneNumbers: 'phoneNumbers',
+  emails: 'emails',
   careerPathId: 'careerPathId',
   postedAt: 'postedAt',
   expiresAt: 'expiresAt',
@@ -163,6 +174,30 @@ export const JobScalarFieldEnum = {
 } as const
 
 export type JobScalarFieldEnum = (typeof JobScalarFieldEnum)[keyof typeof JobScalarFieldEnum]
+
+
+export const JobBookmarkScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  jobId: 'jobId',
+  createdAt: 'createdAt'
+} as const
+
+export type JobBookmarkScalarFieldEnum = (typeof JobBookmarkScalarFieldEnum)[keyof typeof JobBookmarkScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  isRead: 'isRead',
+  link: 'link',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
 
 
 export const ApiKeyScalarFieldEnum = {

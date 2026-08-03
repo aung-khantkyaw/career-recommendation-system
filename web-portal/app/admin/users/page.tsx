@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Search, MoreVertical, Edit, Trash2, Shield, User } from 'lucide-react'
+import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff } from 'lucide-react'
 
 interface User {
   id: string
   name: string | null
   email: string
   role: string
+  isActive: boolean
   createdAt: string
   _count: {
     resumes: number
@@ -68,10 +69,28 @@ export default function UserManagementPage() {
     )
   }
 
-  const getStatusBadge = () => {
-    return (
+  const getStatusBadge = (isActive: boolean) => {
+    return isActive ? (
       <Badge variant="default" className="bg-green-500">Active</Badge>
+    ) : (
+      <Badge variant="secondary" className="bg-gray-500">Inactive</Badge>
     )
+  }
+
+  const toggleUserStatus = async (userId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !currentStatus }),
+      })
+
+      if (response.ok) {
+        setUsers(users.map(u => u.id === userId ? { ...u, isActive: !currentStatus } : u))
+      }
+    } catch (error) {
+      console.error('Failed to toggle user status:', error)
+    }
   }
 
   return (
@@ -97,7 +116,7 @@ export default function UserManagementPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold">{users.length}</div>
+            <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
             <div className="text-sm text-gray-500">Active Users</div>
           </CardContent>
         </Card>
@@ -157,12 +176,26 @@ export default function UserManagementPage() {
                   </TableCell>
                   <TableCell>{getRoleBadge(user.role.toLowerCase())}</TableCell>
                   <TableCell>{user._count.resumes}</TableCell>
-                  <TableCell>{getStatusBadge()}</TableCell>
+                  <TableCell>{getStatusBadge(user.isActive)}</TableCell>
                   <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="w-4 h-4" />
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleUserStatus(user.id, user.isActive)}
+                        title={user.isActive ? 'Deactivate user' : 'Activate user'}
+                      >
+                        {user.isActive ? (
+                          <Power className="w-4 h-4 text-red-500" />
+                        ) : (
+                          <PowerOff className="w-4 h-4 text-green-500" />
+                        )}
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

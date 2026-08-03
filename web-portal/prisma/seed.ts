@@ -24,6 +24,10 @@ async function main() {
       password: adminPassword,
       name: 'System Administrator',
       role: 'ADMIN',
+      phoneNumbers: ['+1 555-0100'],
+      bio: 'System administrator managing the career recommendation platform.',
+      location: 'Remote',
+      website: 'https://career-system.com',
     },
   })
   console.log(`✅ Created admin user: ${admin.email}`)
@@ -37,6 +41,10 @@ async function main() {
       password: userPassword,
       name: 'John Doe',
       role: 'USER',
+      phoneNumbers: ['+1 555-0123', '+1 555-0124'],
+      bio: 'Passionate software developer with 5 years of experience in full-stack development.',
+      location: 'San Francisco, CA',
+      website: 'https://johndoe.dev',
     },
   })
   console.log(`✅ Created regular user: ${user.email}`)
@@ -165,6 +173,8 @@ async function main() {
       salary: '$95,000',
       salaryRange: '$90,000 - $115,000',
       experienceLevel: 'Entry Level',
+      phoneNumbers: ['+1 312-555-0123', '+1 312-555-0124'],
+      emails: ['careers@dataworks.com', 'recruiting@dataworks.com'],
       expiresAt: new Date('2026-12-31'),
     },
     {
@@ -180,6 +190,8 @@ async function main() {
       salary: '$115,000',
       salaryRange: '$100,000 - $130,000',
       experienceLevel: 'Mid Level',
+      phoneNumbers: ['+1 415-555-0198'],
+      emails: ['jobs@webmakers.io'],
       expiresAt: new Date('2026-09-15'),
     },
     {
@@ -195,6 +207,8 @@ async function main() {
       salary: '$105,000',
       salaryRange: '$90,000 - $120,000',
       experienceLevel: 'Mid Level',
+      phoneNumbers: ['+1 310-555-0234', '+1 310-555-0235'],
+      emails: ['design-jobs@creativeapp.com', 'hr@creativeapp.com'],
       expiresAt: new Date('2026-12-01'),
     },
     {
@@ -210,6 +224,8 @@ async function main() {
       salary: '$160,000',
       salaryRange: '$140,000 - $180,000',
       experienceLevel: 'Senior Level',
+      phoneNumbers: ['+1 415-555-0789'],
+      emails: ['ai-careers@nextgen.ai', 'talent@nextgen.ai'],
       expiresAt: new Date('2026-11-30'),
     },
     {
@@ -225,6 +241,8 @@ async function main() {
       salary: '$95,000',
       salaryRange: '$85,000 - $110,000',
       experienceLevel: 'Entry Level',
+      phoneNumbers: ['+1 214-555-0456'],
+      emails: ['qa-jobs@reliantsoft.com'],
       expiresAt: new Date('2026-10-20'),
     },
     {
@@ -240,6 +258,8 @@ async function main() {
       salary: '$135,000',
       salaryRange: '$120,000 - $150,000',
       experienceLevel: 'Mid Level',
+      phoneNumbers: ['+1 617-555-0567', '+1 617-555-0568'],
+      emails: ['devops@techflow.com', 'careers@techflow.com'],
       expiresAt: new Date('2026-11-15'),
     },
     {
@@ -255,6 +275,8 @@ async function main() {
       salary: '$145,000',
       salaryRange: '$130,000 - $160,000',
       experienceLevel: 'Senior Level',
+      phoneNumbers: ['+1 206-555-0678'],
+      emails: ['cloud-roles@cloudscale.io'],
       expiresAt: new Date('2026-10-01'),
     },
     {
@@ -270,6 +292,8 @@ async function main() {
       salary: '$120,000',
       salaryRange: '$110,000 - $135,000',
       experienceLevel: 'Mid Level',
+      phoneNumbers: ['+1 212-555-0890', '+1 212-555-0891'],
+      emails: ['security-jobs@securenet.com', 'recruitment@securenet.com'],
       expiresAt: new Date('2026-09-30'),
     },
   ]

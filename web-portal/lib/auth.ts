@@ -34,6 +34,10 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials')
         }
 
+        if (!user.isActive) {
+          throw new Error('Account is deactivated. Please contact administrator.')
+        }
+
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
@@ -68,6 +72,16 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as 'user' | 'admin'
+        
+        // Check if user is still active
+        const user = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { isActive: true }
+        })
+        
+        if (!user || !user.isActive) {
+          session.user = null as any
+        }
       }
       return session
     }

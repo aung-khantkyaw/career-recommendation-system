@@ -62,6 +62,8 @@ export async function PATCH(
       salary,
       salaryRange,
       experienceLevel,
+      phoneNumbers,
+      emails,
       careerPathId,
       expiresAt,
     } = body
@@ -79,6 +81,8 @@ export async function PATCH(
         ...(salary !== undefined && { salary }),
         ...(salaryRange !== undefined && { salaryRange }),
         ...(experienceLevel !== undefined && { experienceLevel }),
+        ...(phoneNumbers !== undefined && { phoneNumbers: Array.isArray(phoneNumbers) ? phoneNumbers : [] }),
+        ...(emails !== undefined && { emails: Array.isArray(emails) ? emails : [] }),
         ...(careerPathId !== undefined && { careerPathId }),
         ...(expiresAt !== undefined && { expiresAt: expiresAt ? new Date(expiresAt) : null }),
       },

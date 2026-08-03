@@ -72,6 +72,8 @@ export type JobCountAggregateOutputType = {
   salary: number
   salaryRange: number
   experienceLevel: number
+  phoneNumbers: number
+  emails: number
   careerPathId: number
   postedAt: number
   expiresAt: number
@@ -129,6 +131,8 @@ export type JobCountAggregateInputType = {
   salary?: true
   salaryRange?: true
   experienceLevel?: true
+  phoneNumbers?: true
+  emails?: true
   careerPathId?: true
   postedAt?: true
   expiresAt?: true
@@ -221,6 +225,8 @@ export type JobGroupByOutputType = {
   salary: string | null
   salaryRange: string | null
   experienceLevel: string | null
+  phoneNumbers: string[]
+  emails: string[]
   careerPathId: string | null
   postedAt: Date
   expiresAt: Date | null
@@ -261,12 +267,15 @@ export type JobWhereInput = {
   salary?: Prisma.StringNullableFilter<"Job"> | string | null
   salaryRange?: Prisma.StringNullableFilter<"Job"> | string | null
   experienceLevel?: Prisma.StringNullableFilter<"Job"> | string | null
+  phoneNumbers?: Prisma.StringNullableListFilter<"Job">
+  emails?: Prisma.StringNullableListFilter<"Job">
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
+  bookmarks?: Prisma.JobBookmarkListRelationFilter
 }
 
 export type JobOrderByWithRelationInput = {
@@ -281,12 +290,15 @@ export type JobOrderByWithRelationInput = {
   salary?: Prisma.SortOrderInput | Prisma.SortOrder
   salaryRange?: Prisma.SortOrderInput | Prisma.SortOrder
   experienceLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  phoneNumbers?: Prisma.SortOrder
+  emails?: Prisma.SortOrder
   careerPathId?: Prisma.SortOrderInput | Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   careerPath?: Prisma.CareerPathOrderByWithRelationInput
+  bookmarks?: Prisma.JobBookmarkOrderByRelationAggregateInput
 }
 
 export type JobWhereUniqueInput = Prisma.AtLeast<{
@@ -304,12 +316,15 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   salary?: Prisma.StringNullableFilter<"Job"> | string | null
   salaryRange?: Prisma.StringNullableFilter<"Job"> | string | null
   experienceLevel?: Prisma.StringNullableFilter<"Job"> | string | null
+  phoneNumbers?: Prisma.StringNullableListFilter<"Job">
+  emails?: Prisma.StringNullableListFilter<"Job">
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
+  bookmarks?: Prisma.JobBookmarkListRelationFilter
 }, "id">
 
 export type JobOrderByWithAggregationInput = {
@@ -324,6 +339,8 @@ export type JobOrderByWithAggregationInput = {
   salary?: Prisma.SortOrderInput | Prisma.SortOrder
   salaryRange?: Prisma.SortOrderInput | Prisma.SortOrder
   experienceLevel?: Prisma.SortOrderInput | Prisma.SortOrder
+  phoneNumbers?: Prisma.SortOrder
+  emails?: Prisma.SortOrder
   careerPathId?: Prisma.SortOrderInput | Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -349,6 +366,8 @@ export type JobScalarWhereWithAggregatesInput = {
   salary?: Prisma.StringNullableWithAggregatesFilter<"Job"> | string | null
   salaryRange?: Prisma.StringNullableWithAggregatesFilter<"Job"> | string | null
   experienceLevel?: Prisma.StringNullableWithAggregatesFilter<"Job"> | string | null
+  phoneNumbers?: Prisma.StringNullableListFilter<"Job">
+  emails?: Prisma.StringNullableListFilter<"Job">
   careerPathId?: Prisma.StringNullableWithAggregatesFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Job"> | Date | string | null
@@ -368,11 +387,14 @@ export type JobCreateInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
+  bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
 }
 
 export type JobUncheckedCreateInput = {
@@ -387,11 +409,14 @@ export type JobUncheckedCreateInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   careerPathId?: string | null
   postedAt?: Date | string
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
 }
 
 export type JobUpdateInput = {
@@ -406,11 +431,14 @@ export type JobUpdateInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
+  bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateInput = {
@@ -425,11 +453,14 @@ export type JobUncheckedUpdateInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
 }
 
 export type JobCreateManyInput = {
@@ -444,6 +475,8 @@ export type JobCreateManyInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   careerPathId?: string | null
   postedAt?: Date | string
   expiresAt?: Date | string | null
@@ -463,6 +496,8 @@ export type JobUpdateManyMutationInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -481,6 +516,8 @@ export type JobUncheckedUpdateManyInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -510,6 +547,8 @@ export type JobCountOrderByAggregateInput = {
   salary?: Prisma.SortOrder
   salaryRange?: Prisma.SortOrder
   experienceLevel?: Prisma.SortOrder
+  phoneNumbers?: Prisma.SortOrder
+  emails?: Prisma.SortOrder
   careerPathId?: Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
@@ -551,6 +590,11 @@ export type JobMinOrderByAggregateInput = {
   expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type JobScalarRelationFilter = {
+  is?: Prisma.JobWhereInput
+  isNot?: Prisma.JobWhereInput
 }
 
 export type JobCreateNestedManyWithoutCareerPathInput = {
@@ -599,6 +643,14 @@ export type JobCreaterequirementsInput = {
   set: string[]
 }
 
+export type JobCreatephoneNumbersInput = {
+  set: string[]
+}
+
+export type JobCreateemailsInput = {
+  set: string[]
+}
+
 export type EnumJobTypeFieldUpdateOperationsInput = {
   set?: $Enums.JobType
 }
@@ -610,6 +662,30 @@ export type EnumJobStatusFieldUpdateOperationsInput = {
 export type JobUpdaterequirementsInput = {
   set?: string[]
   push?: string | string[]
+}
+
+export type JobUpdatephoneNumbersInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type JobUpdateemailsInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type JobCreateNestedOneWithoutBookmarksInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutBookmarksInput, Prisma.JobUncheckedCreateWithoutBookmarksInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutBookmarksInput
+  connect?: Prisma.JobWhereUniqueInput
+}
+
+export type JobUpdateOneRequiredWithoutBookmarksNestedInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutBookmarksInput, Prisma.JobUncheckedCreateWithoutBookmarksInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutBookmarksInput
+  upsert?: Prisma.JobUpsertWithoutBookmarksInput
+  connect?: Prisma.JobWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutBookmarksInput, Prisma.JobUpdateWithoutBookmarksInput>, Prisma.JobUncheckedUpdateWithoutBookmarksInput>
 }
 
 export type JobCreateWithoutCareerPathInput = {
@@ -624,10 +700,13 @@ export type JobCreateWithoutCareerPathInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutCareerPathInput = {
@@ -642,10 +721,13 @@ export type JobUncheckedCreateWithoutCareerPathInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutCareerPathInput = {
@@ -689,11 +771,113 @@ export type JobScalarWhereInput = {
   salary?: Prisma.StringNullableFilter<"Job"> | string | null
   salaryRange?: Prisma.StringNullableFilter<"Job"> | string | null
   experienceLevel?: Prisma.StringNullableFilter<"Job"> | string | null
+  phoneNumbers?: Prisma.StringNullableListFilter<"Job">
+  emails?: Prisma.StringNullableListFilter<"Job">
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
+}
+
+export type JobCreateWithoutBookmarksInput = {
+  id?: string
+  title: string
+  company: string
+  location: string
+  type?: $Enums.JobType
+  status?: $Enums.JobStatus
+  description: string
+  requirements?: Prisma.JobCreaterequirementsInput | string[]
+  salary?: string | null
+  salaryRange?: string | null
+  experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
+  postedAt?: Date | string
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
+}
+
+export type JobUncheckedCreateWithoutBookmarksInput = {
+  id?: string
+  title: string
+  company: string
+  location: string
+  type?: $Enums.JobType
+  status?: $Enums.JobStatus
+  description: string
+  requirements?: Prisma.JobCreaterequirementsInput | string[]
+  salary?: string | null
+  salaryRange?: string | null
+  experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
+  careerPathId?: string | null
+  postedAt?: Date | string
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type JobCreateOrConnectWithoutBookmarksInput = {
+  where: Prisma.JobWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobCreateWithoutBookmarksInput, Prisma.JobUncheckedCreateWithoutBookmarksInput>
+}
+
+export type JobUpsertWithoutBookmarksInput = {
+  update: Prisma.XOR<Prisma.JobUpdateWithoutBookmarksInput, Prisma.JobUncheckedUpdateWithoutBookmarksInput>
+  create: Prisma.XOR<Prisma.JobCreateWithoutBookmarksInput, Prisma.JobUncheckedCreateWithoutBookmarksInput>
+  where?: Prisma.JobWhereInput
+}
+
+export type JobUpdateToOneWithWhereWithoutBookmarksInput = {
+  where?: Prisma.JobWhereInput
+  data: Prisma.XOR<Prisma.JobUpdateWithoutBookmarksInput, Prisma.JobUncheckedUpdateWithoutBookmarksInput>
+}
+
+export type JobUpdateWithoutBookmarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumJobTypeFieldUpdateOperationsInput | $Enums.JobType
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requirements?: Prisma.JobUpdaterequirementsInput | string[]
+  salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
+  postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
+}
+
+export type JobUncheckedUpdateWithoutBookmarksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumJobTypeFieldUpdateOperationsInput | $Enums.JobType
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requirements?: Prisma.JobUpdaterequirementsInput | string[]
+  salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
+  careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type JobCreateManyCareerPathInput = {
@@ -708,6 +892,8 @@ export type JobCreateManyCareerPathInput = {
   salary?: string | null
   salaryRange?: string | null
   experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
   createdAt?: Date | string
@@ -726,10 +912,13 @@ export type JobUpdateWithoutCareerPathInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutCareerPathInput = {
@@ -744,10 +933,13 @@ export type JobUncheckedUpdateWithoutCareerPathInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateManyWithoutCareerPathInput = {
@@ -762,12 +954,43 @@ export type JobUncheckedUpdateManyWithoutCareerPathInput = {
   salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type JobCountOutputType
+ */
+
+export type JobCountOutputType = {
+  bookmarks: number
+}
+
+export type JobCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookmarks?: boolean | JobCountOutputTypeCountBookmarksArgs
+}
+
+/**
+ * JobCountOutputType without action
+ */
+export type JobCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the JobCountOutputType
+   */
+  select?: Prisma.JobCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * JobCountOutputType without action
+ */
+export type JobCountOutputTypeCountBookmarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JobBookmarkWhereInput
+}
 
 
 export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -782,12 +1005,16 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   salary?: boolean
   salaryRange?: boolean
   experienceLevel?: boolean
+  phoneNumbers?: boolean
+  emails?: boolean
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
+  bookmarks?: boolean | Prisma.Job$bookmarksArgs<ExtArgs>
+  _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
 export type JobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -802,6 +1029,8 @@ export type JobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   salary?: boolean
   salaryRange?: boolean
   experienceLevel?: boolean
+  phoneNumbers?: boolean
+  emails?: boolean
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
@@ -822,6 +1051,8 @@ export type JobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   salary?: boolean
   salaryRange?: boolean
   experienceLevel?: boolean
+  phoneNumbers?: boolean
+  emails?: boolean
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
@@ -842,6 +1073,8 @@ export type JobSelectScalar = {
   salary?: boolean
   salaryRange?: boolean
   experienceLevel?: boolean
+  phoneNumbers?: boolean
+  emails?: boolean
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
@@ -849,9 +1082,11 @@ export type JobSelectScalar = {
   updatedAt?: boolean
 }
 
-export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "company" | "location" | "type" | "status" | "description" | "requirements" | "salary" | "salaryRange" | "experienceLevel" | "careerPathId" | "postedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
+export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "company" | "location" | "type" | "status" | "description" | "requirements" | "salary" | "salaryRange" | "experienceLevel" | "phoneNumbers" | "emails" | "careerPathId" | "postedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
 export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
+  bookmarks?: boolean | Prisma.Job$bookmarksArgs<ExtArgs>
+  _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type JobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
@@ -864,6 +1099,7 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name: "Job"
   objects: {
     careerPath: Prisma.$CareerPathPayload<ExtArgs> | null
+    bookmarks: Prisma.$JobBookmarkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -877,6 +1113,8 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     salary: string | null
     salaryRange: string | null
     experienceLevel: string | null
+    phoneNumbers: string[]
+    emails: string[]
     careerPathId: string | null
     postedAt: Date
     expiresAt: Date | null
@@ -1277,6 +1515,7 @@ readonly fields: JobFieldRefs;
 export interface Prisma__JobClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   careerPath<T extends Prisma.Job$careerPathArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$careerPathArgs<ExtArgs>>): Prisma.Prisma__CareerPathClient<runtime.Types.Result.GetResult<Prisma.$CareerPathPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  bookmarks<T extends Prisma.Job$bookmarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$bookmarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobBookmarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1317,6 +1556,8 @@ export interface JobFieldRefs {
   readonly salary: Prisma.FieldRef<"Job", 'String'>
   readonly salaryRange: Prisma.FieldRef<"Job", 'String'>
   readonly experienceLevel: Prisma.FieldRef<"Job", 'String'>
+  readonly phoneNumbers: Prisma.FieldRef<"Job", 'String[]'>
+  readonly emails: Prisma.FieldRef<"Job", 'String[]'>
   readonly careerPathId: Prisma.FieldRef<"Job", 'String'>
   readonly postedAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"Job", 'DateTime'>
@@ -1739,6 +1980,30 @@ export type Job$careerPathArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.CareerPathInclude<ExtArgs> | null
   where?: Prisma.CareerPathWhereInput
+}
+
+/**
+ * Job.bookmarks
+ */
+export type Job$bookmarksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the JobBookmark
+   */
+  select?: Prisma.JobBookmarkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the JobBookmark
+   */
+  omit?: Prisma.JobBookmarkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobBookmarkInclude<ExtArgs> | null
+  where?: Prisma.JobBookmarkWhereInput
+  orderBy?: Prisma.JobBookmarkOrderByWithRelationInput | Prisma.JobBookmarkOrderByWithRelationInput[]
+  cursor?: Prisma.JobBookmarkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.JobBookmarkScalarFieldEnum | Prisma.JobBookmarkScalarFieldEnum[]
 }
 
 /**

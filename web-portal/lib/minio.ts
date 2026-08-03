@@ -1,7 +1,7 @@
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, CreateBucketCommand, HeadBucketCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3'
 
 const minioClient = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT || 'http://localhost:9000',
+  endpoint: process.env.MINIO_ENDPOINT || `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`,
   region: 'us-east-1',
   credentials: {
     accessKeyId: process.env.MINIO_ROOT_USER || 'admin',
@@ -12,8 +12,47 @@ const minioClient = new S3Client({
 
 const BUCKET_NAME = 'career-resumes'
 
+async function ensureBucketExists() {
+  try {
+    await minioClient.send(new HeadBucketCommand({ Bucket: BUCKET_NAME }))
+  } catch (error: any) {
+    if (error.name === 'NoSuchBucket' || error.name === 'NotFound' || error.$metadata?.httpStatusCode === 404) {
+      await minioClient.send(
+        new CreateBucketCommand({
+          Bucket: BUCKET_NAME,
+        })
+      )
+    } else {
+      throw error
+    }
+  }
+
+  // Set public read policy (for both new and existing buckets)
+  try {
+    await minioClient.send(
+      new PutBucketPolicyCommand({
+        Bucket: BUCKET_NAME,
+        Policy: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Principal: '*',
+              Action: ['s3:GetObject'],
+              Resource: `arn:aws:s3:::${BUCKET_NAME}/*`,
+            },
+          ],
+        }),
+      })
+    )
+  } catch (error) {
+    console.warn('Failed to set bucket policy:', error)
+  }
+}
+
 export async function uploadFile(key: string, body: Buffer, contentType: string) {
   try {
+    await ensureBucketExists()
     await minioClient.send(
       new PutObjectCommand({
         Bucket: BUCKET_NAME,
@@ -27,6 +66,11 @@ export async function uploadFile(key: string, body: Buffer, contentType: string)
     console.error('MinIO upload error:', error)
     return { success: false, error }
   }
+}
+
+export function getFileUrl(key: string) {
+  const endpoint = process.env.MINIO_ENDPOINT || `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`
+  return `${endpoint}/${BUCKET_NAME}/${key}`
 }
 
 export async function getFile(key: string) {

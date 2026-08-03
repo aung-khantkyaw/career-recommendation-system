@@ -49,9 +49,18 @@ model User {
   password      String
   name          String?
   role          UserRole  @default(USER)
+  phoneNumbers  String[]  @default([])
+  avatar        String?
+  bio           String?
+  location      String?
+  website       String?
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   resumes       Resume[]
+  bookmarks     JobBookmark[]
+  notifications  Notification[]
   
   @@index([email])
 }
@@ -128,16 +137,47 @@ model Job {
   salary          String?
   salaryRange     String?
   experienceLevel String?
+  phoneNumbers    String[]   @default([])
+  emails          String[]   @default([])
   careerPathId    String?
   careerPath      CareerPath? @relation(fields: [careerPathId], references: [id], onDelete: SetNull)
   postedAt        DateTime   @default(now())
   expiresAt       DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+  bookmarks       JobBookmark[]
 
   @@index([status])
   @@index([careerPathId])
   @@index([type])
+}
+
+model JobBookmark {
+  id        String   @id @default(uuid())
+  userId    String
+  jobId     String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // JOB_MATCH, RESUME_PROCESSED, SYSTEM
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
 }
 
 model ApiKey {

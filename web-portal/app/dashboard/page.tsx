@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Label } from '@/components/ui/label'
 import { ResumeDropzone } from '@/components/ui/dropzone'
-import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2 } from 'lucide-react'
+import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 
@@ -28,10 +28,22 @@ interface Skill {
   level: number
 }
 
+interface RecentJob {
+  id: string
+  title: string
+  company: string
+  location: string
+  type: string
+  salary: string | null
+  salaryRange: string | null
+  postedAt: string
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
   const [skills, setSkills] = useState<Skill[]>([])
+  const [recentJobs, setRecentJobs] = useState<RecentJob[]>([])
   const [stats, setStats] = useState({ totalResumes: 0, completedResumes: 0, processingResumes: 0, totalSkills: 0 })
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -57,8 +69,22 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchRecentJobs = async () => {
+    try {
+      const response = await fetch('/api/jobs?status=active')
+      const data = await response.json()
+
+      if (response.ok) {
+        setRecentJobs(data.jobs?.slice(0, 5) || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch recent jobs:', error)
+    }
+  }
+
   useEffect(() => {
     fetchDashboardData()
+    fetchRecentJobs()
   }, [])
 
   const handleRefresh = async () => {
@@ -186,7 +212,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Skills Section */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Your Skills</CardTitle>
@@ -202,6 +228,41 @@ export default function DashboardPage() {
                     <Progress value={skill.level} />
                   </div>
                 ))}
+              </CardContent>
+            </Card>
+
+            {/* Recent Jobs Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Jobs</CardTitle>
+                <CardDescription>Latest career opportunities</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {recentJobs.map((job) => (
+                  <div key={job.id} className="border-b pb-4 last:border-0 last:pb-0">
+                    <h4 className="font-semibold text-sm mb-1">{job.title}</h4>
+                    <p className="text-xs text-muted-foreground mb-2">{job.company}</p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
+                        {job.location}
+                      </span>
+                      {job.salaryRange || job.salary ? (
+                        <span className="flex items-center gap-1">
+                          <DollarSign className="w-3 h-3" />
+                          {job.salaryRange || job.salary}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                      <Clock className="w-3 h-3" />
+                      {new Date(job.postedAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                ))}
+                {recentJobs.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No recent jobs available</p>
+                )}
               </CardContent>
             </Card>
           </div>
