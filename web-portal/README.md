@@ -283,10 +283,10 @@ NEXTAUTH_SECRET="your-secret-key"
 NEXTAUTH_URL="http://localhost:3000"
 
 # MinIO
-MINIO_ENDPOINT="localhost"
+MINIO_HOST="localhost"
 MINIO_PORT="9000"
-MINIO_ACCESS_KEY="your-access-key"
-MINIO_SECRET_KEY="your-secret-key"
+MINIO_ROOT_USER="your-access-key"
+MINIO_ROOT_PASSWORD="your-secret-key"
 MINIO_BUCKET="career-resumes"
 MINIO_USE_SSL="false"
 

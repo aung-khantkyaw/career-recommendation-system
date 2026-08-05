@@ -8,7 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Label } from '@/components/ui/label'
 import { ResumeDropzone } from '@/components/ui/dropzone'
-import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock, FileText, Download, Trash2, LayoutDashboard, Briefcase } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { BriefcaseBusiness, TrendingUp, Upload, UserRound, LogOut, RefreshCw, CheckCircle2, Loader2, MapPin, DollarSign, Clock, FileText, Download, Trash2, LayoutDashboard, Briefcase, Eye } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
@@ -68,6 +69,8 @@ export default function DashboardPage() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle')
   const [uploadError, setUploadError] = useState('')
+  const [previewResume, setPreviewResume] = useState<Resume | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const fetchDashboardData = async () => {
     try {
@@ -151,6 +154,25 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Failed to delete resume:', error)
     }
+  }
+
+  const handlePreviewResume = async (resume: Resume) => {
+    try {
+      const response = await fetch(`/api/user/resumes/${resume.id}/download`)
+      const data = await response.json()
+
+      if (response.ok && data.downloadUrl) {
+        setPreviewResume(resume)
+        setPreviewUrl(data.downloadUrl)
+      }
+    } catch (error) {
+      console.error('Failed to preview resume:', error)
+    }
+  }
+
+  const handleClosePreview = () => {
+    setPreviewResume(null)
+    setPreviewUrl(null)
   }
 
   const handleLogout = async () => {
@@ -300,6 +322,73 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
+            {/* Resume History Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Resume History</CardTitle>
+                <CardDescription>Your uploaded resumes and their processing status</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {resumes.map((resume) => (
+                  <div key={resume.id} className="border-b pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-sm mb-1">{resume.originalName}</h4>
+                        <p className="text-xs text-muted-foreground">
+                          {(resume.fileSize / 1024).toFixed(2)} KB • {new Date(resume.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={
+                          resume.processingStatus === 'COMPLETED' ? 'default' :
+                          resume.processingStatus === 'PROCESSING' ? 'secondary' :
+                          resume.processingStatus === 'FAILED' ? 'destructive' : 'outline'
+                        }>
+                          {resume.processingStatus}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handlePreviewResume(resume)}
+                      >
+                        <Eye className="w-3 h-3 mr-1" />
+                        Preview
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownloadResume(resume.id)}
+                      >
+                        <Download className="w-3 h-3 mr-1" />
+                        Download
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteResume(resume.id)}
+                        className="text-red-500 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3 h-3 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                    {resume.processingStatus === 'COMPLETED' && resume.recommendations.length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {resume.recommendations.length} recommendations generated
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {resumes.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No resumes uploaded yet</p>
+                )}
+              </CardContent>
+            </Card>
+
+
             {/* Recent Jobs Section */}
             <Card>
               <CardHeader>
@@ -340,65 +429,6 @@ export default function DashboardPage() {
                 ))}
                 {recentJobs.length === 0 && (
                   <p className="text-sm text-muted-foreground text-center py-4">No recent jobs available</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Resume History Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Resume History</CardTitle>
-                <CardDescription>Your uploaded resumes and their processing status</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {resumes.map((resume) => (
-                  <div key={resume.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-sm mb-1">{resume.originalName}</h4>
-                        <p className="text-xs text-muted-foreground">
-                          {(resume.fileSize / 1024).toFixed(2)} KB • {new Date(resume.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={
-                          resume.processingStatus === 'COMPLETED' ? 'default' :
-                          resume.processingStatus === 'PROCESSING' ? 'secondary' :
-                          resume.processingStatus === 'FAILED' ? 'destructive' : 'outline'
-                        }>
-                          {resume.processingStatus}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownloadResume(resume.id)}
-                        disabled={resume.processingStatus !== 'COMPLETED'}
-                      >
-                        <Download className="w-3 h-3 mr-1" />
-                        Download
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteResume(resume.id)}
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <Trash2 className="w-3 h-3 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                    {resume.processingStatus === 'COMPLETED' && resume.recommendations.length > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {resume.recommendations.length} recommendations generated
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {resumes.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-4">No resumes uploaded yet</p>
                 )}
               </CardContent>
             </Card>
@@ -515,6 +545,43 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Resume Preview Sheet */}
+      <Sheet open={!!previewResume} onOpenChange={handleClosePreview}>
+        <SheetContent side="bottom" className="overflow-y-auto h-[90vh]">
+          <SheetHeader>
+            <SheetTitle>Resume Preview</SheetTitle>
+          </SheetHeader>
+          {previewResume && previewUrl && (
+            <div className="space-y-4 m-4">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{previewResume.originalName}</span>
+                <span>{(previewResume.fileSize / 1024).toFixed(2)} KB</span>
+              </div>
+              <div className="border rounded-lg overflow-hidden">
+                {previewResume.mimeType === 'application/pdf' ? (
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-[70vh]"
+                    title="Resume Preview"
+                  />
+                ) : (
+                  <div className="p-8 text-center">
+                    <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground mb-4">
+                      Preview not available for this file type. Please download to view.
+                    </p>
+                    <Button onClick={() => handleDownloadResume(previewResume.id)}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Resume
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

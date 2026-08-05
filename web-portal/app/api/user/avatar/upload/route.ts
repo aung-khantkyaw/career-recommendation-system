@@ -52,7 +52,8 @@ export async function POST(req: NextRequest) {
 
     // Delete old avatar if exists
     if (user?.avatar) {
-      const oldKey = user.avatar.replace(`${process.env.MINIO_ENDPOINT || 'http://localhost:9000'}/career-resumes/`, '')
+      const endpoint = `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`
+      const oldKey = user.avatar.replace(`${endpoint}/career-resumes/`, '')
       await deleteFile(oldKey)
     }
 

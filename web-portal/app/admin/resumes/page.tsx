@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, FileText, Download, Trash2, User, Calendar, CheckCircle, Clock, XCircle, Loader2, ArrowLeft } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
+import { Search, FileText, Download, Trash2, User, Calendar, CheckCircle, Clock, XCircle, Loader2, ArrowLeft, Eye } from 'lucide-react'
 import Link from 'next/link'
 
 interface Resume {
@@ -35,6 +36,8 @@ export default function AdminResumesPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
+  const [previewResume, setPreviewResume] = useState<Resume | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const fetchResumes = async () => {
     setIsLoading(true)
@@ -108,6 +111,25 @@ export default function AdminResumesPage() {
     } catch (error) {
       console.error('Failed to download resume:', error)
     }
+  }
+
+  const handlePreview = async (resume: Resume) => {
+    try {
+      const response = await fetch(`/api/user/resumes/${resume.id}/download`)
+      const data = await response.json()
+
+      if (response.ok && data.downloadUrl) {
+        setPreviewResume(resume)
+        setPreviewUrl(data.downloadUrl)
+      }
+    } catch (error) {
+      console.error('Failed to preview resume:', error)
+    }
+  }
+
+  const handleClosePreview = () => {
+    setPreviewResume(null)
+    setPreviewUrl(null)
   }
 
   return (
@@ -234,8 +256,15 @@ export default function AdminResumesPage() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => handlePreview(resume)}
+                          title="Preview"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => handleDownload(resume)}
-                          disabled={resume.processingStatus !== 'COMPLETED'}
                           title="Download"
                         >
                           <Download className="h-4 w-4" />
@@ -263,6 +292,43 @@ export default function AdminResumesPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* Resume Preview Sheet */}
+      <Sheet open={!!previewResume} onOpenChange={handleClosePreview}>
+        <SheetContent side="bottom" className="overflow-y-auto h-[90vh]">
+          <SheetHeader>
+            <SheetTitle>Resume Preview</SheetTitle>
+          </SheetHeader>
+          {previewResume && previewUrl && (
+            <div className="space-y-4 m-4">
+              <div className="flex items-center justify-between text-sm text-muted-foreground">
+                <span>{previewResume.originalName}</span>
+                <span>{(previewResume.fileSize / 1024).toFixed(2)} KB</span>
+              </div>
+              <div className="border rounded-lg overflow-hidden">
+                {previewResume.mimeType === 'application/pdf' ? (
+                  <iframe
+                    src={previewUrl}
+                    className="w-full h-[70vh]"
+                    title="Resume Preview"
+                  />
+                ) : (
+                  <div className="p-8 text-center">
+                    <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground mb-4">
+                      Preview not available for this file type. Please download to view.
+                    </p>
+                    <Button onClick={() => handleDownload(previewResume)}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Resume
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }

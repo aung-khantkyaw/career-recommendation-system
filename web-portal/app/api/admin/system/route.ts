@@ -78,7 +78,7 @@ async function getRedisStats() {
 async function getMinioStats() {
   try {
     const minioClient = new MinioClient({
-      endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+      endPoint: process.env.MINIO_HOST || 'localhost',
       port: parseInt(process.env.MINIO_PORT || '9000'),
       useSSL: process.env.MINIO_USE_SSL === 'true',
       accessKey: process.env.MINIO_ROOT_USER || '',

@@ -1,62 +1,29 @@
-# -----------------------------
-# Base Stage
-# -----------------------------
-FROM node:26-alpine AS base
+FROM node:20-alpine
+
 WORKDIR /app
 
-# -----------------------------
-# Development Stage
-# -----------------------------
-FROM base AS development
 RUN apk add --no-cache python3 make g++ libc6-compat
 
 COPY package.json package-lock.json* ./
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm install
+RUN npm ci
 
-COPY . .
-RUN npx prisma generate
-
-ENV NODE_ENV=development
-EXPOSE 3000
-CMD ["npm", "run", "dev"]
-
-# -----------------------------
-# Dependencies Stage (For Production Build)
-# -----------------------------
-FROM base AS deps
-RUN apk add --no-cache python3 make g++ libc6-compat
-COPY package.json package-lock.json* ./
-
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci
-
-# -----------------------------
-# Builder Stage
-# -----------------------------
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npx prisma generate
 RUN npm run build
 
-# -----------------------------
-# Production Stage (Runner)
-# -----------------------------
-FROM base AS production
-
-ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --chown=nextjs:nodejs .next/standalone ./
+COPY --chown=nextjs:nodejs .next/static ./.next/static
+COPY --chown=nextjs:nodejs public ./public
 
 USER nextjs
 EXPOSE 3000

@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, CreateBucketCommand, HeadBucketCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3'
 
 const minioClient = new S3Client({
-  endpoint: process.env.MINIO_ENDPOINT || `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`,
+  endpoint: `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`,
   region: 'us-east-1',
   credentials: {
     accessKeyId: process.env.MINIO_ROOT_USER || 'admin',
@@ -69,7 +69,7 @@ export async function uploadFile(key: string, body: Buffer, contentType: string)
 }
 
 export function getFileUrl(key: string) {
-  const endpoint = process.env.MINIO_ENDPOINT || `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`
+  const endpoint = `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`
   return `${endpoint}/${BUCKET_NAME}/${key}`
 }
 
