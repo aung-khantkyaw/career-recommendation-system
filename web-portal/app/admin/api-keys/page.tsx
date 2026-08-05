@@ -13,7 +13,8 @@ import { Search, Plus, Edit, Trash2, RefreshCw, Key, X, Clock, CheckCircle2 } fr
 interface ApiKey {
   id: string
   provider: string
-  modelName: string
+  llmModelName: string | null
+  embeddingModelName: string | null
   apiKey: string
   limit: number
   used: number
@@ -25,7 +26,8 @@ interface ApiKey {
 
 type ApiKeyForm = {
   provider: string
-  modelName: string
+  llmModelName: string
+  embeddingModelName: string
   apiKey: string
   limit: string
   expiresAt: string
@@ -33,7 +35,8 @@ type ApiKeyForm = {
 
 const emptyForm: ApiKeyForm = {
   provider: 'OPENAI',
-  modelName: '',
+  llmModelName: '',
+  embeddingModelName: '',
   apiKey: '',
   limit: '0',
   expiresAt: '',
@@ -92,7 +95,8 @@ export default function ApiKeysPage() {
     setEditingKey(apiKey)
     setForm({
       provider: apiKey.provider,
-      modelName: apiKey.modelName,
+      llmModelName: apiKey.llmModelName || '',
+      embeddingModelName: apiKey.embeddingModelName || '',
       apiKey: apiKey.apiKey,
       limit: String(apiKey.limit),
       expiresAt: apiKey.expiresAt ? new Date(apiKey.expiresAt).toISOString().split('T')[0] : '',
@@ -159,8 +163,9 @@ export default function ApiKeysPage() {
   }
 
   const deleteApiKey = async (apiKey: ApiKey) => {
+    const modelNames = [apiKey.llmModelName, apiKey.embeddingModelName].filter(Boolean).join(' / ')
     const confirmed = window.confirm(
-      `Delete API key for ${apiKey.modelName}? This cannot be undone.`
+      `Delete API key for ${modelNames}? This cannot be undone.`
     )
 
     if (!confirmed) return
@@ -194,6 +199,7 @@ export default function ApiKeysPage() {
       OPENAI: 'bg-green-500',
       ANTHROPIC: 'bg-purple-500',
       GOOGLE: 'bg-blue-500',
+      OPENROUTER: 'bg-orange-500',
       CUSTOM: 'bg-gray-500',
     }
     return (
@@ -205,8 +211,9 @@ export default function ApiKeysPage() {
 
   const filteredApiKeys = apiKeys.filter((key) => {
     const searchLower = searchQuery.toLowerCase()
+    const modelNames = [key.llmModelName, key.embeddingModelName].filter(Boolean).join(' ').toLowerCase()
     return (
-      key.modelName.toLowerCase().includes(searchLower) ||
+      modelNames.includes(searchLower) ||
       key.provider.toLowerCase().includes(searchLower)
     )
   })
@@ -323,17 +330,24 @@ export default function ApiKeysPage() {
                       <SelectItem value="OPENAI">OpenAI</SelectItem>
                       <SelectItem value="ANTHROPIC">Anthropic</SelectItem>
                       <SelectItem value="GOOGLE">Google</SelectItem>
+                      <SelectItem value="OPENROUTER">OpenRouter</SelectItem>
                       <SelectItem value="CUSTOM">Custom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <Field
-                  id="modelName"
-                  label="Model Name"
-                  value={form.modelName}
-                  onChange={(value) => updateForm('modelName', value)}
-                  placeholder="gpt-4, claude-3-opus, etc."
-                  required
+                  id="llmModelName"
+                  label="LLM Model Name"
+                  value={form.llmModelName}
+                  onChange={(value) => updateForm('llmModelName', value)}
+                  placeholder="gpt-4, gemini-2.5-flash, etc."
+                />
+                <Field
+                  id="embeddingModelName"
+                  label="Embedding Model Name"
+                  value={form.embeddingModelName}
+                  onChange={(value) => updateForm('embeddingModelName', value)}
+                  placeholder="text-embedding-3-small, gemini-embedding-2, etc."
                 />
                 <Field
                   id="apiKey"
@@ -434,7 +448,8 @@ export default function ApiKeysPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Provider</TableHead>
-                <TableHead>Model Name</TableHead>
+                <TableHead>LLM Model</TableHead>
+                <TableHead>Embedding Model</TableHead>
                 <TableHead>API Key</TableHead>
                 <TableHead>Usage</TableHead>
                 <TableHead>Expires</TableHead>
@@ -448,7 +463,8 @@ export default function ApiKeysPage() {
                 filteredApiKeys.map((key) => (
                   <TableRow key={key.id}>
                     <TableCell>{getProviderBadge(key.provider)}</TableCell>
-                    <TableCell className="font-medium">{key.modelName}</TableCell>
+                    <TableCell className="font-medium">{key.llmModelName || '-'}</TableCell>
+                    <TableCell className="font-medium">{key.embeddingModelName || '-'}</TableCell>
                     <TableCell>
                       <code className="text-xs bg-muted px-2 py-1 rounded">
                         {key.apiKey.slice(0, 8)}...{key.apiKey.slice(-4)}
@@ -484,7 +500,7 @@ export default function ApiKeysPage() {
                           onClick={() => openEditForm(key)}
                         >
                           <Edit className="size-4" aria-hidden="true" />
-                          <span className="sr-only">Edit {key.modelName}</span>
+                          <span className="sr-only">Edit API key</span>
                         </Button>
                         <Button
                           variant="ghost"
@@ -492,7 +508,7 @@ export default function ApiKeysPage() {
                           onClick={() => deleteApiKey(key)}
                         >
                           <Trash2 className="size-4" aria-hidden="true" />
-                          <span className="sr-only">Delete {key.modelName}</span>
+                          <span className="sr-only">Delete API key</span>
                         </Button>
                       </div>
                     </TableCell>
@@ -501,7 +517,7 @@ export default function ApiKeysPage() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="py-10 text-center text-muted-foreground"
                   >
                     {isLoading ? 'Loading API keys...' : 'No API keys found.'}

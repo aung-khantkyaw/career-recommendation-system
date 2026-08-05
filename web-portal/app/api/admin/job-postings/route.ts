@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import redis from '@/lib/redis'
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions)
@@ -117,6 +118,13 @@ export async function POST(req: NextRequest) {
         },
       },
     })
+
+    // Queue embedding generation job
+    await redis.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `job_${job.id}`,
+      job_type: 'job_embedding',
+      job_id_field: job.id,
+    }))
 
     return NextResponse.json({ job }, { status: 201 })
   } catch (error) {

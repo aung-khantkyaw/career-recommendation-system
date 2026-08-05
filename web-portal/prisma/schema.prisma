@@ -39,6 +39,7 @@ enum JobStatus {
 }
 
 enum AIProvider {
+  OPENROUTER
   OPENAI
   ANTHROPIC
   GOOGLE
@@ -81,7 +82,7 @@ model Resume {
   minioPath         String
   processingStatus  ProcessingStatus @default(PENDING)
   skills            Json?     // Stores extracted skills as JSON
-  embedding         Unsupported("vector(1536)")? // pgvector embedding
+  embedding         Unsupported("vector(2048)")? // pgvector embedding
   experience        Json?     // Stores extracted experience as JSON
   education         Json?     // Stores extracted education as JSON
   processedAt       DateTime?
@@ -122,12 +123,16 @@ model CareerPath {
   jobOpenings    Int      @default(0)
   growthRate     Float    @default(0)
   active         Boolean  @default(true)
+  embedding      Unsupported("vector(2048)")?
+  processingStatus String @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  processedAt    DateTime?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   jobs           Job[]
 
   @@index([category])
   @@index([active])
+  @@index([processingStatus])
 }
 
 model Job {
@@ -148,6 +153,9 @@ model Job {
   careerPath      CareerPath? @relation(fields: [careerPathId], references: [id], onDelete: SetNull)
   postedAt        DateTime   @default(now())
   expiresAt       DateTime?
+  embedding       Unsupported("vector(2048)")?
+  processingStatus String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  processedAt     DateTime?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   bookmarks       JobBookmark[]
@@ -155,6 +163,7 @@ model Job {
   @@index([status])
   @@index([careerPathId])
   @@index([type])
+  @@index([processingStatus])
 }
 
 model JobBookmark {
@@ -279,16 +288,17 @@ model EmailConfig {
 }
 
 model ApiKey {
-  id          String      @id @default(uuid())
-  provider    AIProvider
-  modelName   String
-  apiKey      String
-  limit       Int         @default(0) // 0 means unlimited
-  used        Int         @default(0)
-  expiresAt   DateTime?
-  active      Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                  String      @id @default(uuid())
+  provider            AIProvider
+  llmModelName        String?
+  embeddingModelName  String?
+  apiKey              String
+  limit               Int         @default(0) // 0 means unlimited
+  used                Int         @default(0)
+  expiresAt           DateTime?
+  active              Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 
   @@index([provider])
   @@index([active])

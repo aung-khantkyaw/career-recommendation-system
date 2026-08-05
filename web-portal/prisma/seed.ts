@@ -1,15 +1,28 @@
 import { config } from 'dotenv'
-import { PrismaClient, Job, JobType, JobStatus } from '../generated/prisma/client'
+import { PrismaClient, Job, JobType, JobStatus, AIProvider } from '../generated/prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
+import { createClient } from 'redis'
 
 config({ path: '.env.local' })
+
+const redisClient = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+})
+
+redisClient.on('error', (err) => console.error('Redis Client Error', err))
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
   console.log('🌱 Starting database seed...')
+
+  // Connect to Redis
+  if (!redisClient.isOpen) {
+    await redisClient.connect()
+    console.log('✅ Connected to Redis')
+  }
 
   // Hash passwords
   const adminPassword = await bcrypt.hash('admin123', 10)
@@ -158,6 +171,14 @@ async function main() {
       create: careerPath,
     })
     console.log(`✅ Created career path: ${careerPath.title}`)
+
+    // Queue embedding generation job for career path
+    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `career_${careerPath.id}`,
+      job_type: 'career_embedding',
+      career_path_id: careerPath.id,
+    }))
+    console.log(`📤 Queued embedding job for career: ${careerPath.title}`)
   }
 
   // Create job postings
@@ -307,7 +328,39 @@ async function main() {
       create: job,
     })
     console.log(`✅ Created job posting: ${job.title}`)
+
+    // Queue embedding generation job for job posting
+    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `job_${job.id}`,
+      job_type: 'job_embedding',
+      job_id_field: job.id,
+    }))
+    console.log(`📤 Queued embedding job for job: ${job.title}`)
   }
+
+  // // Create API keys for AI services
+  // const apiKeys = [
+  //   {
+  //     provider: AIProvider.OPENROUTER,
+  //     llmModelName: 'meta-llama/llama-3.3-70b-instruct:free',
+  //     embeddingModelName: 'nvidia/nemotron-3-embed-1b:free',
+  //     apiKey: process.env.OPENROUTER_API_KEY || 'sk-or-v1-placeholder-key',
+  //     limit: 0,
+  //     active: true,
+  //   },
+  // ]
+
+  // for (const apiKey of apiKeys) {
+  //   await prisma.apiKey.upsert({
+  //     where: { id: 'default-openrouter-key' },
+  //     update: apiKey,
+  //     create: {
+  //       id: 'default-openrouter-key',
+  //       ...apiKey,
+  //     },
+  //   })
+  //   console.log(`✅ Created API key for ${apiKey.provider}`)
+  // }
 
   console.log('🎉 Seed completed successfully!')
 }
@@ -319,4 +372,8 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
+    if (redisClient.isOpen) {
+      await redisClient.quit()
+      console.log('✅ Disconnected from Redis')
+    }
   })

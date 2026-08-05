@@ -46,6 +46,8 @@ type Career = {
   jobOpenings: number
   growthRate: number
   active: boolean
+  processingStatus: string
+  processedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -509,6 +511,7 @@ export default function CareerDataPage() {
                 <TableHead>Salary</TableHead>
                 <TableHead>Growth</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>AI Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -551,6 +554,21 @@ export default function CareerDataPage() {
                         {career.active ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          career.processingStatus === 'COMPLETED'
+                            ? 'default'
+                            : career.processingStatus === 'PROCESSING'
+                              ? 'secondary'
+                              : career.processingStatus === 'FAILED'
+                                ? 'destructive'
+                                : 'outline'
+                        }
+                      >
+                        {career.processingStatus}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -576,7 +594,7 @@ export default function CareerDataPage() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="py-10 text-center text-muted-foreground"
                   >
                     {isLoading ? 'Loading career paths...' : 'No career paths found.'}

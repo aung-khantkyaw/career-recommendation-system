@@ -1,20 +1,24 @@
 import os
 
-DATABASE_URL = (
-    f"postgresql://{os.getenv('POSTGRES_USER')}:"
-    f"{os.getenv('POSTGRES_PASSWORD')}@"
-    f"{os.getenv('POSTGRES_HOST')}:"
-    f"{os.getenv('POSTGRES_PORT')}/"
-    f"{os.getenv('POSTGRES_DB')}"
+DATABASE_URL = os.getenv('DATABASE_URL') or (
+    f"postgresql://{os.getenv('POSTGRES_USER', 'admin')}:" 
+    f"{os.getenv('POSTGRES_PASSWORD', 'secretpassword')}@" 
+    f"{os.getenv('POSTGRES_HOST', 'localhost')}:" 
+    f"{os.getenv('POSTGRES_PORT', '5432')}/" 
+    f"{os.getenv('POSTGRES_DB', 'career_system_db')}"
 
 )
 
-REDIS_URL = (
-    f"redis://{os.getenv('REDIS_HOST')}:"
-    f"{os.getenv('REDIS_PORT')}"
+REDIS_URL = os.getenv('REDIS_URL') or (
+    f"redis://{os.getenv('REDIS_HOST', 'localhost')}:" 
+    f"{os.getenv('REDIS_PORT', '6379')}"
+
 )
 
-MINIO_ENDPOINT = (
-    f"{os.getenv('MINIO_HOST')}:"
-    f"{os.getenv('MINIO_PORT')}"
+MINIO_ENDPOINT = os.getenv('MINIO_ENDPOINT') or (
+    f"{os.getenv('MINIO_HOST', 'localhost')}:" 
+    f"{os.getenv('MINIO_PORT', '9000')}"
+
 )
+
+OPENROUTER_BASE_URL = os.getenv('OPENROUTER_BASE_URL', 'https://openrouter.ai/api/v1')

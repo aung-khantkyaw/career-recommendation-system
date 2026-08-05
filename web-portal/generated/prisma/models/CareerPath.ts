@@ -45,6 +45,8 @@ export type CareerPathMinAggregateOutputType = {
   jobOpenings: number | null
   growthRate: number | null
   active: boolean | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +60,8 @@ export type CareerPathMaxAggregateOutputType = {
   jobOpenings: number | null
   growthRate: number | null
   active: boolean | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -74,6 +78,8 @@ export type CareerPathCountAggregateOutputType = {
   jobOpenings: number
   growthRate: number
   active: number
+  processingStatus: number
+  processedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -99,6 +105,8 @@ export type CareerPathMinAggregateInputType = {
   jobOpenings?: true
   growthRate?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +120,8 @@ export type CareerPathMaxAggregateInputType = {
   jobOpenings?: true
   growthRate?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -128,6 +138,8 @@ export type CareerPathCountAggregateInputType = {
   jobOpenings?: true
   growthRate?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -231,6 +243,8 @@ export type CareerPathGroupByOutputType = {
   jobOpenings: number
   growthRate: number
   active: boolean
+  processingStatus: string
+  processedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: CareerPathCountAggregateOutputType | null
@@ -270,6 +284,8 @@ export type CareerPathWhereInput = {
   jobOpenings?: Prisma.IntFilter<"CareerPath"> | number
   growthRate?: Prisma.FloatFilter<"CareerPath"> | number
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
+  processingStatus?: Prisma.StringFilter<"CareerPath"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"CareerPath"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   jobs?: Prisma.JobListRelationFilter
@@ -287,6 +303,8 @@ export type CareerPathOrderByWithRelationInput = {
   jobOpenings?: Prisma.SortOrder
   growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   jobs?: Prisma.JobOrderByRelationAggregateInput
@@ -307,6 +325,8 @@ export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
   jobOpenings?: Prisma.IntFilter<"CareerPath"> | number
   growthRate?: Prisma.FloatFilter<"CareerPath"> | number
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
+  processingStatus?: Prisma.StringFilter<"CareerPath"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"CareerPath"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   jobs?: Prisma.JobListRelationFilter
@@ -324,6 +344,8 @@ export type CareerPathOrderByWithAggregationInput = {
   jobOpenings?: Prisma.SortOrder
   growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CareerPathCountOrderByAggregateInput
@@ -348,6 +370,8 @@ export type CareerPathScalarWhereWithAggregatesInput = {
   jobOpenings?: Prisma.IntWithAggregatesFilter<"CareerPath"> | number
   growthRate?: Prisma.FloatWithAggregatesFilter<"CareerPath"> | number
   active?: Prisma.BoolWithAggregatesFilter<"CareerPath"> | boolean
+  processingStatus?: Prisma.StringWithAggregatesFilter<"CareerPath"> | string
+  processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CareerPath"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"CareerPath"> | Date | string
 }
@@ -364,6 +388,8 @@ export type CareerPathCreateInput = {
   jobOpenings?: number
   growthRate?: number
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobs?: Prisma.JobCreateNestedManyWithoutCareerPathInput
@@ -381,6 +407,8 @@ export type CareerPathUncheckedCreateInput = {
   jobOpenings?: number
   growthRate?: number
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobs?: Prisma.JobUncheckedCreateNestedManyWithoutCareerPathInput
@@ -398,6 +426,8 @@ export type CareerPathUpdateInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobs?: Prisma.JobUpdateManyWithoutCareerPathNestedInput
@@ -415,6 +445,8 @@ export type CareerPathUncheckedUpdateInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobs?: Prisma.JobUncheckedUpdateManyWithoutCareerPathNestedInput
@@ -432,6 +464,8 @@ export type CareerPathCreateManyInput = {
   jobOpenings?: number
   growthRate?: number
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -448,6 +482,8 @@ export type CareerPathUpdateManyMutationInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -464,6 +500,8 @@ export type CareerPathUncheckedUpdateManyInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -480,6 +518,8 @@ export type CareerPathCountOrderByAggregateInput = {
   jobOpenings?: Prisma.SortOrder
   growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -498,6 +538,8 @@ export type CareerPathMaxOrderByAggregateInput = {
   jobOpenings?: Prisma.SortOrder
   growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -511,6 +553,8 @@ export type CareerPathMinOrderByAggregateInput = {
   jobOpenings?: Prisma.SortOrder
   growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -571,6 +615,8 @@ export type CareerPathCreateWithoutJobsInput = {
   jobOpenings?: number
   growthRate?: number
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -587,6 +633,8 @@ export type CareerPathUncheckedCreateWithoutJobsInput = {
   jobOpenings?: number
   growthRate?: number
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -619,6 +667,8 @@ export type CareerPathUpdateWithoutJobsInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -635,6 +685,8 @@ export type CareerPathUncheckedUpdateWithoutJobsInput = {
   jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
   growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -682,6 +734,8 @@ export type CareerPathSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   jobOpenings?: boolean
   growthRate?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
@@ -700,6 +754,8 @@ export type CareerPathSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   jobOpenings?: boolean
   growthRate?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["careerPath"]>
@@ -716,6 +772,8 @@ export type CareerPathSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   jobOpenings?: boolean
   growthRate?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["careerPath"]>
@@ -732,11 +790,13 @@ export type CareerPathSelectScalar = {
   jobOpenings?: boolean
   growthRate?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "description" | "requiredSkills" | "softSkills" | "roadmap" | "averageSalary" | "jobOpenings" | "growthRate" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["careerPath"]>
+export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "description" | "requiredSkills" | "softSkills" | "roadmap" | "averageSalary" | "jobOpenings" | "growthRate" | "active" | "processingStatus" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["careerPath"]>
 export type CareerPathInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
   _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
@@ -761,6 +821,8 @@ export type $CareerPathPayload<ExtArgs extends runtime.Types.Extensions.Internal
     jobOpenings: number
     growthRate: number
     active: boolean
+    processingStatus: string
+    processedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["careerPath"]>
@@ -1198,6 +1260,8 @@ export interface CareerPathFieldRefs {
   readonly jobOpenings: Prisma.FieldRef<"CareerPath", 'Int'>
   readonly growthRate: Prisma.FieldRef<"CareerPath", 'Float'>
   readonly active: Prisma.FieldRef<"CareerPath", 'Boolean'>
+  readonly processingStatus: Prisma.FieldRef<"CareerPath", 'String'>
+  readonly processedAt: Prisma.FieldRef<"CareerPath", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"CareerPath", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"CareerPath", 'DateTime'>
 }

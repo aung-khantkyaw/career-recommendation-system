@@ -50,6 +50,7 @@ export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus]
 
 
 export const AIProvider = {
+  OPENROUTER: 'OPENROUTER',
   OPENAI: 'OPENAI',
   ANTHROPIC: 'ANTHROPIC',
   GOOGLE: 'GOOGLE',

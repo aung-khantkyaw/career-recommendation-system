@@ -27,6 +27,8 @@ interface Job {
   emails: string[]
   postedAt: string
   expiresAt: string | null
+  processingStatus: string
+  processedAt: string | null
   careerPath: {
     id: string
     title: string
@@ -609,6 +611,7 @@ export default function JobPostingsPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Salary</TableHead>
                 <TableHead>Posted</TableHead>
+                <TableHead>AI Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -633,6 +636,21 @@ export default function JobPostingsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">{new Date(job.postedAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          job.processingStatus === 'COMPLETED'
+                            ? 'default'
+                            : job.processingStatus === 'PROCESSING'
+                              ? 'secondary'
+                              : job.processingStatus === 'FAILED'
+                                ? 'destructive'
+                                : 'outline'
+                        }
+                      >
+                        {job.processingStatus}
+                      </Badge>
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button
@@ -658,7 +676,7 @@ export default function JobPostingsPage() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={9}
                     className="py-10 text-center text-muted-foreground"
                   >
                     {isLoading ? 'Loading job postings...' : 'No job postings found.'}

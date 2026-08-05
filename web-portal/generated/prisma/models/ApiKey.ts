@@ -39,7 +39,8 @@ export type ApiKeySumAggregateOutputType = {
 export type ApiKeyMinAggregateOutputType = {
   id: string | null
   provider: $Enums.AIProvider | null
-  modelName: string | null
+  llmModelName: string | null
+  embeddingModelName: string | null
   apiKey: string | null
   limit: number | null
   used: number | null
@@ -52,7 +53,8 @@ export type ApiKeyMinAggregateOutputType = {
 export type ApiKeyMaxAggregateOutputType = {
   id: string | null
   provider: $Enums.AIProvider | null
-  modelName: string | null
+  llmModelName: string | null
+  embeddingModelName: string | null
   apiKey: string | null
   limit: number | null
   used: number | null
@@ -65,7 +67,8 @@ export type ApiKeyMaxAggregateOutputType = {
 export type ApiKeyCountAggregateOutputType = {
   id: number
   provider: number
-  modelName: number
+  llmModelName: number
+  embeddingModelName: number
   apiKey: number
   limit: number
   used: number
@@ -90,7 +93,8 @@ export type ApiKeySumAggregateInputType = {
 export type ApiKeyMinAggregateInputType = {
   id?: true
   provider?: true
-  modelName?: true
+  llmModelName?: true
+  embeddingModelName?: true
   apiKey?: true
   limit?: true
   used?: true
@@ -103,7 +107,8 @@ export type ApiKeyMinAggregateInputType = {
 export type ApiKeyMaxAggregateInputType = {
   id?: true
   provider?: true
-  modelName?: true
+  llmModelName?: true
+  embeddingModelName?: true
   apiKey?: true
   limit?: true
   used?: true
@@ -116,7 +121,8 @@ export type ApiKeyMaxAggregateInputType = {
 export type ApiKeyCountAggregateInputType = {
   id?: true
   provider?: true
-  modelName?: true
+  llmModelName?: true
+  embeddingModelName?: true
   apiKey?: true
   limit?: true
   used?: true
@@ -216,7 +222,8 @@ export type ApiKeyGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ApiKeyGroupByOutputType = {
   id: string
   provider: $Enums.AIProvider
-  modelName: string
+  llmModelName: string | null
+  embeddingModelName: string | null
   apiKey: string
   limit: number
   used: number
@@ -252,7 +259,8 @@ export type ApiKeyWhereInput = {
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   id?: Prisma.StringFilter<"ApiKey"> | string
   provider?: Prisma.EnumAIProviderFilter<"ApiKey"> | $Enums.AIProvider
-  modelName?: Prisma.StringFilter<"ApiKey"> | string
+  llmModelName?: Prisma.StringNullableFilter<"ApiKey"> | string | null
+  embeddingModelName?: Prisma.StringNullableFilter<"ApiKey"> | string | null
   apiKey?: Prisma.StringFilter<"ApiKey"> | string
   limit?: Prisma.IntFilter<"ApiKey"> | number
   used?: Prisma.IntFilter<"ApiKey"> | number
@@ -265,7 +273,8 @@ export type ApiKeyWhereInput = {
 export type ApiKeyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
-  modelName?: Prisma.SortOrder
+  llmModelName?: Prisma.SortOrderInput | Prisma.SortOrder
+  embeddingModelName?: Prisma.SortOrderInput | Prisma.SortOrder
   apiKey?: Prisma.SortOrder
   limit?: Prisma.SortOrder
   used?: Prisma.SortOrder
@@ -281,7 +290,8 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ApiKeyWhereInput[]
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   provider?: Prisma.EnumAIProviderFilter<"ApiKey"> | $Enums.AIProvider
-  modelName?: Prisma.StringFilter<"ApiKey"> | string
+  llmModelName?: Prisma.StringNullableFilter<"ApiKey"> | string | null
+  embeddingModelName?: Prisma.StringNullableFilter<"ApiKey"> | string | null
   apiKey?: Prisma.StringFilter<"ApiKey"> | string
   limit?: Prisma.IntFilter<"ApiKey"> | number
   used?: Prisma.IntFilter<"ApiKey"> | number
@@ -294,7 +304,8 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
 export type ApiKeyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
-  modelName?: Prisma.SortOrder
+  llmModelName?: Prisma.SortOrderInput | Prisma.SortOrder
+  embeddingModelName?: Prisma.SortOrderInput | Prisma.SortOrder
   apiKey?: Prisma.SortOrder
   limit?: Prisma.SortOrder
   used?: Prisma.SortOrder
@@ -315,7 +326,8 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ApiKeyScalarWhereWithAggregatesInput | Prisma.ApiKeyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   provider?: Prisma.EnumAIProviderWithAggregatesFilter<"ApiKey"> | $Enums.AIProvider
-  modelName?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
+  llmModelName?: Prisma.StringNullableWithAggregatesFilter<"ApiKey"> | string | null
+  embeddingModelName?: Prisma.StringNullableWithAggregatesFilter<"ApiKey"> | string | null
   apiKey?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   limit?: Prisma.IntWithAggregatesFilter<"ApiKey"> | number
   used?: Prisma.IntWithAggregatesFilter<"ApiKey"> | number
@@ -328,7 +340,8 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
 export type ApiKeyCreateInput = {
   id?: string
   provider: $Enums.AIProvider
-  modelName: string
+  llmModelName?: string | null
+  embeddingModelName?: string | null
   apiKey: string
   limit?: number
   used?: number
@@ -341,7 +354,8 @@ export type ApiKeyCreateInput = {
 export type ApiKeyUncheckedCreateInput = {
   id?: string
   provider: $Enums.AIProvider
-  modelName: string
+  llmModelName?: string | null
+  embeddingModelName?: string | null
   apiKey: string
   limit?: number
   used?: number
@@ -354,7 +368,8 @@ export type ApiKeyUncheckedCreateInput = {
 export type ApiKeyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumAIProviderFieldUpdateOperationsInput | $Enums.AIProvider
-  modelName?: Prisma.StringFieldUpdateOperationsInput | string
+  llmModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  embeddingModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
   limit?: Prisma.IntFieldUpdateOperationsInput | number
   used?: Prisma.IntFieldUpdateOperationsInput | number
@@ -367,7 +382,8 @@ export type ApiKeyUpdateInput = {
 export type ApiKeyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumAIProviderFieldUpdateOperationsInput | $Enums.AIProvider
-  modelName?: Prisma.StringFieldUpdateOperationsInput | string
+  llmModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  embeddingModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
   limit?: Prisma.IntFieldUpdateOperationsInput | number
   used?: Prisma.IntFieldUpdateOperationsInput | number
@@ -380,7 +396,8 @@ export type ApiKeyUncheckedUpdateInput = {
 export type ApiKeyCreateManyInput = {
   id?: string
   provider: $Enums.AIProvider
-  modelName: string
+  llmModelName?: string | null
+  embeddingModelName?: string | null
   apiKey: string
   limit?: number
   used?: number
@@ -393,7 +410,8 @@ export type ApiKeyCreateManyInput = {
 export type ApiKeyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumAIProviderFieldUpdateOperationsInput | $Enums.AIProvider
-  modelName?: Prisma.StringFieldUpdateOperationsInput | string
+  llmModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  embeddingModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
   limit?: Prisma.IntFieldUpdateOperationsInput | number
   used?: Prisma.IntFieldUpdateOperationsInput | number
@@ -406,7 +424,8 @@ export type ApiKeyUpdateManyMutationInput = {
 export type ApiKeyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   provider?: Prisma.EnumAIProviderFieldUpdateOperationsInput | $Enums.AIProvider
-  modelName?: Prisma.StringFieldUpdateOperationsInput | string
+  llmModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  embeddingModelName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   apiKey?: Prisma.StringFieldUpdateOperationsInput | string
   limit?: Prisma.IntFieldUpdateOperationsInput | number
   used?: Prisma.IntFieldUpdateOperationsInput | number
@@ -419,7 +438,8 @@ export type ApiKeyUncheckedUpdateManyInput = {
 export type ApiKeyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
-  modelName?: Prisma.SortOrder
+  llmModelName?: Prisma.SortOrder
+  embeddingModelName?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
   limit?: Prisma.SortOrder
   used?: Prisma.SortOrder
@@ -437,7 +457,8 @@ export type ApiKeyAvgOrderByAggregateInput = {
 export type ApiKeyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
-  modelName?: Prisma.SortOrder
+  llmModelName?: Prisma.SortOrder
+  embeddingModelName?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
   limit?: Prisma.SortOrder
   used?: Prisma.SortOrder
@@ -450,7 +471,8 @@ export type ApiKeyMaxOrderByAggregateInput = {
 export type ApiKeyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   provider?: Prisma.SortOrder
-  modelName?: Prisma.SortOrder
+  llmModelName?: Prisma.SortOrder
+  embeddingModelName?: Prisma.SortOrder
   apiKey?: Prisma.SortOrder
   limit?: Prisma.SortOrder
   used?: Prisma.SortOrder
@@ -474,7 +496,8 @@ export type EnumAIProviderFieldUpdateOperationsInput = {
 export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   provider?: boolean
-  modelName?: boolean
+  llmModelName?: boolean
+  embeddingModelName?: boolean
   apiKey?: boolean
   limit?: boolean
   used?: boolean
@@ -487,7 +510,8 @@ export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   provider?: boolean
-  modelName?: boolean
+  llmModelName?: boolean
+  embeddingModelName?: boolean
   apiKey?: boolean
   limit?: boolean
   used?: boolean
@@ -500,7 +524,8 @@ export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   provider?: boolean
-  modelName?: boolean
+  llmModelName?: boolean
+  embeddingModelName?: boolean
   apiKey?: boolean
   limit?: boolean
   used?: boolean
@@ -513,7 +538,8 @@ export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ApiKeySelectScalar = {
   id?: boolean
   provider?: boolean
-  modelName?: boolean
+  llmModelName?: boolean
+  embeddingModelName?: boolean
   apiKey?: boolean
   limit?: boolean
   used?: boolean
@@ -523,7 +549,7 @@ export type ApiKeySelectScalar = {
   updatedAt?: boolean
 }
 
-export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "modelName" | "apiKey" | "limit" | "used" | "expiresAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
+export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "provider" | "llmModelName" | "embeddingModelName" | "apiKey" | "limit" | "used" | "expiresAt" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
 
 export type $ApiKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ApiKey"
@@ -531,7 +557,8 @@ export type $ApiKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     provider: $Enums.AIProvider
-    modelName: string
+    llmModelName: string | null
+    embeddingModelName: string | null
     apiKey: string
     limit: number
     used: number
@@ -964,7 +991,8 @@ export interface Prisma__ApiKeyClient<T, Null = never, ExtArgs extends runtime.T
 export interface ApiKeyFieldRefs {
   readonly id: Prisma.FieldRef<"ApiKey", 'String'>
   readonly provider: Prisma.FieldRef<"ApiKey", 'AIProvider'>
-  readonly modelName: Prisma.FieldRef<"ApiKey", 'String'>
+  readonly llmModelName: Prisma.FieldRef<"ApiKey", 'String'>
+  readonly embeddingModelName: Prisma.FieldRef<"ApiKey", 'String'>
   readonly apiKey: Prisma.FieldRef<"ApiKey", 'String'>
   readonly limit: Prisma.FieldRef<"ApiKey", 'Int'>
   readonly used: Prisma.FieldRef<"ApiKey", 'Int'>

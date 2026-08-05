@@ -8,9 +8,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class CareerRecommender:
-    def __init__(self):
-        self.embedding_generator = EmbeddingGenerator()
-        self.rag_retriever = CareerRetriever()
+    def __init__(self, embedding_generator=None):
+        self.embedding_generator = embedding_generator
+        self.rag_retriever = CareerRetriever(embedding_generator)
         self.job_database = self._load_job_database()
     
     def _load_job_database(self) -> List[Dict]:

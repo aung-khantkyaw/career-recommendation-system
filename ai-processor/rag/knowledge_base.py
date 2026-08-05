@@ -7,8 +7,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class CareerKnowledgeBase:
-    def __init__(self):
-        self.embedding_generator = EmbeddingGenerator()
+    def __init__(self, embedding_generator=None):
+        self.embedding_generator = embedding_generator or EmbeddingGenerator()
         self.documents = self._load_career_documents()
         self.embeddings = None
         self._index_documents()

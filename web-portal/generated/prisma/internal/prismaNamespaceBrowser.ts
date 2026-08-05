@@ -151,6 +151,8 @@ export const CareerPathScalarFieldEnum = {
   jobOpenings: 'jobOpenings',
   growthRate: 'growthRate',
   active: 'active',
+  processingStatus: 'processingStatus',
+  processedAt: 'processedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -175,6 +177,8 @@ export const JobScalarFieldEnum = {
   careerPathId: 'careerPathId',
   postedAt: 'postedAt',
   expiresAt: 'expiresAt',
+  processingStatus: 'processingStatus',
+  processedAt: 'processedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -300,7 +304,8 @@ export type EmailConfigScalarFieldEnum = (typeof EmailConfigScalarFieldEnum)[key
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   provider: 'provider',
-  modelName: 'modelName',
+  llmModelName: 'llmModelName',
+  embeddingModelName: 'embeddingModelName',
   apiKey: 'apiKey',
   limit: 'limit',
   used: 'used',

@@ -38,6 +38,8 @@ export type JobMinAggregateOutputType = {
   careerPathId: string | null
   postedAt: Date | null
   expiresAt: Date | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,8 @@ export type JobMaxAggregateOutputType = {
   careerPathId: string | null
   postedAt: Date | null
   expiresAt: Date | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -77,6 +81,8 @@ export type JobCountAggregateOutputType = {
   careerPathId: number
   postedAt: number
   expiresAt: number
+  processingStatus: number
+  processedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -97,6 +103,8 @@ export type JobMinAggregateInputType = {
   careerPathId?: true
   postedAt?: true
   expiresAt?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -115,6 +123,8 @@ export type JobMaxAggregateInputType = {
   careerPathId?: true
   postedAt?: true
   expiresAt?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -136,6 +146,8 @@ export type JobCountAggregateInputType = {
   careerPathId?: true
   postedAt?: true
   expiresAt?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -230,6 +242,8 @@ export type JobGroupByOutputType = {
   careerPathId: string | null
   postedAt: Date
   expiresAt: Date | null
+  processingStatus: string
+  processedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: JobCountAggregateOutputType | null
@@ -272,6 +286,8 @@ export type JobWhereInput = {
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
+  processingStatus?: Prisma.StringFilter<"Job"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
@@ -295,6 +311,8 @@ export type JobOrderByWithRelationInput = {
   careerPathId?: Prisma.SortOrderInput | Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   careerPath?: Prisma.CareerPathOrderByWithRelationInput
@@ -321,6 +339,8 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
+  processingStatus?: Prisma.StringFilter<"Job"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
@@ -344,6 +364,8 @@ export type JobOrderByWithAggregationInput = {
   careerPathId?: Prisma.SortOrderInput | Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.JobCountOrderByAggregateInput
@@ -371,6 +393,8 @@ export type JobScalarWhereWithAggregatesInput = {
   careerPathId?: Prisma.StringNullableWithAggregatesFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Job"> | Date | string | null
+  processingStatus?: Prisma.StringWithAggregatesFilter<"Job"> | string
+  processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
 }
@@ -391,6 +415,8 @@ export type JobCreateInput = {
   emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
@@ -414,6 +440,8 @@ export type JobUncheckedCreateInput = {
   careerPathId?: string | null
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
@@ -435,6 +463,8 @@ export type JobUpdateInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
@@ -458,6 +488,8 @@ export type JobUncheckedUpdateInput = {
   careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
@@ -480,6 +512,8 @@ export type JobCreateManyInput = {
   careerPathId?: string | null
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -500,6 +534,8 @@ export type JobUpdateManyMutationInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -521,6 +557,8 @@ export type JobUncheckedUpdateManyInput = {
   careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -552,6 +590,8 @@ export type JobCountOrderByAggregateInput = {
   careerPathId?: Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -570,6 +610,8 @@ export type JobMaxOrderByAggregateInput = {
   careerPathId?: Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -588,6 +630,8 @@ export type JobMinOrderByAggregateInput = {
   careerPathId?: Prisma.SortOrder
   postedAt?: Prisma.SortOrder
   expiresAt?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -704,6 +748,8 @@ export type JobCreateWithoutCareerPathInput = {
   emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
@@ -725,6 +771,8 @@ export type JobUncheckedCreateWithoutCareerPathInput = {
   emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
@@ -776,6 +824,8 @@ export type JobScalarWhereInput = {
   careerPathId?: Prisma.StringNullableFilter<"Job"> | string | null
   postedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   expiresAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
+  processingStatus?: Prisma.StringFilter<"Job"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"Job"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
 }
@@ -796,6 +846,8 @@ export type JobCreateWithoutBookmarksInput = {
   emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
@@ -818,6 +870,8 @@ export type JobUncheckedCreateWithoutBookmarksInput = {
   careerPathId?: string | null
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -854,6 +908,8 @@ export type JobUpdateWithoutBookmarksInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
@@ -876,6 +932,8 @@ export type JobUncheckedUpdateWithoutBookmarksInput = {
   careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -896,6 +954,8 @@ export type JobCreateManyCareerPathInput = {
   emails?: Prisma.JobCreateemailsInput | string[]
   postedAt?: Date | string
   expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -916,6 +976,8 @@ export type JobUpdateWithoutCareerPathInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
@@ -937,6 +999,8 @@ export type JobUncheckedUpdateWithoutCareerPathInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
@@ -958,6 +1022,8 @@ export type JobUncheckedUpdateManyWithoutCareerPathInput = {
   emails?: Prisma.JobUpdateemailsInput | string[]
   postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1010,6 +1076,8 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
@@ -1034,6 +1102,8 @@ export type JobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
@@ -1056,6 +1126,8 @@ export type JobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
@@ -1078,11 +1150,13 @@ export type JobSelectScalar = {
   careerPathId?: boolean
   postedAt?: boolean
   expiresAt?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "company" | "location" | "type" | "status" | "description" | "requirements" | "salary" | "salaryRange" | "experienceLevel" | "phoneNumbers" | "emails" | "careerPathId" | "postedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
+export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "company" | "location" | "type" | "status" | "description" | "requirements" | "salary" | "salaryRange" | "experienceLevel" | "phoneNumbers" | "emails" | "careerPathId" | "postedAt" | "expiresAt" | "processingStatus" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
 export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
   bookmarks?: boolean | Prisma.Job$bookmarksArgs<ExtArgs>
@@ -1118,6 +1192,8 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
     careerPathId: string | null
     postedAt: Date
     expiresAt: Date | null
+    processingStatus: string
+    processedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["job"]>
@@ -1561,6 +1637,8 @@ export interface JobFieldRefs {
   readonly careerPathId: Prisma.FieldRef<"Job", 'String'>
   readonly postedAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly expiresAt: Prisma.FieldRef<"Job", 'DateTime'>
+  readonly processingStatus: Prisma.FieldRef<"Job", 'String'>
+  readonly processedAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Job", 'DateTime'>
 }

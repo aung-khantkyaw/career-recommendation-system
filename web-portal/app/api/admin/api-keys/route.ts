@@ -39,16 +39,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { provider, modelName, apiKey, limit, expiresAt } = body
+    const { provider, llmModelName, embeddingModelName, apiKey, limit, expiresAt } = body
 
-    if (!provider || !modelName || !apiKey) {
+    if (!provider || !apiKey) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    if (!llmModelName && !embeddingModelName) {
+      return NextResponse.json({ error: 'At least one model name (LLM or Embedding) is required' }, { status: 400 })
     }
 
     const newApiKey = await prisma.apiKey.create({
       data: {
         provider: provider.toUpperCase(),
-        modelName,
+        llmModelName,
+        embeddingModelName,
         apiKey,
         limit: limit || 0,
         expiresAt: expiresAt ? new Date(expiresAt) : null,
@@ -77,10 +82,11 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { modelName, apiKey, limit, expiresAt, active } = body
+    const { llmModelName, embeddingModelName, apiKey, limit, expiresAt, active } = body
 
     const updateData: any = {}
-    if (modelName !== undefined) updateData.modelName = modelName
+    if (llmModelName !== undefined) updateData.llmModelName = llmModelName
+    if (embeddingModelName !== undefined) updateData.embeddingModelName = embeddingModelName
     if (apiKey !== undefined) updateData.apiKey = apiKey
     if (limit !== undefined) updateData.limit = limit
     if (expiresAt !== undefined) updateData.expiresAt = expiresAt ? new Date(expiresAt) : null

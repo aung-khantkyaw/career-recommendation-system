@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import redis from '@/lib/redis'
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions)
@@ -10,15 +11,16 @@ async function requireAdmin() {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const job = await prisma.job.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         careerPath: {
           select: {
@@ -43,13 +45,14 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await req.json()
     const {
       title,
@@ -69,7 +72,7 @@ export async function PATCH(
     } = body
 
     const job = await prisma.job.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(title && { title }),
         ...(company && { company }),
@@ -97,6 +100,15 @@ export async function PATCH(
       },
     })
 
+    // Queue embedding regeneration job if description or requirements changed
+    if (description || requirements) {
+      await redis.lPush('ai_jobs_queue', JSON.stringify({
+        job_id: `job_${job.id}`,
+        job_type: 'job_embedding',
+        job_id_field: job.id,
+      }))
+    }
+
     return NextResponse.json({ job })
   } catch (error) {
     console.error('Job update error:', error)
@@ -106,15 +118,16 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     if (!(await requireAdmin())) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await params
     await prisma.job.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: 'Job deleted successfully' })

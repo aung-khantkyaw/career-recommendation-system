@@ -39,11 +39,12 @@ export async function PATCH(
     }
 
     const body = await request.json()
-    const { provider, modelName, apiKey, limit, expiresAt, active } = body
+    const { provider, llmModelName, embeddingModelName, apiKey, limit, expiresAt, active } = body
 
     const updateData: any = {}
     if (provider) updateData.provider = provider.toUpperCase()
-    if (modelName) updateData.modelName = modelName
+    if (llmModelName !== undefined) updateData.llmModelName = llmModelName
+    if (embeddingModelName !== undefined) updateData.embeddingModelName = embeddingModelName
     if (apiKey) updateData.apiKey = apiKey
     if (limit !== undefined) updateData.limit = limit
     if (expiresAt !== undefined) updateData.expiresAt = expiresAt ? new Date(expiresAt) : null

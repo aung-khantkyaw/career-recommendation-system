@@ -6,8 +6,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class CareerRetriever:
-    def __init__(self):
-        self.knowledge_base = CareerKnowledgeBase()
+    def __init__(self, embedding_generator=None):
+        self.knowledge_base = CareerKnowledgeBase(embedding_generator)
     
     def retrieve_career_paths(self, resume_text: str, user_skills: List[str], top_k: int = 5) -> List[Dict]:
         query = f"Skills: {', '.join(user_skills)}. Experience: {resume_text[:500]}"

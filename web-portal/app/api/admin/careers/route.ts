@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import redis from '@/lib/redis'
 
 type CareerPayload = {
   title?: string
@@ -143,6 +144,43 @@ export async function GET(req: NextRequest) {
   }
 }
 
+export async function POST(req: NextRequest) {
+  try {
+    if (!(await requireAdmin())) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = (await req.json()) as CareerPayload
+    const result = validateCareerPayload(body)
+
+    if ('error' in result) {
+      return NextResponse.json({ error: result.error }, { status: 400 })
+    }
+
+    const career = await prisma.careerPath.create({
+      data: result.data,
+    })
+
+    // Queue embedding generation job
+    await redis.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `career_${career.id}`,
+      job_type: 'career_embedding',
+      career_path_id: career.id,
+    }))
+
+    return NextResponse.json(
+      { message: 'Career path created successfully', career },
+      { status: 201 }
+    )
+  } catch (error) {
+    console.error('Career creation error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function PUT(req: NextRequest) {
   try {
     if (!(await requireAdmin())) {
@@ -167,6 +205,13 @@ export async function PUT(req: NextRequest) {
       where: { id },
       data: result.data,
     })
+
+    // Queue embedding regeneration job
+    await redis.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `career_${career.id}`,
+      job_type: 'career_embedding',
+      career_path_id: career.id,
+    }))
 
     return NextResponse.json(
       { message: 'Career path updated successfully', career },

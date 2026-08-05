@@ -6,11 +6,23 @@ const redisClient = createClient({
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
+// Initialize connection on module load
+let isInitialized = false;
+
 async function ensureConnected() {
-  if (!redisClient.isOpen) {
-    await redisClient.connect();
+  if (!isInitialized) {
+    if (!redisClient.isOpen) {
+      await redisClient.connect();
+    }
+    isInitialized = true;
+    console.log('✅ Redis connected');
   }
 }
+
+// Auto-connect on first use
+ensureConnected().catch(err => {
+  console.error('Failed to connect to Redis:', err);
+});
 
 export async function addJobToQueue(resumeId: string, minioPath: string, userId: string) {
   await ensureConnected();
@@ -26,3 +38,5 @@ export async function addJobToQueue(resumeId: string, minioPath: string, userId:
   await redisClient.lPush('ai_jobs_queue', jobPayload);
   console.log(`Job ${resumeId} successfully added to Redis queue.`);
 }
+
+export default redisClient;
