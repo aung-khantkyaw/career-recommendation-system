@@ -31,6 +31,8 @@ export type SkillMinAggregateOutputType = {
   description: string | null
   difficulty: string | null
   active: boolean | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +44,8 @@ export type SkillMaxAggregateOutputType = {
   description: string | null
   difficulty: string | null
   active: boolean | null
+  processingStatus: string | null
+  processedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +57,8 @@ export type SkillCountAggregateOutputType = {
   description: number
   difficulty: number
   active: number
+  processingStatus: number
+  processedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +72,8 @@ export type SkillMinAggregateInputType = {
   description?: true
   difficulty?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +85,8 @@ export type SkillMaxAggregateInputType = {
   description?: true
   difficulty?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +98,8 @@ export type SkillCountAggregateInputType = {
   description?: true
   difficulty?: true
   active?: true
+  processingStatus?: true
+  processedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +184,8 @@ export type SkillGroupByOutputType = {
   description: string | null
   difficulty: string
   active: boolean
+  processingStatus: string
+  processedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: SkillCountAggregateOutputType | null
@@ -204,8 +218,11 @@ export type SkillWhereInput = {
   description?: Prisma.StringNullableFilter<"Skill"> | string | null
   difficulty?: Prisma.StringFilter<"Skill"> | string
   active?: Prisma.BoolFilter<"Skill"> | boolean
+  processingStatus?: Prisma.StringFilter<"Skill"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"Skill"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Skill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Skill"> | Date | string
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }
 
 export type SkillOrderByWithRelationInput = {
@@ -215,8 +232,11 @@ export type SkillOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  embedding?: Prisma.EmbeddingOrderByWithRelationInput
 }
 
 export type SkillWhereUniqueInput = Prisma.AtLeast<{
@@ -229,8 +249,11 @@ export type SkillWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"Skill"> | string | null
   difficulty?: Prisma.StringFilter<"Skill"> | string
   active?: Prisma.BoolFilter<"Skill"> | boolean
+  processingStatus?: Prisma.StringFilter<"Skill"> | string
+  processedAt?: Prisma.DateTimeNullableFilter<"Skill"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Skill"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Skill"> | Date | string
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }, "id" | "name">
 
 export type SkillOrderByWithAggregationInput = {
@@ -240,6 +263,8 @@ export type SkillOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.SkillCountOrderByAggregateInput
@@ -257,6 +282,8 @@ export type SkillScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"Skill"> | string | null
   difficulty?: Prisma.StringWithAggregatesFilter<"Skill"> | string
   active?: Prisma.BoolWithAggregatesFilter<"Skill"> | boolean
+  processingStatus?: Prisma.StringWithAggregatesFilter<"Skill"> | string
+  processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Skill"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Skill"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Skill"> | Date | string
 }
@@ -268,8 +295,11 @@ export type SkillCreateInput = {
   description?: string | null
   difficulty?: string
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutSkillInput
 }
 
 export type SkillUncheckedCreateInput = {
@@ -279,8 +309,11 @@ export type SkillUncheckedCreateInput = {
   description?: string | null
   difficulty?: string
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutSkillInput
 }
 
 export type SkillUpdateInput = {
@@ -290,8 +323,11 @@ export type SkillUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUpdateOneWithoutSkillNestedInput
 }
 
 export type SkillUncheckedUpdateInput = {
@@ -301,8 +337,11 @@ export type SkillUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutSkillNestedInput
 }
 
 export type SkillCreateManyInput = {
@@ -312,6 +351,8 @@ export type SkillCreateManyInput = {
   description?: string | null
   difficulty?: string
   active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -323,6 +364,8 @@ export type SkillUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -334,6 +377,8 @@ export type SkillUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   difficulty?: Prisma.StringFieldUpdateOperationsInput | string
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -345,6 +390,8 @@ export type SkillCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -356,6 +403,8 @@ export type SkillMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -367,8 +416,99 @@ export type SkillMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   difficulty?: Prisma.SortOrder
   active?: Prisma.SortOrder
+  processingStatus?: Prisma.SortOrder
+  processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type SkillNullableScalarRelationFilter = {
+  is?: Prisma.SkillWhereInput | null
+  isNot?: Prisma.SkillWhereInput | null
+}
+
+export type SkillCreateNestedOneWithoutEmbeddingInput = {
+  create?: Prisma.XOR<Prisma.SkillCreateWithoutEmbeddingInput, Prisma.SkillUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.SkillCreateOrConnectWithoutEmbeddingInput
+  connect?: Prisma.SkillWhereUniqueInput
+}
+
+export type SkillUpdateOneWithoutEmbeddingNestedInput = {
+  create?: Prisma.XOR<Prisma.SkillCreateWithoutEmbeddingInput, Prisma.SkillUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.SkillCreateOrConnectWithoutEmbeddingInput
+  upsert?: Prisma.SkillUpsertWithoutEmbeddingInput
+  disconnect?: Prisma.SkillWhereInput | boolean
+  delete?: Prisma.SkillWhereInput | boolean
+  connect?: Prisma.SkillWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SkillUpdateToOneWithWhereWithoutEmbeddingInput, Prisma.SkillUpdateWithoutEmbeddingInput>, Prisma.SkillUncheckedUpdateWithoutEmbeddingInput>
+}
+
+export type SkillCreateWithoutEmbeddingInput = {
+  id?: string
+  name: string
+  category: string
+  description?: string | null
+  difficulty?: string
+  active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SkillUncheckedCreateWithoutEmbeddingInput = {
+  id?: string
+  name: string
+  category: string
+  description?: string | null
+  difficulty?: string
+  active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SkillCreateOrConnectWithoutEmbeddingInput = {
+  where: Prisma.SkillWhereUniqueInput
+  create: Prisma.XOR<Prisma.SkillCreateWithoutEmbeddingInput, Prisma.SkillUncheckedCreateWithoutEmbeddingInput>
+}
+
+export type SkillUpsertWithoutEmbeddingInput = {
+  update: Prisma.XOR<Prisma.SkillUpdateWithoutEmbeddingInput, Prisma.SkillUncheckedUpdateWithoutEmbeddingInput>
+  create: Prisma.XOR<Prisma.SkillCreateWithoutEmbeddingInput, Prisma.SkillUncheckedCreateWithoutEmbeddingInput>
+  where?: Prisma.SkillWhereInput
+}
+
+export type SkillUpdateToOneWithWhereWithoutEmbeddingInput = {
+  where?: Prisma.SkillWhereInput
+  data: Prisma.XOR<Prisma.SkillUpdateWithoutEmbeddingInput, Prisma.SkillUncheckedUpdateWithoutEmbeddingInput>
+}
+
+export type SkillUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  difficulty?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SkillUncheckedUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  difficulty?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -380,8 +520,11 @@ export type SkillSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   description?: boolean
   difficulty?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  embedding?: boolean | Prisma.Skill$embeddingArgs<ExtArgs>
 }, ExtArgs["result"]["skill"]>
 
 export type SkillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -391,6 +534,8 @@ export type SkillSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   description?: boolean
   difficulty?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["skill"]>
@@ -402,6 +547,8 @@ export type SkillSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   description?: boolean
   difficulty?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["skill"]>
@@ -413,15 +560,24 @@ export type SkillSelectScalar = {
   description?: boolean
   difficulty?: boolean
   active?: boolean
+  processingStatus?: boolean
+  processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SkillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "category" | "description" | "difficulty" | "active" | "createdAt" | "updatedAt", ExtArgs["result"]["skill"]>
+export type SkillOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "category" | "description" | "difficulty" | "active" | "processingStatus" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["skill"]>
+export type SkillInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  embedding?: boolean | Prisma.Skill$embeddingArgs<ExtArgs>
+}
+export type SkillIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type SkillIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $SkillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Skill"
-  objects: {}
+  objects: {
+    embedding: Prisma.$EmbeddingPayload<ExtArgs> | null
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
@@ -429,6 +585,8 @@ export type $SkillPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     description: string | null
     difficulty: string
     active: boolean
+    processingStatus: string
+    processedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["skill"]>
@@ -825,6 +983,7 @@ readonly fields: SkillFieldRefs;
  */
 export interface Prisma__SkillClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  embedding<T extends Prisma.Skill$embeddingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Skill$embeddingArgs<ExtArgs>>): Prisma.Prisma__EmbeddingClient<runtime.Types.Result.GetResult<Prisma.$EmbeddingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -860,6 +1019,8 @@ export interface SkillFieldRefs {
   readonly description: Prisma.FieldRef<"Skill", 'String'>
   readonly difficulty: Prisma.FieldRef<"Skill", 'String'>
   readonly active: Prisma.FieldRef<"Skill", 'Boolean'>
+  readonly processingStatus: Prisma.FieldRef<"Skill", 'String'>
+  readonly processedAt: Prisma.FieldRef<"Skill", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Skill", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Skill", 'DateTime'>
 }
@@ -879,6 +1040,10 @@ export type SkillFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * Filter, which Skill to fetch.
    */
   where: Prisma.SkillWhereUniqueInput
@@ -897,6 +1062,10 @@ export type SkillFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * Filter, which Skill to fetch.
    */
   where: Prisma.SkillWhereUniqueInput
@@ -914,6 +1083,10 @@ export type SkillFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Skill
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
   /**
    * Filter, which Skill to fetch.
    */
@@ -963,6 +1136,10 @@ export type SkillFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * Filter, which Skill to fetch.
    */
   where?: Prisma.SkillWhereInput
@@ -1010,6 +1187,10 @@ export type SkillFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Skill
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
   /**
    * Filter, which Skills to fetch.
    */
@@ -1059,6 +1240,10 @@ export type SkillCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * The data needed to create a Skill.
    */
   data: Prisma.XOR<Prisma.SkillCreateInput, Prisma.SkillUncheckedCreateInput>
@@ -1106,6 +1291,10 @@ export type SkillUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the Skill
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
   /**
    * The data needed to update a Skill.
    */
@@ -1173,6 +1362,10 @@ export type SkillUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * The filter to search for the Skill to update in case it exists.
    */
   where: Prisma.SkillWhereUniqueInput
@@ -1199,6 +1392,10 @@ export type SkillDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
+  /**
    * Filter which Skill to delete.
    */
   where: Prisma.SkillWhereUniqueInput
@@ -1219,6 +1416,25 @@ export type SkillDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Skill.embedding
+ */
+export type Skill$embeddingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Embedding
+   */
+  select?: Prisma.EmbeddingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Embedding
+   */
+  omit?: Prisma.EmbeddingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmbeddingInclude<ExtArgs> | null
+  where?: Prisma.EmbeddingWhereInput
+}
+
+/**
  * Skill without action
  */
 export type SkillDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1230,4 +1446,8 @@ export type SkillDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the Skill
    */
   omit?: Prisma.SkillOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SkillInclude<ExtArgs> | null
 }

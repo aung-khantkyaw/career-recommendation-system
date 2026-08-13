@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,7 +10,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Search, Plus, Edit, Trash2, RefreshCw, Briefcase, MapPin, DollarSign, Clock, X } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, RefreshCw, Briefcase, MapPin, DollarSign, Clock, X, ToggleLeft, ToggleRight } from 'lucide-react'
+import { useStatusUpdates } from '@/hooks/use-status-updates'
 
 interface Job {
   id: string
@@ -81,8 +83,9 @@ export default function JobPostingsPage() {
   const [careerPaths, setCareerPaths] = useState<any[]>([])
   const [form, setForm] = useState<JobForm>(emptyForm)
   const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  
+  // Real-time status updates
+  const { getStatusForEntity } = useStatusUpdates()
 
   const fetchJobs = async () => {
     setIsLoading(true)
@@ -130,8 +133,6 @@ export default function JobPostingsPage() {
     setEditingJob(null)
     setForm(emptyForm)
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
   }
 
   const openEditForm = (job: Job) => {
@@ -153,8 +154,6 @@ export default function JobPostingsPage() {
       expiresAt: job.expiresAt ? new Date(job.expiresAt).toISOString().split('T')[0] : '',
     })
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
   }
 
   const closeForm = () => {
@@ -170,11 +169,23 @@ export default function JobPostingsPage() {
     }))
   }
 
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, any> = {
+      PENDING: 'secondary',
+      PROCESSING: 'default bg-blue-600',
+      COMPLETED: 'default bg-green-600',
+      FAILED: 'destructive',
+    }
+    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>
+  }
+
+  const getRealTimeStatus = (job: Job) => {
+    return getStatusForEntity('JOB', job.id) || job.processingStatus
+  }
+
   const saveJob = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSaving(true)
-    setError('')
-    setSuccess('')
 
     const payload = {
       ...form,
@@ -202,7 +213,7 @@ export default function JobPostingsPage() {
         throw new Error(data.error || 'Failed to save job posting')
       }
 
-      setSuccess(
+      toast.success(
         editingJob
           ? 'Job posting updated successfully.'
           : 'Job posting created successfully.'
@@ -210,9 +221,51 @@ export default function JobPostingsPage() {
       closeForm()
       fetchJobs()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save job posting')
+      toast.error(err instanceof Error ? err.message : 'Failed to save job posting')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const deleteJob = async (job: Job) => {
+    const confirmed = window.confirm(
+      `Delete job posting "${job.title}"? This cannot be undone.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      const response = await fetch(`/api/admin/job-postings/${job.id}`, {
+        method: 'DELETE',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete job posting')
+      }
+
+      toast.success('Job posting deleted successfully.')
+      fetchJobs()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete job posting')
+    }
+  }
+
+  const toggleActive = async (job: Job) => {
+    try {
+      const response = await fetch(`/api/admin/job-postings/${job.id}/toggle-active`, {
+        method: 'PATCH',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to toggle job posting status')
+      }
+
+      toast.success('Job posting status updated successfully.')
+      fetchJobs()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to toggle job posting status')
     }
   }
 
@@ -257,32 +310,9 @@ export default function JobPostingsPage() {
     fetchJobs()
   }
 
-  const deleteJob = async (job: Job) => {
-    const confirmed = window.confirm(
-      `Delete "${job.title}"? This cannot be undone.`
-    )
-
-    if (!confirmed) return
-
-    setError('')
-    setSuccess('')
-
-    try {
-      const response = await fetch(`/api/admin/job-postings/${job.id}`, {
-        method: 'DELETE',
-      })
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to delete job posting')
-      }
-
-      setSuccess('Job posting deleted successfully.')
-      fetchJobs()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete job posting')
-    }
-  }
+  useEffect(() => {
+    handleRefresh()
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -313,12 +343,6 @@ export default function JobPostingsPage() {
           </Button>
         </div>
       </div>
-
-      {error ? (
-        <Notice tone="error" message={error} />
-      ) : success ? (
-        <Notice tone="success" message={success} />
-      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card className="shadow-sm">
@@ -628,7 +652,26 @@ export default function JobPostingsPage() {
                       </div>
                     </TableCell>
                     <TableCell>{getJobTypeBadge(job.type)}</TableCell>
-                    <TableCell>{getJobStatusBadge(job.status)}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleActive(job)}
+                        className="flex items-center gap-2"
+                      >
+                        {job.status === 'ACTIVE' ? (
+                          <>
+                            <ToggleRight className="size-5 text-green-600" />
+                            <span className="text-green-600">Active</span>
+                          </>
+                        ) : (
+                          <>
+                            <ToggleLeft className="size-5 text-muted-foreground" />
+                            <span className="text-muted-foreground">Closed</span>
+                          </>
+                        )}
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         <DollarSign className="w-3 h-3 text-gray-400" />
@@ -637,19 +680,7 @@ export default function JobPostingsPage() {
                     </TableCell>
                     <TableCell className="text-sm">{new Date(job.postedAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          job.processingStatus === 'COMPLETED'
-                            ? 'default'
-                            : job.processingStatus === 'PROCESSING'
-                              ? 'secondary'
-                              : job.processingStatus === 'FAILED'
-                                ? 'destructive'
-                                : 'outline'
-                        }
-                      >
-                        {job.processingStatus}
-                      </Badge>
+                      {getStatusBadge(getRealTimeStatus(job))}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -688,35 +719,6 @@ export default function JobPostingsPage() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function Notice({ tone, message }: { tone: 'error' | 'success'; message: string }) {
-  return (
-    <Card
-      className={
-        tone === 'error'
-          ? 'border-destructive/40 bg-destructive/10 shadow-sm'
-          : 'shadow-sm'
-      }
-    >
-      <CardContent className="flex items-center gap-3 py-4">
-        {tone === 'error' ? (
-          <X className="size-4 text-destructive" aria-hidden="true" />
-        ) : (
-          <Clock className="size-4" aria-hidden="true" />
-        )}
-        <p
-          className={
-            tone === 'error'
-              ? 'text-sm font-medium text-destructive'
-              : 'text-sm font-medium'
-          }
-        >
-          {message}
-        </p>
-      </CardContent>
-    </Card>
   )
 }
 

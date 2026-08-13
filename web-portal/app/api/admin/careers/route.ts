@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import redis from '@/lib/redis'
@@ -11,15 +10,13 @@ type CareerPayload = {
   description?: string
   requiredSkills?: string[] | string
   softSkills?: string[] | string
-  roadmap?: unknown
+  roadmap?: Prisma.InputJsonValue
   averageSalary?: string
-  jobOpenings?: number | string
-  growthRate?: number | string
   active?: boolean
 }
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   return Boolean(session?.user && session.user.role === 'admin')
 }
 
@@ -36,13 +33,6 @@ function toStringArray(value: string[] | string | undefined) {
   }
 
   return []
-}
-
-function toNumber(value: number | string | undefined, fallback = 0) {
-  if (value === undefined || value === '') return fallback
-
-  const number = Number(value)
-  return Number.isFinite(number) ? number : fallback
 }
 
 function validateCareerPayload(body: CareerPayload) {
@@ -70,10 +60,8 @@ function validateCareerPayload(body: CareerPayload) {
       description,
       requiredSkills,
       softSkills,
-      roadmap: body.roadmap as any,
+      roadmap: body.roadmap,
       averageSalary,
-      jobOpenings: Math.max(0, Math.round(toNumber(body.jobOpenings))),
-      growthRate: toNumber(body.growthRate),
       active: body.active ?? true,
     },
   }
@@ -111,7 +99,7 @@ export async function GET(req: NextRequest) {
           : {}),
     }
 
-    const [careers, total, active, inactive, aggregate] = await Promise.all([
+    const [careers, total, active, inactive] = await Promise.all([
       prisma.careerPath.findMany({
         where,
         orderBy: [{ active: 'desc' }, { updatedAt: 'desc' }],
@@ -119,10 +107,6 @@ export async function GET(req: NextRequest) {
       prisma.careerPath.count(),
       prisma.careerPath.count({ where: { active: true } }),
       prisma.careerPath.count({ where: { active: false } }),
-      prisma.careerPath.aggregate({
-        _sum: { jobOpenings: true },
-        _avg: { growthRate: true },
-      }),
     ])
 
     return NextResponse.json({
@@ -131,8 +115,6 @@ export async function GET(req: NextRequest) {
         total,
         active,
         inactive,
-        totalJobs: aggregate._sum.jobOpenings || 0,
-        avgGrowth: `${Math.round(aggregate._avg.growthRate || 0)}%`,
       },
     })
   } catch (error) {
@@ -204,14 +186,34 @@ export async function PUT(req: NextRequest) {
     const career = await prisma.careerPath.update({
       where: { id },
       data: result.data,
+      include: {
+        embedding: true,
+      },
     })
 
-    // Queue embedding regeneration job
-    await redis.lPush('ai_jobs_queue', JSON.stringify({
-      job_id: `career_${career.id}`,
-      job_type: 'career_embedding',
-      career_path_id: career.id,
-    }))
+    // Check if embedding regeneration is needed
+    let shouldRegenerate = true
+
+    if (career.embedding) {
+      // Get current active API key
+      const activeApiKey = await prisma.apiKey.findFirst({
+        where: { active: true },
+      })
+
+      if (activeApiKey && activeApiKey.embeddingModelName === career.embedding.model) {
+        // Same model, no need to regenerate
+        shouldRegenerate = false
+      }
+    }
+
+    // Queue embedding regeneration job only if needed
+    if (shouldRegenerate) {
+      await redis.lPush('ai_jobs_queue', JSON.stringify({
+        job_id: `career_${career.id}`,
+        job_type: 'career_embedding',
+        career_path_id: career.id,
+      }))
+    }
 
     return NextResponse.json(
       { message: 'Career path updated successfully', career },

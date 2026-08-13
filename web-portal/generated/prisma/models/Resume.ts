@@ -278,6 +278,7 @@ export type ResumeWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Resume"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   recommendations?: Prisma.CareerRecommendationListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }
 
 export type ResumeOrderByWithRelationInput = {
@@ -297,6 +298,7 @@ export type ResumeOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
   recommendations?: Prisma.CareerRecommendationOrderByRelationAggregateInput
+  embedding?: Prisma.EmbeddingOrderByWithRelationInput
 }
 
 export type ResumeWhereUniqueInput = Prisma.AtLeast<{
@@ -319,6 +321,7 @@ export type ResumeWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Resume"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   recommendations?: Prisma.CareerRecommendationListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }, "id">
 
 export type ResumeOrderByWithAggregationInput = {
@@ -379,6 +382,7 @@ export type ResumeCreateInput = {
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutResumesInput
   recommendations?: Prisma.CareerRecommendationCreateNestedManyWithoutResumeInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeUncheckedCreateInput = {
@@ -397,6 +401,7 @@ export type ResumeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   recommendations?: Prisma.CareerRecommendationUncheckedCreateNestedManyWithoutResumeInput
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeUpdateInput = {
@@ -415,6 +420,7 @@ export type ResumeUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutResumesNestedInput
   recommendations?: Prisma.CareerRecommendationUpdateManyWithoutResumeNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutResumeNestedInput
 }
 
 export type ResumeUncheckedUpdateInput = {
@@ -433,6 +439,7 @@ export type ResumeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recommendations?: Prisma.CareerRecommendationUncheckedUpdateManyWithoutResumeNestedInput
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutResumeNestedInput
 }
 
 export type ResumeCreateManyInput = {
@@ -553,6 +560,11 @@ export type ResumeScalarRelationFilter = {
   isNot?: Prisma.ResumeWhereInput
 }
 
+export type ResumeNullableScalarRelationFilter = {
+  is?: Prisma.ResumeWhereInput | null
+  isNot?: Prisma.ResumeWhereInput | null
+}
+
 export type ResumeCreateNestedManyWithoutUserInput = {
   create?: Prisma.XOR<Prisma.ResumeCreateWithoutUserInput, Prisma.ResumeUncheckedCreateWithoutUserInput> | Prisma.ResumeCreateWithoutUserInput[] | Prisma.ResumeUncheckedCreateWithoutUserInput[]
   connectOrCreate?: Prisma.ResumeCreateOrConnectWithoutUserInput | Prisma.ResumeCreateOrConnectWithoutUserInput[]
@@ -621,6 +633,22 @@ export type ResumeUpdateOneRequiredWithoutRecommendationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ResumeUpdateToOneWithWhereWithoutRecommendationsInput, Prisma.ResumeUpdateWithoutRecommendationsInput>, Prisma.ResumeUncheckedUpdateWithoutRecommendationsInput>
 }
 
+export type ResumeCreateNestedOneWithoutEmbeddingInput = {
+  create?: Prisma.XOR<Prisma.ResumeCreateWithoutEmbeddingInput, Prisma.ResumeUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.ResumeCreateOrConnectWithoutEmbeddingInput
+  connect?: Prisma.ResumeWhereUniqueInput
+}
+
+export type ResumeUpdateOneWithoutEmbeddingNestedInput = {
+  create?: Prisma.XOR<Prisma.ResumeCreateWithoutEmbeddingInput, Prisma.ResumeUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.ResumeCreateOrConnectWithoutEmbeddingInput
+  upsert?: Prisma.ResumeUpsertWithoutEmbeddingInput
+  disconnect?: Prisma.ResumeWhereInput | boolean
+  delete?: Prisma.ResumeWhereInput | boolean
+  connect?: Prisma.ResumeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ResumeUpdateToOneWithWhereWithoutEmbeddingInput, Prisma.ResumeUpdateWithoutEmbeddingInput>, Prisma.ResumeUncheckedUpdateWithoutEmbeddingInput>
+}
+
 export type ResumeCreateWithoutUserInput = {
   id?: string
   fileName: string
@@ -636,6 +664,7 @@ export type ResumeCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   recommendations?: Prisma.CareerRecommendationCreateNestedManyWithoutResumeInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeUncheckedCreateWithoutUserInput = {
@@ -653,6 +682,7 @@ export type ResumeUncheckedCreateWithoutUserInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   recommendations?: Prisma.CareerRecommendationUncheckedCreateNestedManyWithoutResumeInput
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeCreateOrConnectWithoutUserInput = {
@@ -716,6 +746,7 @@ export type ResumeCreateWithoutRecommendationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutResumesInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeUncheckedCreateWithoutRecommendationsInput = {
@@ -733,6 +764,7 @@ export type ResumeUncheckedCreateWithoutRecommendationsInput = {
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutResumeInput
 }
 
 export type ResumeCreateOrConnectWithoutRecommendationsInput = {
@@ -766,6 +798,7 @@ export type ResumeUpdateWithoutRecommendationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutResumesNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutResumeNestedInput
 }
 
 export type ResumeUncheckedUpdateWithoutRecommendationsInput = {
@@ -783,6 +816,95 @@ export type ResumeUncheckedUpdateWithoutRecommendationsInput = {
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutResumeNestedInput
+}
+
+export type ResumeCreateWithoutEmbeddingInput = {
+  id?: string
+  fileName: string
+  originalName: string
+  fileSize: number
+  mimeType: string
+  minioPath: string
+  processingStatus?: $Enums.ProcessingStatus
+  skills?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  experience?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  education?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutResumesInput
+  recommendations?: Prisma.CareerRecommendationCreateNestedManyWithoutResumeInput
+}
+
+export type ResumeUncheckedCreateWithoutEmbeddingInput = {
+  id?: string
+  userId: string
+  fileName: string
+  originalName: string
+  fileSize: number
+  mimeType: string
+  minioPath: string
+  processingStatus?: $Enums.ProcessingStatus
+  skills?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  experience?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  education?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  recommendations?: Prisma.CareerRecommendationUncheckedCreateNestedManyWithoutResumeInput
+}
+
+export type ResumeCreateOrConnectWithoutEmbeddingInput = {
+  where: Prisma.ResumeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResumeCreateWithoutEmbeddingInput, Prisma.ResumeUncheckedCreateWithoutEmbeddingInput>
+}
+
+export type ResumeUpsertWithoutEmbeddingInput = {
+  update: Prisma.XOR<Prisma.ResumeUpdateWithoutEmbeddingInput, Prisma.ResumeUncheckedUpdateWithoutEmbeddingInput>
+  create: Prisma.XOR<Prisma.ResumeCreateWithoutEmbeddingInput, Prisma.ResumeUncheckedCreateWithoutEmbeddingInput>
+  where?: Prisma.ResumeWhereInput
+}
+
+export type ResumeUpdateToOneWithWhereWithoutEmbeddingInput = {
+  where?: Prisma.ResumeWhereInput
+  data: Prisma.XOR<Prisma.ResumeUpdateWithoutEmbeddingInput, Prisma.ResumeUncheckedUpdateWithoutEmbeddingInput>
+}
+
+export type ResumeUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  minioPath?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumProcessingStatusFieldUpdateOperationsInput | $Enums.ProcessingStatus
+  skills?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  experience?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  education?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutResumesNestedInput
+  recommendations?: Prisma.CareerRecommendationUpdateManyWithoutResumeNestedInput
+}
+
+export type ResumeUncheckedUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  fileName?: Prisma.StringFieldUpdateOperationsInput | string
+  originalName?: Prisma.StringFieldUpdateOperationsInput | string
+  fileSize?: Prisma.IntFieldUpdateOperationsInput | number
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  minioPath?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.EnumProcessingStatusFieldUpdateOperationsInput | $Enums.ProcessingStatus
+  skills?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  experience?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  education?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recommendations?: Prisma.CareerRecommendationUncheckedUpdateManyWithoutResumeNestedInput
 }
 
 export type ResumeCreateManyUserInput = {
@@ -816,6 +938,7 @@ export type ResumeUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recommendations?: Prisma.CareerRecommendationUpdateManyWithoutResumeNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutResumeNestedInput
 }
 
 export type ResumeUncheckedUpdateWithoutUserInput = {
@@ -833,6 +956,7 @@ export type ResumeUncheckedUpdateWithoutUserInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recommendations?: Prisma.CareerRecommendationUncheckedUpdateManyWithoutResumeNestedInput
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutResumeNestedInput
 }
 
 export type ResumeUncheckedUpdateManyWithoutUserInput = {
@@ -899,6 +1023,7 @@ export type ResumeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   recommendations?: boolean | Prisma.Resume$recommendationsArgs<ExtArgs>
+  embedding?: boolean | Prisma.Resume$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.ResumeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["resume"]>
 
@@ -959,6 +1084,7 @@ export type ResumeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type ResumeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   recommendations?: boolean | Prisma.Resume$recommendationsArgs<ExtArgs>
+  embedding?: boolean | Prisma.Resume$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.ResumeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ResumeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -973,6 +1099,7 @@ export type $ResumePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
     recommendations: Prisma.$CareerRecommendationPayload<ExtArgs>[]
+    embedding: Prisma.$EmbeddingPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1385,6 +1512,7 @@ export interface Prisma__ResumeClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   recommendations<T extends Prisma.Resume$recommendationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resume$recommendationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CareerRecommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  embedding<T extends Prisma.Resume$embeddingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Resume$embeddingArgs<ExtArgs>>): Prisma.Prisma__EmbeddingClient<runtime.Types.Result.GetResult<Prisma.$EmbeddingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1850,6 +1978,25 @@ export type Resume$recommendationsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.CareerRecommendationScalarFieldEnum | Prisma.CareerRecommendationScalarFieldEnum[]
+}
+
+/**
+ * Resume.embedding
+ */
+export type Resume$embeddingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Embedding
+   */
+  select?: Prisma.EmbeddingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Embedding
+   */
+  omit?: Prisma.EmbeddingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmbeddingInclude<ExtArgs> | null
+  where?: Prisma.EmbeddingWhereInput
 }
 
 /**

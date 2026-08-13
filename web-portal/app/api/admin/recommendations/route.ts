@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   return Boolean(session?.user && session.user.role === 'admin')
 }
 
@@ -18,12 +17,13 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search')?.trim() || ''
     const category = searchParams.get('category') || 'all'
     const matchScore = searchParams.get('matchScore') || 'all'
+    const includeJobs = searchParams.get('includeJobs') === 'true'
 
     const where: any = {}
 
     if (search) {
       where.OR = [
-        { jobTitle: { contains: search, mode: 'insensitive' as const } },
+        { careerPath: { contains: search, mode: 'insensitive' as const } },
         { category: { contains: search, mode: 'insensitive' as const } },
         { resume: { user: { email: { contains: search, mode: 'insensitive' as const } } } },
       ]
@@ -48,9 +48,11 @@ export async function GET(req: NextRequest) {
         take: 100,
         select: {
           id: true,
-          jobTitle: true,
+          careerPath: true,
           category: true,
           matchScore: true,
+          skillsMatched: true,
+          jobs: true,
           createdAt: true,
           resume: {
             select: {
@@ -73,6 +75,61 @@ export async function GET(req: NextRequest) {
       }),
     ])
 
+    // If includeJobs is true, fetch job details for all jobIds
+    let recommendationsWithJobs = recommendations
+    if (includeJobs) {
+      const jobIds = new Set<string>()
+      recommendations.forEach(rec => {
+        const jobs = rec.jobs as any[] || []
+        jobs.forEach(job => {
+          if (job.job_id) {
+            jobIds.add(job.job_id)
+          }
+        })
+      })
+
+      if (jobIds.size > 0) {
+        const jobs = await prisma.job.findMany({
+          where: { id: { in: Array.from(jobIds) } },
+          select: {
+            id: true,
+            title: true,
+            company: true,
+            location: true,
+            description: true,
+            requirements: true,
+            type: true,
+            salary: true,
+            salaryRange: true,
+          }
+        })
+
+        const jobMap = new Map(jobs.map(job => [job.id, job]))
+
+        recommendationsWithJobs = recommendations.map(rec => {
+          const jobs = rec.jobs as any[] || []
+          const enrichedJobs = jobs.map(job => {
+            if (job.job_id && jobMap.has(job.job_id)) {
+              const jobDetails = jobMap.get(job.job_id)
+              return {
+                ...job,
+                title: jobDetails.title,
+                company: jobDetails.company,
+                location: jobDetails.location,
+                description: jobDetails.description,
+                requirements: jobDetails.requirements,
+                type: jobDetails.type,
+                salary: jobDetails.salary,
+                salaryRange: jobDetails.salaryRange,
+              }
+            }
+            return job
+          })
+          return { ...rec, jobs: enrichedJobs }
+        })
+      }
+    }
+
     const highMatch = await prisma.careerRecommendation.count({
       where: { ...where, matchScore: { gte: 80 } },
     })
@@ -92,7 +149,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      recommendations,
+      recommendations: recommendationsWithJobs,
       stats,
     })
   } catch (error) {

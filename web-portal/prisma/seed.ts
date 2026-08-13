@@ -74,9 +74,7 @@ async function main() {
       requiredSkills: ['CI/CD', 'Docker', 'Kubernetes', 'Linux', 'Python'],
       softSkills: ['Collaboration', 'Adaptability', 'Communication'],
       averageSalary: '$135,980',
-      jobOpenings: 0,
-      growthRate: 15,
-      active: false,
+      active: true,
     },
     {
       id: '45018e79-074b-4c4d-bf01-9b4420e735a0',
@@ -86,9 +84,7 @@ async function main() {
       requiredSkills: ['Wireframing', 'Prototyping', 'Figma', 'User Research', 'Usability Testing'],
       softSkills: ['Empathy', 'Active Listening', 'Critical Thinking'],
       averageSalary: '$98,090',
-      jobOpenings: 0,
-      growthRate: 7,
-      active: false,
+      active: true,
     },
     {
       id: '5758de7d-227b-42db-9db6-a52f7b550da4',
@@ -98,9 +94,7 @@ async function main() {
       requiredSkills: ['JavaScript', 'React', 'Node.js', 'SQL', 'HTML/CSS'],
       softSkills: ['Time Management', 'Problem Solving', 'Creativity'],
       averageSalary: '$133,080',
-      jobOpenings: 0,
-      growthRate: 15,
-      active: false,
+      active: true,
     },
     {
       id: '5d387949-c6d6-45c1-b90b-15d873907e21',
@@ -110,9 +104,7 @@ async function main() {
       requiredSkills: ['Automated Testing', 'Bug Tracking', 'Selenium', 'Python', 'Performance Testing'],
       softSkills: ['Attention to Detail', 'Critical Thinking', 'Communication'],
       averageSalary: '$102,610',
-      jobOpenings: 0,
-      growthRate: 15,
-      active: false,
+      active: true,
     },
     {
       id: '62c26a7f-5372-463c-ba13-c0b395822907',
@@ -122,9 +114,7 @@ async function main() {
       requiredSkills: ['Python', 'R', 'SQL', 'Machine Learning', 'Data Visualization'],
       softSkills: ['Analytical Thinking', 'Problem Solving', 'Communication'],
       averageSalary: '$112,590',
-      jobOpenings: 0,
-      growthRate: 34,
-      active: false,
+      active: true,
     },
     {
       id: 'b97c7a14-d029-44a1-8a46-d50fca0988c2',
@@ -134,9 +124,7 @@ async function main() {
       requiredSkills: ['AWS / Azure / GCP', 'Network Design', 'Cloud Security', 'Kubernetes'],
       softSkills: ['Leadership', 'Problem Solving', 'Strategic Thinking'],
       averageSalary: '$130,390',
-      jobOpenings: 0,
-      growthRate: 12,
-      active: false,
+      active: true,
     },
     {
       id: 'dc232900-e183-483c-ae52-6a9836d7803a',
@@ -146,9 +134,7 @@ async function main() {
       requiredSkills: ['Python', 'TensorFlow', 'PyTorch', 'Natural Language Processing', 'Algorithms'],
       softSkills: ['Adaptability', 'Continuous Learning', 'Problem Solving'],
       averageSalary: '$150,000',
-      jobOpenings: 0,
-      growthRate: 80,
-      active: false,
+      active: true,
     },
     {
       id: 'fedd04dc-bbe1-4a55-8246-ddfd3d60be32',
@@ -158,9 +144,7 @@ async function main() {
       requiredSkills: ['Network Security', 'Threat Analysis', 'Risk Management', 'Security Auditing'],
       softSkills: ['Analytical Thinking', 'Attention to Detail', 'Stress Management'],
       averageSalary: '$124,910',
-      jobOpenings: 0,
-      growthRate: 29,
-      active: false,
+      active: true,
     },
   ]
 
@@ -338,29 +322,226 @@ async function main() {
     console.log(`📤 Queued embedding job for job: ${job.title}`)
   }
 
-  // // Create API keys for AI services
-  // const apiKeys = [
-  //   {
-  //     provider: AIProvider.OPENROUTER,
-  //     llmModelName: 'meta-llama/llama-3.3-70b-instruct:free',
-  //     embeddingModelName: 'nvidia/nemotron-3-embed-1b:free',
-  //     apiKey: process.env.OPENROUTER_API_KEY || 'sk-or-v1-placeholder-key',
-  //     limit: 0,
-  //     active: true,
-  //   },
-  // ]
+  // Seed skills from skill_model.py
+  const techSkills = [
+    // Programming Languages
+    'python', 'java', 'core java', 'java se', 'java ee', 'j2ee',
+    'javascript', 'typescript', 'c', 'c++', 'c#',
+    'go', 'golang', 'rust', 'ruby', 'php',
+    'swift', 'kotlin', 'dart', 'r', 'matlab',
+    // Frontend
+    'html', 'css', 'sass', 'bootstrap', 'tailwind css',
+    'javascript', 'jquery',
+    'react', 'reactjs', 'next.js', 'nextjs',
+    'angular', 'angularjs',
+    'vue', 'vue.js', 'vuejs',
+    'redux', 'vite',
+    // Backend
+    'node.js', 'nodejs',
+    'express', 'express.js',
+    'nestjs', 'nest.js',
+    'django', 'flask', 'fastapi',
+    'spring', 'spring boot',
+    'asp.net', '.net', '.net core',
+    'laravel', 'codeigniter',
+    'graphql', 'rest api', 'restful api',
+    'grpc', 'microservices',
+    // Mobile
+    'flutter', 'react native',
+    'android', 'android studio',
+    'ios', 'xcode',
+    // Databases
+    'sql', 'nosql',
+    'mysql', 'postgresql',
+    'sqlite', 'sql server', 'mssql',
+    'oracle', 'mongodb',
+    'redis', 'firebase',
+    'supabase', 'cassandra',
+    'elasticsearch', 'snowflake',
+    'bigquery',
+    // Cloud
+    'aws', 'azure', 'gcp',
+    'ec2', 'lambda', 's3',
+    'cloudfront', 'eks', 'ecs',
+    // DevOps
+    'docker', 'docker compose',
+    'kubernetes', 'helm',
+    'terraform', 'ansible',
+    'jenkins', 'github actions',
+    'gitlab ci', 'argocd',
+    'prometheus', 'grafana',
+    'nginx',
+    // Version Control
+    'git', 'github', 'gitlab', 'bitbucket',
+    // Operating Systems
+    'linux', 'ubuntu',
+    'windows server',
+    'bash', 'shell', 'powershell',
+    // Data Engineering
+    'hadoop', 'spark',
+    'kafka', 'airflow',
+    // AI / ML
+    'machine learning',
+    'deep learning',
+    'artificial intelligence',
+    'nlp',
+    'computer vision',
+    'data science',
+    'tensorflow',
+    'pytorch',
+    'keras',
+    'scikit-learn',
+    'pandas',
+    'numpy',
+    'opencv',
+    'yolo',
+    'openvino',
+    'hugging face',
+    'transformers',
+    'langchain',
+    'llamaindex',
+    'rag',
+    'ollama',
+    'faiss',
+    'chromadb',
+    'pinecone',
+    'milvus',
+    // Security
+    'cybersecurity',
+    'penetration testing',
+    'burp suite',
+    'wireshark',
+    'metasploit',
+    'nmap',
+    'kali linux',
+    // Testing
+    'unit testing',
+    'integration testing',
+    'selenium',
+    'pytest',
+    'jest',
+    'postman',
+    // Tools
+    'jira',
+    'confluence',
+    'figma',
+    'canva',
+    'photoshop',
+    'illustrator',
+    'adobe xd',
+    'power bi',
+    'tableau',
+    'excel',
+    'word',
+    'powerpoint',
+    // Methodologies
+    'agile',
+    'scrum',
+    'kanban',
+    'devops',
+    // Other
+    'oauth',
+    'jwt',
+    'socket.io',
+    'rabbitmq',
+    'blockchain',
+    'web3'
+  ]
 
-  // for (const apiKey of apiKeys) {
-  //   await prisma.apiKey.upsert({
-  //     where: { id: 'default-openrouter-key' },
-  //     update: apiKey,
-  //     create: {
-  //       id: 'default-openrouter-key',
-  //       ...apiKey,
-  //     },
-  //   })
-  //   console.log(`✅ Created API key for ${apiKey.provider}`)
-  // }
+  const softSkills = [
+    'communication',
+    'verbal communication',
+    'written communication',
+    'presentation',
+    'public speaking',
+    'leadership',
+    'teamwork',
+    'collaboration',
+    'interpersonal skills',
+    'problem solving',
+    'critical thinking',
+    'analytical thinking',
+    'decision making',
+    'time management',
+    'project management',
+    'organizational skills',
+    'adaptability',
+    'flexibility',
+    'fast learner',
+    'continuous learning',
+    'creativity',
+    'innovation',
+    'attention to detail',
+    'work ethic',
+    'self motivated',
+    'self management',
+    'initiative',
+    'responsibility',
+    'accountability',
+    'multitasking',
+    'stress management',
+    'customer service',
+    'client relationship',
+    'active listening',
+    'negotiation',
+    'conflict resolution',
+    'mentoring',
+    'coaching',
+    'emotional intelligence',
+    'empathy',
+    'networking',
+    'hard working',
+    'punctual',
+    'organized'
+  ]
+
+  // Seed technical skills
+  for (const skillName of techSkills) {
+    const displayName = skillName.charAt(0).toUpperCase() + skillName.slice(1)
+    const skill = await prisma.skill.upsert({
+      where: { name: displayName },
+      update: {},
+      create: {
+        name: displayName,
+        category: 'TECHNICAL',
+        description: `${displayName} - Technical skill`,
+        difficulty: 'INTERMEDIATE',
+        active: true,
+      },
+    })
+
+    // Queue embedding generation job for skill
+    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `skill_${skill.id}`,
+      job_type: 'skill_embedding',
+      skill_id: skill.id,
+    }))
+  }
+  console.log(`✅ Seeded ${techSkills.length} technical skills`)
+
+  // Seed soft skills
+  for (const skillName of softSkills) {
+    const displayName = skillName.charAt(0).toUpperCase() + skillName.slice(1)
+    const skill = await prisma.skill.upsert({
+      where: { name: displayName },
+      update: {},
+      create: {
+        name: displayName,
+        category: 'SOFT',
+        description: `${displayName} - Soft skill`,
+        difficulty: 'INTERMEDIATE',
+        active: true,
+      },
+    })
+
+    // Queue embedding generation job for skill
+    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+      job_id: `skill_${skill.id}`,
+      job_type: 'skill_embedding',
+      skill_id: skill.id,
+    }))
+  }
+  console.log(`✅ Seeded ${softSkills.length} soft skills`)
 
   console.log('🎉 Seed completed successfully!')
 }

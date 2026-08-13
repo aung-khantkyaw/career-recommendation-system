@@ -27,7 +27,6 @@ interface Recommendation {
 
 interface Skill {
   name: string
-  level: number
 }
 
 interface RecentJob {
@@ -79,7 +78,7 @@ export default function DashboardPage() {
 
       if (response.ok) {
         setRecommendations(data.recommendations || [])
-        setSkills(data.skills?.all?.map((s: string) => ({ name: s, level: 75 })) || [])
+        setSkills(data.skills?.all?.map((s: string) => ({ name: s })) || [])
         setStats(data.stats)
       }
     } catch (error) {
@@ -310,15 +309,13 @@ export default function DashboardPage() {
                 <CardDescription>Skills extracted from your resumes</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {skills.map((skill) => (
-                  <div key={skill.name} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{skill.name}</span>
-                      <span className="text-sm text-muted-foreground">{skill.level}%</span>
-                    </div>
-                    <Progress value={skill.level} />
-                  </div>
-                ))}
+                <div className="flex flex-wrap gap-2 max-h-[200px] overflow-y-auto">
+                  {skills.map((skill) => (
+                    <Badge key={skill.name} variant="secondary">
+                      {skill.name}
+                    </Badge>
+                  ))}
+                </div>
               </CardContent>
             </Card>
 
@@ -440,8 +437,8 @@ export default function DashboardPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>Career Recommendations</CardTitle>
-                    <CardDescription>AI-powered job matches based on your profile</CardDescription>
+                    <CardTitle>Career & Job Recommendations</CardTitle>
+                    <CardDescription>AI-powered matches based on your profile</CardDescription>
                   </div>
                   <Button
                     variant="outline"
@@ -456,33 +453,68 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {recommendations.map((rec) => (
-                    <Card key={rec.id} className="hover:shadow-md transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h3 className="text-lg font-semibold">{rec.jobTitle}</h3>
-                            <p className="text-sm text-muted-foreground">{rec.company}</p>
-                          </div>
-                          <Badge variant="default" className="text-lg px-3 py-1 bg-green-500">
-                            {rec.matchScore}%
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4">{rec.description}</p>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {rec.skillsMatched.map((skill) => (
-                            <Badge key={skill} variant="secondary">
-                              {skill}
-                            </Badge>
-                          ))}
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <Badge variant="outline">{rec.category}</Badge>
-                          <Button size="sm">View Details</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {recommendations.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No recommendations yet. Upload a resume to get started.</p>
+                    </div>
+                  ) : (
+                    recommendations.map((rec) => {
+                      const isJob = rec.company && !rec.careerPath
+                      const isCareerPath = rec.careerPath && !rec.company
+                      
+                      return (
+                        <Card key={rec.id} className="hover:shadow-md transition-shadow">
+                          <CardContent className="p-6">
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="text-lg font-semibold">{rec.jobTitle}</h3>
+                                  {isJob && (
+                                    <Badge variant="default" className="bg-blue-500">
+                                      Job
+                                    </Badge>
+                                  )}
+                                  {isCareerPath && (
+                                    <Badge variant="default" className="bg-purple-500">
+                                      Career Path
+                                    </Badge>
+                                  )}
+                                </div>
+                                {isJob && (
+                                  <p className="text-sm text-muted-foreground">{rec.company}</p>
+                                )}
+                                {isCareerPath && (
+                                  <p className="text-sm text-muted-foreground">{rec.careerPath}</p>
+                                )}
+                              </div>
+                              <Badge variant="default" className="text-lg px-3 py-1 bg-green-500">
+                                {rec.matchScore}%
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-4">{rec.description}</p>
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {rec.skillsMatched && rec.skillsMatched.length > 0 ? (
+                                rec.skillsMatched.map((skill) => (
+                                  <Badge key={skill} variant="secondary">
+                                    {skill}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-sm text-muted-foreground">No skills matched</span>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between">
+                              {rec.category && (
+                                <Badge variant="outline">{rec.category}</Badge>
+                              )}
+                              <Button size="sm">View Details</Button>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )
+                    })
+                  )}
                 </div>
               </CardContent>
             </Card>

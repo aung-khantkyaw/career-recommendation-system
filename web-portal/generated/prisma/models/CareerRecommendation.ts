@@ -37,37 +37,29 @@ export type CareerRecommendationSumAggregateOutputType = {
 export type CareerRecommendationMinAggregateOutputType = {
   id: string | null
   resumeId: string | null
-  jobTitle: string | null
-  company: string | null
-  matchScore: number | null
-  description: string | null
   careerPath: string | null
   category: string | null
+  matchScore: number | null
   createdAt: Date | null
 }
 
 export type CareerRecommendationMaxAggregateOutputType = {
   id: string | null
   resumeId: string | null
-  jobTitle: string | null
-  company: string | null
-  matchScore: number | null
-  description: string | null
   careerPath: string | null
   category: string | null
+  matchScore: number | null
   createdAt: Date | null
 }
 
 export type CareerRecommendationCountAggregateOutputType = {
   id: number
   resumeId: number
-  jobTitle: number
-  company: number
-  matchScore: number
-  skillsMatched: number
-  description: number
   careerPath: number
   category: number
+  matchScore: number
+  skillsMatched: number
+  jobs: number
   createdAt: number
   _all: number
 }
@@ -84,37 +76,29 @@ export type CareerRecommendationSumAggregateInputType = {
 export type CareerRecommendationMinAggregateInputType = {
   id?: true
   resumeId?: true
-  jobTitle?: true
-  company?: true
-  matchScore?: true
-  description?: true
   careerPath?: true
   category?: true
+  matchScore?: true
   createdAt?: true
 }
 
 export type CareerRecommendationMaxAggregateInputType = {
   id?: true
   resumeId?: true
-  jobTitle?: true
-  company?: true
-  matchScore?: true
-  description?: true
   careerPath?: true
   category?: true
+  matchScore?: true
   createdAt?: true
 }
 
 export type CareerRecommendationCountAggregateInputType = {
   id?: true
   resumeId?: true
-  jobTitle?: true
-  company?: true
-  matchScore?: true
-  skillsMatched?: true
-  description?: true
   careerPath?: true
   category?: true
+  matchScore?: true
+  skillsMatched?: true
+  jobs?: true
   createdAt?: true
   _all?: true
 }
@@ -208,13 +192,11 @@ export type CareerRecommendationGroupByArgs<ExtArgs extends runtime.Types.Extens
 export type CareerRecommendationGroupByOutputType = {
   id: string
   resumeId: string
-  jobTitle: string
-  company: string | null
-  matchScore: number
-  skillsMatched: string[]
-  description: string
   careerPath: string | null
   category: string | null
+  matchScore: number
+  skillsMatched: string[]
+  jobs: runtime.JsonValue
   createdAt: Date
   _count: CareerRecommendationCountAggregateOutputType | null
   _avg: CareerRecommendationAvgAggregateOutputType | null
@@ -244,13 +226,11 @@ export type CareerRecommendationWhereInput = {
   NOT?: Prisma.CareerRecommendationWhereInput | Prisma.CareerRecommendationWhereInput[]
   id?: Prisma.StringFilter<"CareerRecommendation"> | string
   resumeId?: Prisma.StringFilter<"CareerRecommendation"> | string
-  jobTitle?: Prisma.StringFilter<"CareerRecommendation"> | string
-  company?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
-  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
-  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
-  description?: Prisma.StringFilter<"CareerRecommendation"> | string
   careerPath?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
   category?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
+  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
+  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
+  jobs?: Prisma.JsonFilter<"CareerRecommendation">
   createdAt?: Prisma.DateTimeFilter<"CareerRecommendation"> | Date | string
   resume?: Prisma.XOR<Prisma.ResumeScalarRelationFilter, Prisma.ResumeWhereInput>
 }
@@ -258,13 +238,11 @@ export type CareerRecommendationWhereInput = {
 export type CareerRecommendationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
-  jobTitle?: Prisma.SortOrder
-  company?: Prisma.SortOrderInput | Prisma.SortOrder
-  matchScore?: Prisma.SortOrder
-  skillsMatched?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   careerPath?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
+  matchScore?: Prisma.SortOrder
+  skillsMatched?: Prisma.SortOrder
+  jobs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   resume?: Prisma.ResumeOrderByWithRelationInput
 }
@@ -275,13 +253,11 @@ export type CareerRecommendationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.CareerRecommendationWhereInput[]
   NOT?: Prisma.CareerRecommendationWhereInput | Prisma.CareerRecommendationWhereInput[]
   resumeId?: Prisma.StringFilter<"CareerRecommendation"> | string
-  jobTitle?: Prisma.StringFilter<"CareerRecommendation"> | string
-  company?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
-  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
-  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
-  description?: Prisma.StringFilter<"CareerRecommendation"> | string
   careerPath?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
   category?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
+  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
+  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
+  jobs?: Prisma.JsonFilter<"CareerRecommendation">
   createdAt?: Prisma.DateTimeFilter<"CareerRecommendation"> | Date | string
   resume?: Prisma.XOR<Prisma.ResumeScalarRelationFilter, Prisma.ResumeWhereInput>
 }, "id">
@@ -289,13 +265,11 @@ export type CareerRecommendationWhereUniqueInput = Prisma.AtLeast<{
 export type CareerRecommendationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
-  jobTitle?: Prisma.SortOrder
-  company?: Prisma.SortOrderInput | Prisma.SortOrder
-  matchScore?: Prisma.SortOrder
-  skillsMatched?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   careerPath?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
+  matchScore?: Prisma.SortOrder
+  skillsMatched?: Prisma.SortOrder
+  jobs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.CareerRecommendationCountOrderByAggregateInput
   _avg?: Prisma.CareerRecommendationAvgOrderByAggregateInput
@@ -310,25 +284,21 @@ export type CareerRecommendationScalarWhereWithAggregatesInput = {
   NOT?: Prisma.CareerRecommendationScalarWhereWithAggregatesInput | Prisma.CareerRecommendationScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"CareerRecommendation"> | string
   resumeId?: Prisma.StringWithAggregatesFilter<"CareerRecommendation"> | string
-  jobTitle?: Prisma.StringWithAggregatesFilter<"CareerRecommendation"> | string
-  company?: Prisma.StringNullableWithAggregatesFilter<"CareerRecommendation"> | string | null
-  matchScore?: Prisma.FloatWithAggregatesFilter<"CareerRecommendation"> | number
-  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
-  description?: Prisma.StringWithAggregatesFilter<"CareerRecommendation"> | string
   careerPath?: Prisma.StringNullableWithAggregatesFilter<"CareerRecommendation"> | string | null
   category?: Prisma.StringNullableWithAggregatesFilter<"CareerRecommendation"> | string | null
+  matchScore?: Prisma.FloatWithAggregatesFilter<"CareerRecommendation"> | number
+  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
+  jobs?: Prisma.JsonWithAggregatesFilter<"CareerRecommendation">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"CareerRecommendation"> | Date | string
 }
 
 export type CareerRecommendationCreateInput = {
   id?: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   resume: Prisma.ResumeCreateNestedOneWithoutRecommendationsInput
 }
@@ -336,25 +306,21 @@ export type CareerRecommendationCreateInput = {
 export type CareerRecommendationUncheckedCreateInput = {
   id?: string
   resumeId: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type CareerRecommendationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   resume?: Prisma.ResumeUpdateOneRequiredWithoutRecommendationsNestedInput
 }
@@ -362,51 +328,43 @@ export type CareerRecommendationUpdateInput = {
 export type CareerRecommendationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CareerRecommendationCreateManyInput = {
   id?: string
   resumeId: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type CareerRecommendationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CareerRecommendationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   resumeId?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -423,13 +381,11 @@ export type CareerRecommendationOrderByRelationAggregateInput = {
 export type CareerRecommendationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
-  jobTitle?: Prisma.SortOrder
-  company?: Prisma.SortOrder
-  matchScore?: Prisma.SortOrder
-  skillsMatched?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   careerPath?: Prisma.SortOrder
   category?: Prisma.SortOrder
+  matchScore?: Prisma.SortOrder
+  skillsMatched?: Prisma.SortOrder
+  jobs?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -440,24 +396,18 @@ export type CareerRecommendationAvgOrderByAggregateInput = {
 export type CareerRecommendationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
-  jobTitle?: Prisma.SortOrder
-  company?: Prisma.SortOrder
-  matchScore?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   careerPath?: Prisma.SortOrder
   category?: Prisma.SortOrder
+  matchScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
 export type CareerRecommendationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   resumeId?: Prisma.SortOrder
-  jobTitle?: Prisma.SortOrder
-  company?: Prisma.SortOrder
-  matchScore?: Prisma.SortOrder
-  description?: Prisma.SortOrder
   careerPath?: Prisma.SortOrder
   category?: Prisma.SortOrder
+  matchScore?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -526,25 +476,21 @@ export type CareerRecommendationUpdateskillsMatchedInput = {
 
 export type CareerRecommendationCreateWithoutResumeInput = {
   id?: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type CareerRecommendationUncheckedCreateWithoutResumeInput = {
   id?: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
@@ -580,61 +526,51 @@ export type CareerRecommendationScalarWhereInput = {
   NOT?: Prisma.CareerRecommendationScalarWhereInput | Prisma.CareerRecommendationScalarWhereInput[]
   id?: Prisma.StringFilter<"CareerRecommendation"> | string
   resumeId?: Prisma.StringFilter<"CareerRecommendation"> | string
-  jobTitle?: Prisma.StringFilter<"CareerRecommendation"> | string
-  company?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
-  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
-  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
-  description?: Prisma.StringFilter<"CareerRecommendation"> | string
   careerPath?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
   category?: Prisma.StringNullableFilter<"CareerRecommendation"> | string | null
+  matchScore?: Prisma.FloatFilter<"CareerRecommendation"> | number
+  skillsMatched?: Prisma.StringNullableListFilter<"CareerRecommendation">
+  jobs?: Prisma.JsonFilter<"CareerRecommendation">
   createdAt?: Prisma.DateTimeFilter<"CareerRecommendation"> | Date | string
 }
 
 export type CareerRecommendationCreateManyResumeInput = {
   id?: string
-  jobTitle: string
-  company?: string | null
-  matchScore: number
-  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
-  description: string
   careerPath?: string | null
   category?: string | null
+  matchScore: number
+  skillsMatched?: Prisma.CareerRecommendationCreateskillsMatchedInput | string[]
+  jobs: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
 }
 
 export type CareerRecommendationUpdateWithoutResumeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CareerRecommendationUncheckedUpdateWithoutResumeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type CareerRecommendationUncheckedUpdateManyWithoutResumeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  jobTitle?: Prisma.StringFieldUpdateOperationsInput | string
-  company?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
-  description?: Prisma.StringFieldUpdateOperationsInput | string
   careerPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  matchScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  skillsMatched?: Prisma.CareerRecommendationUpdateskillsMatchedInput | string[]
+  jobs?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -643,13 +579,11 @@ export type CareerRecommendationUncheckedUpdateManyWithoutResumeInput = {
 export type CareerRecommendationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   resumeId?: boolean
-  jobTitle?: boolean
-  company?: boolean
-  matchScore?: boolean
-  skillsMatched?: boolean
-  description?: boolean
   careerPath?: boolean
   category?: boolean
+  matchScore?: boolean
+  skillsMatched?: boolean
+  jobs?: boolean
   createdAt?: boolean
   resume?: boolean | Prisma.ResumeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerRecommendation"]>
@@ -657,13 +591,11 @@ export type CareerRecommendationSelect<ExtArgs extends runtime.Types.Extensions.
 export type CareerRecommendationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   resumeId?: boolean
-  jobTitle?: boolean
-  company?: boolean
-  matchScore?: boolean
-  skillsMatched?: boolean
-  description?: boolean
   careerPath?: boolean
   category?: boolean
+  matchScore?: boolean
+  skillsMatched?: boolean
+  jobs?: boolean
   createdAt?: boolean
   resume?: boolean | Prisma.ResumeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerRecommendation"]>
@@ -671,13 +603,11 @@ export type CareerRecommendationSelectCreateManyAndReturn<ExtArgs extends runtim
 export type CareerRecommendationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   resumeId?: boolean
-  jobTitle?: boolean
-  company?: boolean
-  matchScore?: boolean
-  skillsMatched?: boolean
-  description?: boolean
   careerPath?: boolean
   category?: boolean
+  matchScore?: boolean
+  skillsMatched?: boolean
+  jobs?: boolean
   createdAt?: boolean
   resume?: boolean | Prisma.ResumeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerRecommendation"]>
@@ -685,17 +615,15 @@ export type CareerRecommendationSelectUpdateManyAndReturn<ExtArgs extends runtim
 export type CareerRecommendationSelectScalar = {
   id?: boolean
   resumeId?: boolean
-  jobTitle?: boolean
-  company?: boolean
-  matchScore?: boolean
-  skillsMatched?: boolean
-  description?: boolean
   careerPath?: boolean
   category?: boolean
+  matchScore?: boolean
+  skillsMatched?: boolean
+  jobs?: boolean
   createdAt?: boolean
 }
 
-export type CareerRecommendationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resumeId" | "jobTitle" | "company" | "matchScore" | "skillsMatched" | "description" | "careerPath" | "category" | "createdAt", ExtArgs["result"]["careerRecommendation"]>
+export type CareerRecommendationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "resumeId" | "careerPath" | "category" | "matchScore" | "skillsMatched" | "jobs" | "createdAt", ExtArgs["result"]["careerRecommendation"]>
 export type CareerRecommendationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   resume?: boolean | Prisma.ResumeDefaultArgs<ExtArgs>
 }
@@ -714,13 +642,11 @@ export type $CareerRecommendationPayload<ExtArgs extends runtime.Types.Extension
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     resumeId: string
-    jobTitle: string
-    company: string | null
-    matchScore: number
-    skillsMatched: string[]
-    description: string
     careerPath: string | null
     category: string | null
+    matchScore: number
+    skillsMatched: string[]
+    jobs: runtime.JsonValue
     createdAt: Date
   }, ExtArgs["result"]["careerRecommendation"]>
   composites: {}
@@ -1148,13 +1074,11 @@ export interface Prisma__CareerRecommendationClient<T, Null = never, ExtArgs ext
 export interface CareerRecommendationFieldRefs {
   readonly id: Prisma.FieldRef<"CareerRecommendation", 'String'>
   readonly resumeId: Prisma.FieldRef<"CareerRecommendation", 'String'>
-  readonly jobTitle: Prisma.FieldRef<"CareerRecommendation", 'String'>
-  readonly company: Prisma.FieldRef<"CareerRecommendation", 'String'>
-  readonly matchScore: Prisma.FieldRef<"CareerRecommendation", 'Float'>
-  readonly skillsMatched: Prisma.FieldRef<"CareerRecommendation", 'String[]'>
-  readonly description: Prisma.FieldRef<"CareerRecommendation", 'String'>
   readonly careerPath: Prisma.FieldRef<"CareerRecommendation", 'String'>
   readonly category: Prisma.FieldRef<"CareerRecommendation", 'String'>
+  readonly matchScore: Prisma.FieldRef<"CareerRecommendation", 'Float'>
+  readonly skillsMatched: Prisma.FieldRef<"CareerRecommendation", 'String[]'>
+  readonly jobs: Prisma.FieldRef<"CareerRecommendation", 'Json'>
   readonly createdAt: Prisma.FieldRef<"CareerRecommendation", 'DateTime'>
 }
     

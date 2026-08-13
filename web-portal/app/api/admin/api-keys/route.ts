@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import redis from '@/lib/redis'
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -97,6 +97,18 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     })
 
+    // Notify AI processor if active status changed
+    if (active !== undefined) {
+      await redis.publish('api_key_changes', JSON.stringify({
+        type: 'active_changed',
+        apiKeyId: updatedApiKey.id,
+        active: updatedApiKey.active,
+        provider: updatedApiKey.provider,
+        llmModelName: updatedApiKey.llmModelName,
+        embeddingModelName: updatedApiKey.embeddingModelName,
+      }))
+    }
+
     return NextResponse.json({ apiKey: updatedApiKey })
   } catch (error) {
     console.error('Failed to update API key:', error)
@@ -106,7 +118,7 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }

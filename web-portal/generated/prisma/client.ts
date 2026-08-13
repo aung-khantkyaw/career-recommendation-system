@@ -111,3 +111,8 @@ export type EmailConfig = Prisma.EmailConfigModel
  * 
  */
 export type ApiKey = Prisma.ApiKeyModel
+/**
+ * Model Embedding
+ * 
+ */
+export type Embedding = Prisma.EmbeddingModel

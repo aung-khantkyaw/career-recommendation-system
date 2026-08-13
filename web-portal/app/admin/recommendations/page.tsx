@@ -7,13 +7,16 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, RefreshCw, TrendingUp, User, Briefcase, Trash2, Eye } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Search, RefreshCw, TrendingUp, User, Briefcase, Trash2, Eye, X } from 'lucide-react'
 
 interface Recommendation {
   id: string
-  jobTitle: string
-  category: string
+  careerPath: string | null
+  category: string | null
   matchScore: number
+  skillsMatched: string[]
+  jobs: any[]
   createdAt: string
   resume: {
     id: string
@@ -47,6 +50,8 @@ export default function RecommendationsManagementPage() {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [matchScoreFilter, setMatchScoreFilter] = useState('all')
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedRecommendation, setSelectedRecommendation] = useState<Recommendation | null>(null)
+  const [isJobDialogOpen, setIsJobDialogOpen] = useState(false)
 
   const fetchRecommendations = async () => {
     setIsLoading(true)
@@ -104,6 +109,26 @@ export default function RecommendationsManagementPage() {
 
   const handleRefresh = () => {
     fetchRecommendations()
+  }
+
+  const handleViewJobs = async (recommendation: Recommendation) => {
+    try {
+      const response = await fetch(`/api/admin/recommendations?includeJobs=true`, { cache: 'no-store' })
+      const data = await response.json()
+
+      if (response.ok) {
+        const enrichedRecommendation = data.recommendations.find((r: Recommendation) => r.id === recommendation.id)
+        if (enrichedRecommendation) {
+          setSelectedRecommendation(enrichedRecommendation)
+          setIsJobDialogOpen(true)
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch job details:', error)
+      // Fallback: show dialog with original recommendation
+      setSelectedRecommendation(recommendation)
+      setIsJobDialogOpen(true)
+    }
   }
 
   return (
@@ -183,7 +208,7 @@ export default function RecommendationsManagementPage() {
                 className="pl-10 h-12"
               />
             </div>
-            <Select value={categoryFilter}  onValueChange={(value) => setCategoryFilter(value || 'all')}>
+            <Select value={categoryFilter} onValueChange={(value) => setCategoryFilter(value || 'all')}>
               <SelectTrigger className="w-full md:w-48">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
@@ -235,7 +260,7 @@ export default function RecommendationsManagementPage() {
               {recommendations.length ? (
                 recommendations.map((recommendation) => (
                   <TableRow key={recommendation.id}>
-                    <TableCell className="font-medium">{recommendation.jobTitle}</TableCell>
+                    <TableCell className="font-medium">{recommendation.careerPath || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{recommendation.category || 'General'}</Badge>
                     </TableCell>
@@ -257,7 +282,7 @@ export default function RecommendationsManagementPage() {
                     <TableCell className="text-sm">{new Date(recommendation.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" onClick={() => handleViewJobs(recommendation)}>
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm">
@@ -278,6 +303,70 @@ export default function RecommendationsManagementPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Jobs Dialog */}
+      <Dialog open={isJobDialogOpen} onOpenChange={setIsJobDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <span>Recommended Jobs for {selectedRecommendation?.careerPath || 'Career Path'}</span>
+              <Button variant="ghost" size="sm" onClick={() => setIsJobDialogOpen(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </DialogTitle>
+            <DialogDescription>
+              {selectedRecommendation?.category && <Badge variant="outline">{selectedRecommendation.category}</Badge>}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedRecommendation && (
+            <div className="space-y-4 mt-4">
+              {/* Jobs List */}
+              <div>
+                {selectedRecommendation.jobs && selectedRecommendation.jobs.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedRecommendation.jobs.map((job: any, index: number) => (
+                      <Card key={index}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <h4 className="font-semibold text-lg">{job.title}</h4>
+                              {job.company && <p className="text-sm text-gray-600">{job.company}</p>}
+                            </div>
+                            {(job.matchScore || job.match_score) && (
+                              <Badge 
+                                variant={(job.matchScore || job.match_score) >= 80 ? 'default' : (job.matchScore || job.match_score) >= 60 ? 'secondary' : 'outline'}
+                                className={(job.matchScore || job.match_score) >= 80 ? 'bg-green-500' : (job.matchScore || job.match_score) >= 60 ? 'bg-yellow-500' : ''}
+                              >
+                                {Math.round(job.matchScore || job.match_score)}% Match
+                              </Badge>
+                            )}
+                          </div>
+                          {job.description && (
+                            <p className="text-sm text-gray-700 mt-2">{job.description}</p>
+                          )}
+                          {((job.skillsMatched || job.skills_matched) && (job.skillsMatched || job.skills_matched).length > 0) && (
+                            <div className="mt-3">
+                              <p className="text-xs text-gray-500 mb-1">Matched Skills:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {(job.skillsMatched || job.skills_matched).map((skill: string, skillIndex: number) => (
+                                  <Badge key={skillIndex} variant="outline" className="text-xs">{skill}</Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No jobs available for this career path.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -1,7 +1,6 @@
-import os
-from minio import Minio
-from minio.error import S3Error
-from config import MINIO_ENDPOINT
+import boto3
+from botocore.client import Config
+from config import MINIO_ENDPOINT, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -9,45 +8,39 @@ logger = logging.getLogger(__name__)
 
 class MinIOService:
     def __init__(self):
-        self.client = Minio(
-            MINIO_ENDPOINT,
-            access_key=os.getenv('MINIO_ROOT_USER'),
-            secret_key=os.getenv('MINIO_ROOT_PASSWORD'),
-            secure=False
+        self.client = boto3.client(
+            's3',
+            endpoint_url=f"http://{MINIO_ENDPOINT}",
+            aws_access_key_id=MINIO_ROOT_USER,
+            aws_secret_access_key=MINIO_ROOT_PASSWORD,
+            region_name='us-east-1',
+            config=Config(signature_version='s3v4')
         )
-        self.bucket_name = "resumes"
-        self._ensure_bucket_exists()
-    
-    def _ensure_bucket_exists(self):
-        try:
-            if not self.client.bucket_exists(self.bucket_name):
-                self.client.make_bucket(self.bucket_name)
-                logger.info(f"Bucket '{self.bucket_name}' created")
-        except S3Error as e:
-            logger.error(f"MinIO bucket error: {e}")
-            raise
+        self.bucket_name = "career-resumes"
+        # Don't try to create bucket - web portal handles that with proper policy
+        logger.info(f"MinIO service initialized for bucket: {self.bucket_name}")
     
     def download_file(self, object_name, local_path):
         try:
-            self.client.fget_object(self.bucket_name, object_name, local_path)
+            self.client.download_file(self.bucket_name, object_name, local_path)
             logger.info(f"Downloaded {object_name} to {local_path}")
             return local_path
-        except S3Error as e:
+        except Exception as e:
             logger.error(f"File download failed: {e}")
             raise
     
     def upload_file(self, file_path, object_name):
         try:
-            self.client.fput_object(self.bucket_name, object_name, file_path)
+            self.client.upload_file(file_path, self.bucket_name, object_name)
             logger.info(f"Uploaded {file_path} as {object_name}")
-        except S3Error as e:
+        except Exception as e:
             logger.error(f"File upload failed: {e}")
             raise
     
     def delete_file(self, object_name):
         try:
-            self.client.remove_object(self.bucket_name, object_name)
+            self.client.delete_object(Bucket=self.bucket_name, Key=object_name)
             logger.info(f"Deleted {object_name}")
-        except S3Error as e:
+        except Exception as e:
             logger.error(f"File deletion failed: {e}")
             raise

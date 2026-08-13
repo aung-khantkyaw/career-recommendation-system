@@ -13,15 +13,21 @@ class EmbeddingGenerator:
         self.provider = (provider or os.getenv('EMBEDDING_PROVIDER', 'openai')).lower()
         self.model = model or os.getenv('EMBEDDING_MODEL', 'text-embedding-3-small')
         self.base_url = base_url
-        self.dimension = 2048
+        self.dimension = 2048  # Default for OpenRouter/OpenAI
 
         if self.provider == 'google':
             if not api_key:
                 api_key = os.getenv('GOOGLE_API_KEY')
             if api_key:
                 self.client = genai.Client(api_key=api_key)
-                self.dimension = 768  # Google embedding dimension
-                logger.info(f"Initialized Google genai embedding model: {self.model}")
+                # Set dimension based on Google model
+                if 'embedding-2' in self.model:
+                    self.dimension = 3072  # gemini-embedding-2 dimension
+                elif 'embedding' in self.model:
+                    self.dimension = 2048  # Other Google embedding models
+                else:
+                    self.dimension = 768  # Older Google embedding models
+                logger.info(f"Initialized Google genai embedding model: {self.model} (dimension: {self.dimension})")
             else:
                 logger.warning("GOOGLE_API_KEY not found, falling back to OpenAI")
                 self.provider = 'openai'
@@ -52,7 +58,7 @@ class EmbeddingGenerator:
                 response = self.client.models.embed_content(
                     model=self.model,
                     contents=text,
-                    config=genai.EmbedContentConfig(task_type="retrieval_document")
+                    config=genai.EmbedContentConfig(task_type="retrieval_document") if hasattr(genai, 'EmbedContentConfig') else None
                 )
                 embedding = response.embeddings[0].values
             else:
@@ -80,7 +86,7 @@ class EmbeddingGenerator:
                 response = self.client.models.embed_content(
                     model=self.model,
                     contents=texts,
-                    config=genai.EmbedContentConfig(task_type="retrieval_document")
+                    config=genai.EmbedContentConfig(task_type="retrieval_document") if hasattr(genai, 'EmbedContentConfig') else None
                 )
                 embeddings = [emb.values for emb in response.embeddings]
             else:

@@ -410,7 +410,8 @@ export const ModelName = {
   Skill: 'Skill',
   SystemConfig: 'SystemConfig',
   EmailConfig: 'EmailConfig',
-  ApiKey: 'ApiKey'
+  ApiKey: 'ApiKey',
+  Embedding: 'Embedding'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "resume" | "careerRecommendation" | "careerPath" | "job" | "jobBookmark" | "notification" | "activityLog" | "auditLog" | "feedback" | "skill" | "systemConfig" | "emailConfig" | "apiKey"
+    modelProps: "user" | "resume" | "careerRecommendation" | "careerPath" | "job" | "jobBookmark" | "notification" | "activityLog" | "auditLog" | "feedback" | "skill" | "systemConfig" | "emailConfig" | "apiKey" | "embedding"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1467,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Embedding: {
+      payload: Prisma.$EmbeddingPayload<ExtArgs>
+      fields: Prisma.EmbeddingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EmbeddingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EmbeddingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        findFirst: {
+          args: Prisma.EmbeddingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EmbeddingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        findMany: {
+          args: Prisma.EmbeddingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>[]
+        }
+        create: {
+          args: Prisma.EmbeddingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        createMany: {
+          args: Prisma.EmbeddingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EmbeddingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>[]
+        }
+        delete: {
+          args: Prisma.EmbeddingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        update: {
+          args: Prisma.EmbeddingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        deleteMany: {
+          args: Prisma.EmbeddingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EmbeddingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EmbeddingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>[]
+        }
+        upsert: {
+          args: Prisma.EmbeddingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EmbeddingPayload>
+        }
+        aggregate: {
+          args: Prisma.EmbeddingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEmbedding>
+        }
+        groupBy: {
+          args: Prisma.EmbeddingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmbeddingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EmbeddingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EmbeddingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1548,13 +1623,11 @@ export type ResumeScalarFieldEnum = (typeof ResumeScalarFieldEnum)[keyof typeof 
 export const CareerRecommendationScalarFieldEnum = {
   id: 'id',
   resumeId: 'resumeId',
-  jobTitle: 'jobTitle',
-  company: 'company',
-  matchScore: 'matchScore',
-  skillsMatched: 'skillsMatched',
-  description: 'description',
   careerPath: 'careerPath',
   category: 'category',
+  matchScore: 'matchScore',
+  skillsMatched: 'skillsMatched',
+  jobs: 'jobs',
   createdAt: 'createdAt'
 } as const
 
@@ -1570,8 +1643,6 @@ export const CareerPathScalarFieldEnum = {
   softSkills: 'softSkills',
   roadmap: 'roadmap',
   averageSalary: 'averageSalary',
-  jobOpenings: 'jobOpenings',
-  growthRate: 'growthRate',
   active: 'active',
   processingStatus: 'processingStatus',
   processedAt: 'processedAt',
@@ -1687,6 +1758,8 @@ export const SkillScalarFieldEnum = {
   description: 'description',
   difficulty: 'difficulty',
   active: 'active',
+  processingStatus: 'processingStatus',
+  processedAt: 'processedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1740,6 +1813,22 @@ export const ApiKeyScalarFieldEnum = {
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
 
 
+export const EmbeddingScalarFieldEnum = {
+  id: 'id',
+  resumeId: 'resumeId',
+  careerPathId: 'careerPathId',
+  jobId: 'jobId',
+  skillId: 'skillId',
+  dimension: 'dimension',
+  model: 'model',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmbeddingScalarFieldEnum = (typeof EmbeddingScalarFieldEnum)[keyof typeof EmbeddingScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1754,6 +1843,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -2098,6 +2194,7 @@ export type GlobalOmitConfig = {
   systemConfig?: Prisma.SystemConfigOmit
   emailConfig?: Prisma.EmailConfigOmit
   apiKey?: Prisma.ApiKeyOmit
+  embedding?: Prisma.EmbeddingOmit
 }
 
 /* Types for Logging */

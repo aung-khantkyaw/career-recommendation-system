@@ -1,14 +1,16 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import {
-  BarChart3,
   Briefcase,
   CheckCircle2,
   Edit,
   Plus,
   RefreshCw,
   Search,
+  ToggleLeft,
+  ToggleRight,
   Trash2,
   X,
 } from 'lucide-react'
@@ -33,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useStatusUpdates } from '@/hooks/use-status-updates'
 
 type Career = {
   id: string
@@ -43,8 +46,6 @@ type Career = {
   softSkills: string[]
   roadmap: unknown
   averageSalary: string
-  jobOpenings: number
-  growthRate: number
   active: boolean
   processingStatus: string
   processedAt: string | null
@@ -56,8 +57,6 @@ type CareerStats = {
   total: number
   active: number
   inactive: number
-  totalJobs: number
-  avgGrowth: string
 }
 
 type CareerForm = {
@@ -67,8 +66,6 @@ type CareerForm = {
   requiredSkills: string
   softSkills: string
   averageSalary: string
-  jobOpenings: string
-  growthRate: string
   active: boolean
 }
 
@@ -79,8 +76,6 @@ const emptyForm: CareerForm = {
   requiredSkills: '',
   softSkills: '',
   averageSalary: '',
-  jobOpenings: '0',
-  growthRate: '0',
   active: true,
 }
 
@@ -88,8 +83,6 @@ const defaultStats: CareerStats = {
   total: 0,
   active: 0,
   inactive: 0,
-  totalJobs: 0,
-  avgGrowth: '0%',
 }
 
 export default function CareerDataPage() {
@@ -102,12 +95,12 @@ export default function CareerDataPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
+  
+  // Real-time status updates
+  const { getStatusForEntity } = useStatusUpdates()
 
   const fetchCareers = async (query = searchQuery, status = statusFilter) => {
     setIsLoading(true)
-    setError('')
 
     try {
       const params = new URLSearchParams()
@@ -131,7 +124,7 @@ export default function CareerDataPage() {
       setCareers(data.careers)
       setStats(data.stats)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch careers')
+      toast.error(err instanceof Error ? err.message : 'Failed to fetch careers')
     } finally {
       setIsLoading(false)
     }
@@ -158,14 +151,9 @@ export default function CareerDataPage() {
         icon: CheckCircle2,
       },
       {
-        label: 'Tracked Jobs',
-        value: stats.totalJobs.toLocaleString(),
-        icon: BarChart3,
-      },
-      {
-        label: 'Average Growth',
-        value: stats.avgGrowth,
-        icon: BarChart3,
+        label: 'Inactive Paths',
+        value: stats.inactive.toLocaleString(),
+        icon: ToggleLeft,
       },
     ],
     [stats]
@@ -175,8 +163,6 @@ export default function CareerDataPage() {
     setEditingCareer(null)
     setForm(emptyForm)
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
   }
 
   const openEditForm = (career: Career) => {
@@ -188,13 +174,27 @@ export default function CareerDataPage() {
       requiredSkills: career.requiredSkills.join(', '),
       softSkills: career.softSkills.join(', '),
       averageSalary: career.averageSalary,
-      jobOpenings: String(career.jobOpenings),
-      growthRate: String(career.growthRate),
       active: career.active,
     })
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
+  }
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<
+      string,
+      { variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }
+    > = {
+      PENDING: { variant: 'secondary' },
+      PROCESSING: { variant: 'default', className: 'bg-blue-600' },
+      COMPLETED: { variant: 'default', className: 'bg-green-600' },
+      FAILED: { variant: 'destructive' },
+    }
+    const badge = variants[status] || { variant: 'outline' as const }
+    return <Badge variant={badge.variant} className={badge.className}>{status}</Badge>
+  }
+
+  const getRealTimeStatus = (career: Career) => {
+    return getStatusForEntity('CAREER_PATH', career.id) || career.processingStatus
   }
 
   const closeForm = () => {
@@ -213,19 +213,17 @@ export default function CareerDataPage() {
   const saveCareer = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSaving(true)
-    setError('')
-    setSuccess('')
 
     const payload = {
-      title: form.title,
-      category: form.category,
-      description: form.description,
-      requiredSkills: form.requiredSkills,
-      softSkills: form.softSkills,
-      averageSalary: form.averageSalary,
-      jobOpenings: Number(form.jobOpenings),
-      growthRate: Number(form.growthRate),
-      active: form.active,
+      ...form,
+      requiredSkills: form.requiredSkills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
+      softSkills: form.softSkills
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
     }
 
     try {
@@ -239,13 +237,13 @@ export default function CareerDataPage() {
           body: JSON.stringify(payload),
         }
       )
-      const data = (await response.json()) as { error?: string }
+      const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to save career path')
       }
 
-      setSuccess(
+      toast.success(
         editingCareer
           ? 'Career path updated successfully.'
           : 'Career path created successfully.'
@@ -253,7 +251,7 @@ export default function CareerDataPage() {
       closeForm()
       await fetchCareers()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save career path')
+      toast.error(err instanceof Error ? err.message : 'Failed to save career path')
     } finally {
       setIsSaving(false)
     }
@@ -261,30 +259,45 @@ export default function CareerDataPage() {
 
   const deleteCareer = async (career: Career) => {
     const confirmed = window.confirm(
-      `Delete "${career.title}"? This cannot be undone.`
+      `Delete career path "${career.title}"? This cannot be undone.`
     )
 
     if (!confirmed) return
-
-    setError('')
-    setSuccess('')
 
     try {
       const response = await fetch(`/api/admin/careers?id=${career.id}`, {
         method: 'DELETE',
       })
-      const data = (await response.json()) as { error?: string }
+      const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.error || 'Failed to delete career path')
       }
 
-      setSuccess('Career path deleted successfully.')
+      toast.success('Career path deleted successfully.')
       await fetchCareers()
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error ? err.message : 'Failed to delete career path'
       )
+    }
+  }
+
+  const toggleActive = async (career: Career) => {
+    try {
+      const response = await fetch(`/api/admin/careers/${career.id}/toggle-active`, {
+        method: 'PATCH',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to toggle career status')
+      }
+
+      toast.success('Career status updated successfully.')
+      await fetchCareers()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to toggle career status')
     }
   }
 
@@ -318,12 +331,6 @@ export default function CareerDataPage() {
           </Button>
         </div>
       </div>
-
-      {error ? (
-        <Notice tone="error" message={error} />
-      ) : success ? (
-        <Notice tone="success" message={success} />
-      ) : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {statCards.map((stat) => {
@@ -390,24 +397,6 @@ export default function CareerDataPage() {
                   placeholder="$85,000"
                   required
                 />
-                <div className="grid grid-cols-2 gap-3">
-                  <Field
-                    id="jobOpenings"
-                    label="Available jobs"
-                    value={form.jobOpenings}
-                    onChange={(value) => updateForm('jobOpenings', value)}
-                    type="number"
-                    min="0"
-                  />
-                  <Field
-                    id="growthRate"
-                    label="Growth %"
-                    value={form.growthRate}
-                    onChange={(value) => updateForm('growthRate', value)}
-                    type="number"
-                    step="0.1"
-                  />
-                </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -507,9 +496,7 @@ export default function CareerDataPage() {
                 <TableHead>Career Path</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Skills</TableHead>
-                <TableHead className="text-right">Jobs</TableHead>
                 <TableHead>Salary</TableHead>
-                <TableHead>Growth</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>AI Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -544,30 +531,29 @@ export default function CareerDataPage() {
                         ) : null}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
-                      {career.jobOpenings.toLocaleString()}
-                    </TableCell>
                     <TableCell>{career.averageSalary}</TableCell>
-                    <TableCell>{career.growthRate}%</TableCell>
                     <TableCell>
-                      <Badge variant={career.active ? 'default' : 'secondary'}>
-                        {career.active ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleActive(career)}
+                        className="flex items-center gap-2"
+                      >
+                        {career.active ? (
+                          <>
+                            <ToggleRight className="size-5 text-green-600" />
+                            <span className="text-green-600">Active</span>
+                          </>
+                        ) : (
+                          <>
+                            <ToggleLeft className="size-5 text-muted-foreground" />
+                            <span className="text-muted-foreground">Inactive</span>
+                          </>
+                        )}
+                      </Button>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          career.processingStatus === 'COMPLETED'
-                            ? 'default'
-                            : career.processingStatus === 'PROCESSING'
-                              ? 'secondary'
-                              : career.processingStatus === 'FAILED'
-                                ? 'destructive'
-                                : 'outline'
-                        }
-                      >
-                        {career.processingStatus}
-                      </Badge>
+                      {getStatusBadge(getRealTimeStatus(career))}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -606,35 +592,6 @@ export default function CareerDataPage() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function Notice({ tone, message }: { tone: 'error' | 'success'; message: string }) {
-  return (
-    <Card
-      className={
-        tone === 'error'
-          ? 'border-destructive/40 bg-destructive/10 shadow-sm'
-          : 'shadow-sm'
-      }
-    >
-      <CardContent className="flex items-center gap-3 py-4">
-        {tone === 'error' ? (
-          <X className="size-4 text-destructive" aria-hidden="true" />
-        ) : (
-          <CheckCircle2 className="size-4" aria-hidden="true" />
-        )}
-        <p
-          className={
-            tone === 'error'
-              ? 'text-sm font-medium text-destructive'
-              : 'text-sm font-medium'
-          }
-        >
-          {message}
-        </p>
-      </CardContent>
-    </Card>
   )
 }
 

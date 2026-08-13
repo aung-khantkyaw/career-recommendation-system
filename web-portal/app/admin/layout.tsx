@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { 
-  LayoutDashboard, 
-  Users, 
-  BriefcaseBusiness, 
-  Cpu, 
-  Activity, 
+import {
+  LayoutDashboard,
+  Users,
+  BriefcaseBusiness,
+  Cpu,
+  Activity,
   LogOut,
   TrendingUp,
   Building2,
@@ -38,6 +38,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
+import { Toaster } from '@/components/ui/sonner'
 
 const navGroups = [
   {
@@ -71,20 +72,20 @@ const navGroups = [
       { href: '/admin/audit-logs', icon: Shield, label: 'Audit Logs' },
     ]
   },
-  {
-    label: 'Communication',
-    items: [
-      { href: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
-      { href: '/admin/email-config', icon: Mail, label: 'Email Config' },
-      { href: '/admin/notification-settings', icon: Bell, label: 'Notifications' },
-    ]
-  },
+  // {
+  //   label: 'Communication',
+  //   items: [
+  //     { href: '/admin/feedback', icon: MessageSquare, label: 'Feedback' },
+  //     { href: '/admin/email-config', icon: Mail, label: 'Email Config' },
+  //     { href: '/admin/notification-settings', icon: Bell, label: 'Notifications' },
+  //   ]
+  // },
   {
     label: 'System',
     items: [
       { href: '/admin/api-keys', icon: Key, label: 'API Keys' },
       { href: '/admin/system', icon: Activity, label: 'System Monitor' },
-      { href: '/admin/system-config', icon: Database, label: 'System Config' },
+      // { href: '/admin/system-config', icon: Database, label: 'System Config' },
     ]
   },
 ]
@@ -162,6 +163,7 @@ export default function AdminLayout({
           </div>
         </main>
       </div>
+      <Toaster />
     </SidebarProvider>
   )
 }

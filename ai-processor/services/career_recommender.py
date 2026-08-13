@@ -1,116 +1,179 @@
 import os
 import logging
 from typing import List, Dict
+import json
 from embeddings.generator import EmbeddingGenerator
-from rag.retriever import CareerRetriever
+from services.database import DatabaseService
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class CareerRecommender:
-    def __init__(self, embedding_generator=None):
+    def __init__(self, embedding_generator=None, db_service=None):
         self.embedding_generator = embedding_generator
-        self.rag_retriever = CareerRetriever(embedding_generator)
-        self.job_database = self._load_job_database()
+        self.db_service = db_service or DatabaseService()
     
-    def _load_job_database(self) -> List[Dict]:
-        return [
-            {
-                'id': 1,
-                'job_title': 'Software Engineer',
-                'company': 'Tech Corp',
-                'required_skills': ['python', 'javascript', 'react', 'sql', 'git'],
-                'description': 'Develop and maintain software applications using modern technologies.'
-            },
-            {
-                'id': 2,
-                'job_title': 'Data Scientist',
-                'company': 'Data Analytics Inc',
-                'required_skills': ['python', 'machine learning', 'data science', 'sql', 'pandas'],
-                'description': 'Analyze complex data sets and build predictive models.'
-            },
-            {
-                'id': 3,
-                'job_title': 'DevOps Engineer',
-                'company': 'Cloud Solutions',
-                'required_skills': ['docker', 'kubernetes', 'aws', 'ci/cd', 'linux'],
-                'description': 'Manage cloud infrastructure and deployment pipelines.'
-            },
-            {
-                'id': 4,
-                'job_title': 'Full Stack Developer',
-                'company': 'Web Agency',
-                'required_skills': ['react', 'nodejs', 'typescript', 'sql', 'mongodb'],
-                'description': 'Build complete web applications from frontend to backend.'
-            },
-            {
-                'id': 5,
-                'job_title': 'Machine Learning Engineer',
-                'company': 'AI Startup',
-                'required_skills': ['python', 'tensorflow', 'pytorch', 'machine learning', 'deep learning'],
-                'description': 'Design and implement machine learning systems at scale.'
-            },
-            {
-                'id': 6,
-                'job_title': 'Backend Developer',
-                'company': 'Enterprise Systems',
-                'required_skills': ['java', 'spring', 'sql', 'postgresql', 'redis'],
-                'description': 'Develop robust backend services and APIs.'
-            },
-            {
-                'id': 7,
-                'job_title': 'Frontend Developer',
-                'company': 'Digital Agency',
-                'required_skills': ['javascript', 'react', 'typescript', 'css', 'html'],
-                'description': 'Create responsive and interactive user interfaces.'
-            },
-            {
-                'id': 8,
-                'job_title': 'Cloud Architect',
-                'company': 'Tech Giants',
-                'required_skills': ['aws', 'azure', 'kubernetes', 'terraform', 'docker'],
-                'description': 'Design and implement cloud infrastructure solutions.'
-            }
-        ]
+    def _load_career_paths(self) -> List[Dict]:
+        """Load career paths from database"""
+        try:
+            query = """
+                SELECT id, title, category, description, "requiredSkills", "softSkills"
+                FROM "CareerPath"
+                WHERE active = true
+            """
+            result = self.db_service.execute_query(query)
+            logger.info(f"Loaded {len(result)} career paths from database")
+            return [
+                {
+                    'id': row['id'],
+                    'title': row['title'],
+                    'category': row['category'],
+                    'description': row['description'],
+                    'required_skills': row['requiredSkills'] or [],
+                    'soft_skills': row['softSkills'] or []
+                }
+                for row in result
+            ]
+        except Exception as e:
+            logger.error(f"Failed to load career paths: {e}")
+            return []
+    
+    def _load_jobs(self) -> List[Dict]:
+        """Load jobs from database with career path info"""
+        try:
+            query = """
+                SELECT j.id, j.title, j.company, j.location, j.description, j.requirements, j."careerPathId",
+                       cp.title as career_path_title, cp.category as career_path_category
+                FROM "Job" j
+                LEFT JOIN "CareerPath" cp ON j."careerPathId" = cp.id
+                WHERE j.status = 'ACTIVE'
+            """
+            result = self.db_service.execute_query(query)
+            logger.info(f"Loaded {len(result)} jobs from database")
+            return [
+                {
+                    'id': row['id'],
+                    'title': row['title'],
+                    'company': row['company'],
+                    'location': row['location'],
+                    'description': row['description'],
+                    'requirements': row['requirements'] or [],
+                    'career_path_id': row['careerPathId'],
+                    'career_path_title': row.get('career_path_title'),
+                    'career_path_category': row.get('career_path_category')
+                }
+                for row in result
+            ]
+        except Exception as e:
+            logger.error(f"Failed to load jobs: {e}")
+            return []
     
     def recommend_careers(self, user_skills: List[str], resume_text: str, top_k: int = 5) -> List[Dict]:
+        """Recommend career paths based on resume"""
         recommendations = []
         
-        # Get RAG-based career insights
-        rag_career_paths = self.rag_retriever.retrieve_career_paths(resume_text, user_skills, top_k)
+        # Load career paths from database
+        career_paths = self._load_career_paths()
+        
+        if not career_paths:
+            logger.warning("No career paths found in database")
+            return []
         
         resume_embedding = self.embedding_generator.generate_embedding(resume_text)
-        
-        for job in self.job_database:
-            match_score = self._calculate_match_score(user_skills, job['required_skills'])
-            
-            job_text = f"{job['job_title']} {job['description']} {' '.join(job['required_skills'])}"
-            job_embedding = self.embedding_generator.generate_embedding(job_text)
-            
+        resume_dimension = len(resume_embedding)
+
+        for career in career_paths:
+            match_score = self._calculate_match_score(user_skills, career['required_skills'])
+
+            # Get embedding from Embedding table with dimension check
+            embedding_data = self.db_service.get_embedding('CAREER_PATH', career['id'], expected_dimension=resume_dimension)
+            if embedding_data:
+                career_embedding = embedding_data['vector']
+            else:
+                career_text = f"{career['title']} {career['description']} {' '.join(career['required_skills'])} {' '.join(career['soft_skills'])}"
+                career_embedding = self.embedding_generator.generate_embedding(career_text)
+                # Save new embedding to database
+                self.db_service.save_embedding('CAREER_PATH', career['id'], career_embedding)
+
             semantic_similarity = self.embedding_generator.cosine_similarity(
-                resume_embedding, job_embedding
+                resume_embedding, career_embedding
             )
             
-            # Find matching RAG career path for additional context
-            rag_match = next((path for path in rag_career_paths if job['job_title'] in path['career_path']), None)
+            combined_score = (match_score * 0.5) + (semantic_similarity * 0.5)
             
-            combined_score = (match_score * 0.5) + (semantic_similarity * 0.3) + (rag_match['relevance_score'] * 0.2 if rag_match else 0)
-            
-            skills_matched = [skill for skill in user_skills if skill in job['required_skills']]
+            skills_matched = [skill for skill in user_skills if skill in career['required_skills']]
             
             recommendations.append({
-                'job_title': job['job_title'],
-                'company': job['company'],
-                'match_score': round(combined_score * 100, 2),
+                'job_title': career['title'],
+                'company': None,  # Career paths don't have companies
+                'match_score': float(round(combined_score * 100, 2)),
                 'skills_matched': skills_matched,
-                'description': job['description'],
-                'career_path': rag_match['career_path'] if rag_match else None,
-                'category': rag_match['category'] if rag_match else None
+                'description': career['description'],
+                'career_path': career['title'],
+                'category': career['category']
             })
         
         recommendations.sort(key=lambda x: x['match_score'], reverse=True)
         
-        logger.info(f"Generated {len(recommendations[:top_k])} career recommendations with RAG insights")
+        logger.info(f"Generated {len(recommendations[:top_k])} career recommendations")
+        return recommendations[:top_k]
+    
+    def recommend_jobs(self, user_skills: List[str], resume_text: str, top_k: int = 5) -> List[Dict]:
+        """Recommend jobs based on resume"""
+        recommendations = []
+        
+        # Load jobs from database
+        jobs = self._load_jobs()
+        
+        if not jobs:
+            logger.warning("No jobs found in database")
+            return []
+        
+        resume_embedding = self.embedding_generator.generate_embedding(resume_text)
+        resume_dimension = len(resume_embedding)
+
+        for job in jobs:
+            match_score = self._calculate_match_score(user_skills, job['requirements'])
+
+            # Get embedding from Embedding table with dimension check
+            embedding_data = self.db_service.get_embedding('JOB', job['id'], expected_dimension=resume_dimension)
+            if embedding_data:
+                job_embedding = embedding_data['vector']
+            else:
+                job_text = f"{job['title']} {job['description']} {' '.join(job['requirements'])}"
+                job_embedding = self.embedding_generator.generate_embedding(job_text)
+                # Save new embedding to database
+                self.db_service.save_embedding('JOB', job['id'], job_embedding)
+
+            semantic_similarity = self.embedding_generator.cosine_similarity(
+                resume_embedding, job_embedding
+            )
+            
+            combined_score = (match_score * 0.5) + (semantic_similarity * 0.5)
+            
+            # Match skills more flexibly - case-insensitive and partial match
+            skills_matched = []
+            for user_skill in user_skills:
+                for req_skill in job['requirements']:
+                    if user_skill.lower() in req_skill.lower() or req_skill.lower() in user_skill.lower():
+                        if user_skill not in skills_matched:
+                            skills_matched.append(user_skill)
+            
+            # Use career path info from database
+            career_path = job.get('career_path_title')
+            category = job.get('career_path_category')
+            
+            recommendations.append({
+                'job_id': job['id'],
+                'match_score': float(round(combined_score * 100, 2)),
+                'skills_matched': skills_matched,
+                'career_path': career_path,
+                'category': category
+            })
+        
+        recommendations.sort(key=lambda x: x['match_score'], reverse=True)
+        
+        logger.info(f"Generated {len(recommendations[:top_k])} job recommendations")
         return recommendations[:top_k]
     
     def _calculate_match_score(self, user_skills: List[str], required_skills: List[str]) -> float:
@@ -118,4 +181,11 @@ class CareerRecommender:
             return 0.0
         
         matched = sum(1 for skill in user_skills if skill in required_skills)
+        return matched / len(required_skills)
+
+    def _calculate_match_score_flexible(self, user_skills: List[str], required_skills: List[str]) -> float:
+        if not required_skills:
+            return 0.0
+        
+        matched = sum(1 for skill in user_skills if skill.lower() in [req_skill.lower() for req_skill in required_skills])
         return matched / len(required_skills)

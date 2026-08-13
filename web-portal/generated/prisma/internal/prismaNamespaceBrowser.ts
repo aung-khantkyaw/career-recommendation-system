@@ -64,7 +64,8 @@ export const ModelName = {
   Skill: 'Skill',
   SystemConfig: 'SystemConfig',
   EmailConfig: 'EmailConfig',
-  ApiKey: 'ApiKey'
+  ApiKey: 'ApiKey',
+  Embedding: 'Embedding'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -126,13 +127,11 @@ export type ResumeScalarFieldEnum = (typeof ResumeScalarFieldEnum)[keyof typeof 
 export const CareerRecommendationScalarFieldEnum = {
   id: 'id',
   resumeId: 'resumeId',
-  jobTitle: 'jobTitle',
-  company: 'company',
-  matchScore: 'matchScore',
-  skillsMatched: 'skillsMatched',
-  description: 'description',
   careerPath: 'careerPath',
   category: 'category',
+  matchScore: 'matchScore',
+  skillsMatched: 'skillsMatched',
+  jobs: 'jobs',
   createdAt: 'createdAt'
 } as const
 
@@ -148,8 +147,6 @@ export const CareerPathScalarFieldEnum = {
   softSkills: 'softSkills',
   roadmap: 'roadmap',
   averageSalary: 'averageSalary',
-  jobOpenings: 'jobOpenings',
-  growthRate: 'growthRate',
   active: 'active',
   processingStatus: 'processingStatus',
   processedAt: 'processedAt',
@@ -265,6 +262,8 @@ export const SkillScalarFieldEnum = {
   description: 'description',
   difficulty: 'difficulty',
   active: 'active',
+  processingStatus: 'processingStatus',
+  processedAt: 'processedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -318,6 +317,22 @@ export const ApiKeyScalarFieldEnum = {
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
 
 
+export const EmbeddingScalarFieldEnum = {
+  id: 'id',
+  resumeId: 'resumeId',
+  careerPathId: 'careerPathId',
+  jobId: 'jobId',
+  skillId: 'skillId',
+  dimension: 'dimension',
+  model: 'model',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type EmbeddingScalarFieldEnum = (typeof EmbeddingScalarFieldEnum)[keyof typeof EmbeddingScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -332,6 +347,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

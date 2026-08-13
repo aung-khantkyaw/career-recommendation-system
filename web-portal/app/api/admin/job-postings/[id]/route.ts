@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import redis from '@/lib/redis'
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   return Boolean(session?.user && session.user.role === 'admin')
 }
 
@@ -90,6 +89,7 @@ export async function PATCH(
         ...(expiresAt !== undefined && { expiresAt: expiresAt ? new Date(expiresAt) : null }),
       },
       include: {
+        embedding: true,
         careerPath: {
           select: {
             id: true,
@@ -100,8 +100,27 @@ export async function PATCH(
       },
     })
 
-    // Queue embedding regeneration job if description or requirements changed
+    // Check if embedding regeneration is needed
+    let shouldRegenerate = false
+
     if (description || requirements) {
+      // Content changed, check if model matches
+      if (job.embedding) {
+        const activeApiKey = await prisma.apiKey.findFirst({
+          where: { active: true },
+        })
+
+        if (!activeApiKey || activeApiKey.embeddingModelName !== job.embedding.model) {
+          shouldRegenerate = true
+        }
+      } else {
+        // No existing embedding, need to generate
+        shouldRegenerate = true
+      }
+    }
+
+    // Queue embedding regeneration job only if needed
+    if (shouldRegenerate) {
       await redis.lPush('ai_jobs_queue', JSON.stringify({
         job_id: `job_${job.id}`,
         job_type: 'job_embedding',

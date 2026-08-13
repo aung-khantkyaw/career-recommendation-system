@@ -20,20 +20,8 @@ export type CareerPathModel = runtime.Types.Result.DefaultSelection<Prisma.$Care
 
 export type AggregateCareerPath = {
   _count: CareerPathCountAggregateOutputType | null
-  _avg: CareerPathAvgAggregateOutputType | null
-  _sum: CareerPathSumAggregateOutputType | null
   _min: CareerPathMinAggregateOutputType | null
   _max: CareerPathMaxAggregateOutputType | null
-}
-
-export type CareerPathAvgAggregateOutputType = {
-  jobOpenings: number | null
-  growthRate: number | null
-}
-
-export type CareerPathSumAggregateOutputType = {
-  jobOpenings: number | null
-  growthRate: number | null
 }
 
 export type CareerPathMinAggregateOutputType = {
@@ -42,8 +30,6 @@ export type CareerPathMinAggregateOutputType = {
   category: string | null
   description: string | null
   averageSalary: string | null
-  jobOpenings: number | null
-  growthRate: number | null
   active: boolean | null
   processingStatus: string | null
   processedAt: Date | null
@@ -57,8 +43,6 @@ export type CareerPathMaxAggregateOutputType = {
   category: string | null
   description: string | null
   averageSalary: string | null
-  jobOpenings: number | null
-  growthRate: number | null
   active: boolean | null
   processingStatus: string | null
   processedAt: Date | null
@@ -75,8 +59,6 @@ export type CareerPathCountAggregateOutputType = {
   softSkills: number
   roadmap: number
   averageSalary: number
-  jobOpenings: number
-  growthRate: number
   active: number
   processingStatus: number
   processedAt: number
@@ -86,24 +68,12 @@ export type CareerPathCountAggregateOutputType = {
 }
 
 
-export type CareerPathAvgAggregateInputType = {
-  jobOpenings?: true
-  growthRate?: true
-}
-
-export type CareerPathSumAggregateInputType = {
-  jobOpenings?: true
-  growthRate?: true
-}
-
 export type CareerPathMinAggregateInputType = {
   id?: true
   title?: true
   category?: true
   description?: true
   averageSalary?: true
-  jobOpenings?: true
-  growthRate?: true
   active?: true
   processingStatus?: true
   processedAt?: true
@@ -117,8 +87,6 @@ export type CareerPathMaxAggregateInputType = {
   category?: true
   description?: true
   averageSalary?: true
-  jobOpenings?: true
-  growthRate?: true
   active?: true
   processingStatus?: true
   processedAt?: true
@@ -135,8 +103,6 @@ export type CareerPathCountAggregateInputType = {
   softSkills?: true
   roadmap?: true
   averageSalary?: true
-  jobOpenings?: true
-  growthRate?: true
   active?: true
   processingStatus?: true
   processedAt?: true
@@ -183,18 +149,6 @@ export type CareerPathAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: CareerPathAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: CareerPathSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: CareerPathMinAggregateInputType
@@ -225,8 +179,6 @@ export type CareerPathGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: CareerPathCountAggregateInputType | true
-  _avg?: CareerPathAvgAggregateInputType
-  _sum?: CareerPathSumAggregateInputType
   _min?: CareerPathMinAggregateInputType
   _max?: CareerPathMaxAggregateInputType
 }
@@ -240,16 +192,12 @@ export type CareerPathGroupByOutputType = {
   softSkills: string[]
   roadmap: runtime.JsonValue | null
   averageSalary: string
-  jobOpenings: number
-  growthRate: number
   active: boolean
   processingStatus: string
   processedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: CareerPathCountAggregateOutputType | null
-  _avg: CareerPathAvgAggregateOutputType | null
-  _sum: CareerPathSumAggregateOutputType | null
   _min: CareerPathMinAggregateOutputType | null
   _max: CareerPathMaxAggregateOutputType | null
 }
@@ -281,14 +229,13 @@ export type CareerPathWhereInput = {
   softSkills?: Prisma.StringNullableListFilter<"CareerPath">
   roadmap?: Prisma.JsonNullableFilter<"CareerPath">
   averageSalary?: Prisma.StringFilter<"CareerPath"> | string
-  jobOpenings?: Prisma.IntFilter<"CareerPath"> | number
-  growthRate?: Prisma.FloatFilter<"CareerPath"> | number
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
   processingStatus?: Prisma.StringFilter<"CareerPath"> | string
   processedAt?: Prisma.DateTimeNullableFilter<"CareerPath"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   jobs?: Prisma.JobListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }
 
 export type CareerPathOrderByWithRelationInput = {
@@ -300,14 +247,13 @@ export type CareerPathOrderByWithRelationInput = {
   softSkills?: Prisma.SortOrder
   roadmap?: Prisma.SortOrderInput | Prisma.SortOrder
   averageSalary?: Prisma.SortOrder
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
   processingStatus?: Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   jobs?: Prisma.JobOrderByRelationAggregateInput
+  embedding?: Prisma.EmbeddingOrderByWithRelationInput
 }
 
 export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
@@ -322,14 +268,13 @@ export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
   softSkills?: Prisma.StringNullableListFilter<"CareerPath">
   roadmap?: Prisma.JsonNullableFilter<"CareerPath">
   averageSalary?: Prisma.StringFilter<"CareerPath"> | string
-  jobOpenings?: Prisma.IntFilter<"CareerPath"> | number
-  growthRate?: Prisma.FloatFilter<"CareerPath"> | number
   active?: Prisma.BoolFilter<"CareerPath"> | boolean
   processingStatus?: Prisma.StringFilter<"CareerPath"> | string
   processedAt?: Prisma.DateTimeNullableFilter<"CareerPath"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   jobs?: Prisma.JobListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }, "id" | "title">
 
 export type CareerPathOrderByWithAggregationInput = {
@@ -341,18 +286,14 @@ export type CareerPathOrderByWithAggregationInput = {
   softSkills?: Prisma.SortOrder
   roadmap?: Prisma.SortOrderInput | Prisma.SortOrder
   averageSalary?: Prisma.SortOrder
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
   processingStatus?: Prisma.SortOrder
   processedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CareerPathCountOrderByAggregateInput
-  _avg?: Prisma.CareerPathAvgOrderByAggregateInput
   _max?: Prisma.CareerPathMaxOrderByAggregateInput
   _min?: Prisma.CareerPathMinOrderByAggregateInput
-  _sum?: Prisma.CareerPathSumOrderByAggregateInput
 }
 
 export type CareerPathScalarWhereWithAggregatesInput = {
@@ -367,8 +308,6 @@ export type CareerPathScalarWhereWithAggregatesInput = {
   softSkills?: Prisma.StringNullableListFilter<"CareerPath">
   roadmap?: Prisma.JsonNullableWithAggregatesFilter<"CareerPath">
   averageSalary?: Prisma.StringWithAggregatesFilter<"CareerPath"> | string
-  jobOpenings?: Prisma.IntWithAggregatesFilter<"CareerPath"> | number
-  growthRate?: Prisma.FloatWithAggregatesFilter<"CareerPath"> | number
   active?: Prisma.BoolWithAggregatesFilter<"CareerPath"> | boolean
   processingStatus?: Prisma.StringWithAggregatesFilter<"CareerPath"> | string
   processedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"CareerPath"> | Date | string | null
@@ -385,14 +324,13 @@ export type CareerPathCreateInput = {
   softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary: string
-  jobOpenings?: number
-  growthRate?: number
   active?: boolean
   processingStatus?: string
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobs?: Prisma.JobCreateNestedManyWithoutCareerPathInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutCareerPathInput
 }
 
 export type CareerPathUncheckedCreateInput = {
@@ -404,14 +342,13 @@ export type CareerPathUncheckedCreateInput = {
   softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary: string
-  jobOpenings?: number
-  growthRate?: number
   active?: boolean
   processingStatus?: string
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobs?: Prisma.JobUncheckedCreateNestedManyWithoutCareerPathInput
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutCareerPathInput
 }
 
 export type CareerPathUpdateInput = {
@@ -423,14 +360,13 @@ export type CareerPathUpdateInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobs?: Prisma.JobUpdateManyWithoutCareerPathNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutCareerPathNestedInput
 }
 
 export type CareerPathUncheckedUpdateInput = {
@@ -442,14 +378,13 @@ export type CareerPathUncheckedUpdateInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobs?: Prisma.JobUncheckedUpdateManyWithoutCareerPathNestedInput
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutCareerPathNestedInput
 }
 
 export type CareerPathCreateManyInput = {
@@ -461,8 +396,6 @@ export type CareerPathCreateManyInput = {
   softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary: string
-  jobOpenings?: number
-  growthRate?: number
   active?: boolean
   processingStatus?: string
   processedAt?: Date | string | null
@@ -479,8 +412,6 @@ export type CareerPathUpdateManyMutationInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -497,8 +428,6 @@ export type CareerPathUncheckedUpdateManyInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -515,18 +444,11 @@ export type CareerPathCountOrderByAggregateInput = {
   softSkills?: Prisma.SortOrder
   roadmap?: Prisma.SortOrder
   averageSalary?: Prisma.SortOrder
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
   processingStatus?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type CareerPathAvgOrderByAggregateInput = {
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
 }
 
 export type CareerPathMaxOrderByAggregateInput = {
@@ -535,8 +457,6 @@ export type CareerPathMaxOrderByAggregateInput = {
   category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   averageSalary?: Prisma.SortOrder
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
   processingStatus?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
@@ -550,18 +470,11 @@ export type CareerPathMinOrderByAggregateInput = {
   category?: Prisma.SortOrder
   description?: Prisma.SortOrder
   averageSalary?: Prisma.SortOrder
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
   active?: Prisma.SortOrder
   processingStatus?: Prisma.SortOrder
   processedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-}
-
-export type CareerPathSumOrderByAggregateInput = {
-  jobOpenings?: Prisma.SortOrder
-  growthRate?: Prisma.SortOrder
 }
 
 export type CareerPathNullableScalarRelationFilter = {
@@ -603,6 +516,22 @@ export type CareerPathUpdateOneWithoutJobsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CareerPathUpdateToOneWithWhereWithoutJobsInput, Prisma.CareerPathUpdateWithoutJobsInput>, Prisma.CareerPathUncheckedUpdateWithoutJobsInput>
 }
 
+export type CareerPathCreateNestedOneWithoutEmbeddingInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutEmbeddingInput, Prisma.CareerPathUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutEmbeddingInput
+  connect?: Prisma.CareerPathWhereUniqueInput
+}
+
+export type CareerPathUpdateOneWithoutEmbeddingNestedInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutEmbeddingInput, Prisma.CareerPathUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutEmbeddingInput
+  upsert?: Prisma.CareerPathUpsertWithoutEmbeddingInput
+  disconnect?: Prisma.CareerPathWhereInput | boolean
+  delete?: Prisma.CareerPathWhereInput | boolean
+  connect?: Prisma.CareerPathWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CareerPathUpdateToOneWithWhereWithoutEmbeddingInput, Prisma.CareerPathUpdateWithoutEmbeddingInput>, Prisma.CareerPathUncheckedUpdateWithoutEmbeddingInput>
+}
+
 export type CareerPathCreateWithoutJobsInput = {
   id?: string
   title: string
@@ -612,13 +541,12 @@ export type CareerPathCreateWithoutJobsInput = {
   softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary: string
-  jobOpenings?: number
-  growthRate?: number
   active?: boolean
   processingStatus?: string
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutCareerPathInput
 }
 
 export type CareerPathUncheckedCreateWithoutJobsInput = {
@@ -630,13 +558,12 @@ export type CareerPathUncheckedCreateWithoutJobsInput = {
   softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary: string
-  jobOpenings?: number
-  growthRate?: number
   active?: boolean
   processingStatus?: string
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutCareerPathInput
 }
 
 export type CareerPathCreateOrConnectWithoutJobsInput = {
@@ -664,13 +591,12 @@ export type CareerPathUpdateWithoutJobsInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUpdateOneWithoutCareerPathNestedInput
 }
 
 export type CareerPathUncheckedUpdateWithoutJobsInput = {
@@ -682,13 +608,96 @@ export type CareerPathUncheckedUpdateWithoutJobsInput = {
   softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
   roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
-  jobOpenings?: Prisma.IntFieldUpdateOperationsInput | number
-  growthRate?: Prisma.FloatFieldUpdateOperationsInput | number
   active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutCareerPathNestedInput
+}
+
+export type CareerPathCreateWithoutEmbeddingInput = {
+  id?: string
+  title: string
+  category: string
+  description: string
+  requiredSkills?: Prisma.CareerPathCreaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary: string
+  active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jobs?: Prisma.JobCreateNestedManyWithoutCareerPathInput
+}
+
+export type CareerPathUncheckedCreateWithoutEmbeddingInput = {
+  id?: string
+  title: string
+  category: string
+  description: string
+  requiredSkills?: Prisma.CareerPathCreaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathCreatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary: string
+  active?: boolean
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  jobs?: Prisma.JobUncheckedCreateNestedManyWithoutCareerPathInput
+}
+
+export type CareerPathCreateOrConnectWithoutEmbeddingInput = {
+  where: Prisma.CareerPathWhereUniqueInput
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutEmbeddingInput, Prisma.CareerPathUncheckedCreateWithoutEmbeddingInput>
+}
+
+export type CareerPathUpsertWithoutEmbeddingInput = {
+  update: Prisma.XOR<Prisma.CareerPathUpdateWithoutEmbeddingInput, Prisma.CareerPathUncheckedUpdateWithoutEmbeddingInput>
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutEmbeddingInput, Prisma.CareerPathUncheckedCreateWithoutEmbeddingInput>
+  where?: Prisma.CareerPathWhereInput
+}
+
+export type CareerPathUpdateToOneWithWhereWithoutEmbeddingInput = {
+  where?: Prisma.CareerPathWhereInput
+  data: Prisma.XOR<Prisma.CareerPathUpdateWithoutEmbeddingInput, Prisma.CareerPathUncheckedUpdateWithoutEmbeddingInput>
+}
+
+export type CareerPathUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requiredSkills?: Prisma.CareerPathUpdaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobs?: Prisma.JobUpdateManyWithoutCareerPathNestedInput
+}
+
+export type CareerPathUncheckedUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requiredSkills?: Prisma.CareerPathUpdaterequiredSkillsInput | string[]
+  softSkills?: Prisma.CareerPathUpdatesoftSkillsInput | string[]
+  roadmap?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  averageSalary?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  jobs?: Prisma.JobUncheckedUpdateManyWithoutCareerPathNestedInput
 }
 
 
@@ -731,14 +740,13 @@ export type CareerPathSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   softSkills?: boolean
   roadmap?: boolean
   averageSalary?: boolean
-  jobOpenings?: boolean
-  growthRate?: boolean
   active?: boolean
   processingStatus?: boolean
   processedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
+  embedding?: boolean | Prisma.CareerPath$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerPath"]>
 
@@ -751,8 +759,6 @@ export type CareerPathSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   softSkills?: boolean
   roadmap?: boolean
   averageSalary?: boolean
-  jobOpenings?: boolean
-  growthRate?: boolean
   active?: boolean
   processingStatus?: boolean
   processedAt?: boolean
@@ -769,8 +775,6 @@ export type CareerPathSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   softSkills?: boolean
   roadmap?: boolean
   averageSalary?: boolean
-  jobOpenings?: boolean
-  growthRate?: boolean
   active?: boolean
   processingStatus?: boolean
   processedAt?: boolean
@@ -787,8 +791,6 @@ export type CareerPathSelectScalar = {
   softSkills?: boolean
   roadmap?: boolean
   averageSalary?: boolean
-  jobOpenings?: boolean
-  growthRate?: boolean
   active?: boolean
   processingStatus?: boolean
   processedAt?: boolean
@@ -796,9 +798,10 @@ export type CareerPathSelectScalar = {
   updatedAt?: boolean
 }
 
-export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "description" | "requiredSkills" | "softSkills" | "roadmap" | "averageSalary" | "jobOpenings" | "growthRate" | "active" | "processingStatus" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["careerPath"]>
+export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "description" | "requiredSkills" | "softSkills" | "roadmap" | "averageSalary" | "active" | "processingStatus" | "processedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["careerPath"]>
 export type CareerPathInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobs?: boolean | Prisma.CareerPath$jobsArgs<ExtArgs>
+  embedding?: boolean | Prisma.CareerPath$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CareerPathIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -808,6 +811,7 @@ export type $CareerPathPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "CareerPath"
   objects: {
     jobs: Prisma.$JobPayload<ExtArgs>[]
+    embedding: Prisma.$EmbeddingPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -818,8 +822,6 @@ export type $CareerPathPayload<ExtArgs extends runtime.Types.Extensions.Internal
     softSkills: string[]
     roadmap: runtime.JsonValue | null
     averageSalary: string
-    jobOpenings: number
-    growthRate: number
     active: boolean
     processingStatus: string
     processedAt: Date | null
@@ -1220,6 +1222,7 @@ readonly fields: CareerPathFieldRefs;
 export interface Prisma__CareerPathClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   jobs<T extends Prisma.CareerPath$jobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CareerPath$jobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  embedding<T extends Prisma.CareerPath$embeddingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CareerPath$embeddingArgs<ExtArgs>>): Prisma.Prisma__EmbeddingClient<runtime.Types.Result.GetResult<Prisma.$EmbeddingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1257,8 +1260,6 @@ export interface CareerPathFieldRefs {
   readonly softSkills: Prisma.FieldRef<"CareerPath", 'String[]'>
   readonly roadmap: Prisma.FieldRef<"CareerPath", 'Json'>
   readonly averageSalary: Prisma.FieldRef<"CareerPath", 'String'>
-  readonly jobOpenings: Prisma.FieldRef<"CareerPath", 'Int'>
-  readonly growthRate: Prisma.FieldRef<"CareerPath", 'Float'>
   readonly active: Prisma.FieldRef<"CareerPath", 'Boolean'>
   readonly processingStatus: Prisma.FieldRef<"CareerPath", 'String'>
   readonly processedAt: Prisma.FieldRef<"CareerPath", 'DateTime'>
@@ -1678,6 +1679,25 @@ export type CareerPath$jobsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.JobScalarFieldEnum | Prisma.JobScalarFieldEnum[]
+}
+
+/**
+ * CareerPath.embedding
+ */
+export type CareerPath$embeddingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Embedding
+   */
+  select?: Prisma.EmbeddingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Embedding
+   */
+  omit?: Prisma.EmbeddingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmbeddingInclude<ExtArgs> | null
+  where?: Prisma.EmbeddingWhereInput
 }
 
 /**

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import redis from '@/lib/redis'
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   return Boolean(session?.user && session.user.role === 'admin')
 }
 

@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createClient } from 'redis'
 import { Client as MinioClient } from 'minio'
@@ -109,7 +108,7 @@ async function getMinioStats() {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
 
     if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json(
@@ -184,7 +183,7 @@ export async function GET() {
         orderBy: { matchScore: 'desc' },
         select: {
           id: true,
-          jobTitle: true,
+          careerPath: true,
           category: true,
           matchScore: true,
           createdAt: true,
@@ -252,7 +251,7 @@ export async function GET() {
       })),
       topRecommendations: topRecommendations.map((recommendation) => ({
         id: recommendation.id,
-        career: recommendation.jobTitle,
+        career: recommendation.careerPath,
         category: recommendation.category || 'General',
         matchScore: Math.round(recommendation.matchScore),
         student:

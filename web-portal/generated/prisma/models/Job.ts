@@ -292,6 +292,7 @@ export type JobWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
   bookmarks?: Prisma.JobBookmarkListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }
 
 export type JobOrderByWithRelationInput = {
@@ -317,6 +318,7 @@ export type JobOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   careerPath?: Prisma.CareerPathOrderByWithRelationInput
   bookmarks?: Prisma.JobBookmarkOrderByRelationAggregateInput
+  embedding?: Prisma.EmbeddingOrderByWithRelationInput
 }
 
 export type JobWhereUniqueInput = Prisma.AtLeast<{
@@ -345,6 +347,7 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   careerPath?: Prisma.XOR<Prisma.CareerPathNullableScalarRelationFilter, Prisma.CareerPathWhereInput> | null
   bookmarks?: Prisma.JobBookmarkListRelationFilter
+  embedding?: Prisma.XOR<Prisma.EmbeddingNullableScalarRelationFilter, Prisma.EmbeddingWhereInput> | null
 }, "id">
 
 export type JobOrderByWithAggregationInput = {
@@ -421,6 +424,7 @@ export type JobCreateInput = {
   updatedAt?: Date | string
   careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
   bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateInput = {
@@ -445,6 +449,7 @@ export type JobUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobUpdateInput = {
@@ -469,6 +474,7 @@ export type JobUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
   bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateInput = {
@@ -493,6 +499,7 @@ export type JobUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobCreateManyInput = {
@@ -641,6 +648,11 @@ export type JobScalarRelationFilter = {
   isNot?: Prisma.JobWhereInput
 }
 
+export type JobNullableScalarRelationFilter = {
+  is?: Prisma.JobWhereInput | null
+  isNot?: Prisma.JobWhereInput | null
+}
+
 export type JobCreateNestedManyWithoutCareerPathInput = {
   create?: Prisma.XOR<Prisma.JobCreateWithoutCareerPathInput, Prisma.JobUncheckedCreateWithoutCareerPathInput> | Prisma.JobCreateWithoutCareerPathInput[] | Prisma.JobUncheckedCreateWithoutCareerPathInput[]
   connectOrCreate?: Prisma.JobCreateOrConnectWithoutCareerPathInput | Prisma.JobCreateOrConnectWithoutCareerPathInput[]
@@ -732,6 +744,22 @@ export type JobUpdateOneRequiredWithoutBookmarksNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutBookmarksInput, Prisma.JobUpdateWithoutBookmarksInput>, Prisma.JobUncheckedUpdateWithoutBookmarksInput>
 }
 
+export type JobCreateNestedOneWithoutEmbeddingInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutEmbeddingInput, Prisma.JobUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutEmbeddingInput
+  connect?: Prisma.JobWhereUniqueInput
+}
+
+export type JobUpdateOneWithoutEmbeddingNestedInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutEmbeddingInput, Prisma.JobUncheckedCreateWithoutEmbeddingInput>
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutEmbeddingInput
+  upsert?: Prisma.JobUpsertWithoutEmbeddingInput
+  disconnect?: Prisma.JobWhereInput | boolean
+  delete?: Prisma.JobWhereInput | boolean
+  connect?: Prisma.JobWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutEmbeddingInput, Prisma.JobUpdateWithoutEmbeddingInput>, Prisma.JobUncheckedUpdateWithoutEmbeddingInput>
+}
+
 export type JobCreateWithoutCareerPathInput = {
   id?: string
   title: string
@@ -753,6 +781,7 @@ export type JobCreateWithoutCareerPathInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutCareerPathInput = {
@@ -776,6 +805,7 @@ export type JobUncheckedCreateWithoutCareerPathInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutCareerPathInput = {
@@ -851,6 +881,7 @@ export type JobCreateWithoutBookmarksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
+  embedding?: Prisma.EmbeddingCreateNestedOneWithoutJobInput
 }
 
 export type JobUncheckedCreateWithoutBookmarksInput = {
@@ -874,6 +905,7 @@ export type JobUncheckedCreateWithoutBookmarksInput = {
   processedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  embedding?: Prisma.EmbeddingUncheckedCreateNestedOneWithoutJobInput
 }
 
 export type JobCreateOrConnectWithoutBookmarksInput = {
@@ -913,6 +945,7 @@ export type JobUpdateWithoutBookmarksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutBookmarksInput = {
@@ -936,6 +969,119 @@ export type JobUncheckedUpdateWithoutBookmarksInput = {
   processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutJobNestedInput
+}
+
+export type JobCreateWithoutEmbeddingInput = {
+  id?: string
+  title: string
+  company: string
+  location: string
+  type?: $Enums.JobType
+  status?: $Enums.JobStatus
+  description: string
+  requirements?: Prisma.JobCreaterequirementsInput | string[]
+  salary?: string | null
+  salaryRange?: string | null
+  experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
+  postedAt?: Date | string
+  expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  careerPath?: Prisma.CareerPathCreateNestedOneWithoutJobsInput
+  bookmarks?: Prisma.JobBookmarkCreateNestedManyWithoutJobInput
+}
+
+export type JobUncheckedCreateWithoutEmbeddingInput = {
+  id?: string
+  title: string
+  company: string
+  location: string
+  type?: $Enums.JobType
+  status?: $Enums.JobStatus
+  description: string
+  requirements?: Prisma.JobCreaterequirementsInput | string[]
+  salary?: string | null
+  salaryRange?: string | null
+  experienceLevel?: string | null
+  phoneNumbers?: Prisma.JobCreatephoneNumbersInput | string[]
+  emails?: Prisma.JobCreateemailsInput | string[]
+  careerPathId?: string | null
+  postedAt?: Date | string
+  expiresAt?: Date | string | null
+  processingStatus?: string
+  processedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedCreateNestedManyWithoutJobInput
+}
+
+export type JobCreateOrConnectWithoutEmbeddingInput = {
+  where: Prisma.JobWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobCreateWithoutEmbeddingInput, Prisma.JobUncheckedCreateWithoutEmbeddingInput>
+}
+
+export type JobUpsertWithoutEmbeddingInput = {
+  update: Prisma.XOR<Prisma.JobUpdateWithoutEmbeddingInput, Prisma.JobUncheckedUpdateWithoutEmbeddingInput>
+  create: Prisma.XOR<Prisma.JobCreateWithoutEmbeddingInput, Prisma.JobUncheckedCreateWithoutEmbeddingInput>
+  where?: Prisma.JobWhereInput
+}
+
+export type JobUpdateToOneWithWhereWithoutEmbeddingInput = {
+  where?: Prisma.JobWhereInput
+  data: Prisma.XOR<Prisma.JobUpdateWithoutEmbeddingInput, Prisma.JobUncheckedUpdateWithoutEmbeddingInput>
+}
+
+export type JobUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumJobTypeFieldUpdateOperationsInput | $Enums.JobType
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requirements?: Prisma.JobUpdaterequirementsInput | string[]
+  salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
+  postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  careerPath?: Prisma.CareerPathUpdateOneWithoutJobsNestedInput
+  bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
+}
+
+export type JobUncheckedUpdateWithoutEmbeddingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  company?: Prisma.StringFieldUpdateOperationsInput | string
+  location?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumJobTypeFieldUpdateOperationsInput | $Enums.JobType
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  requirements?: Prisma.JobUpdaterequirementsInput | string[]
+  salary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  salaryRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experienceLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.JobUpdatephoneNumbersInput | string[]
+  emails?: Prisma.JobUpdateemailsInput | string[]
+  careerPathId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  postedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  processedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
 }
 
 export type JobCreateManyCareerPathInput = {
@@ -981,6 +1127,7 @@ export type JobUpdateWithoutCareerPathInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUpdateManyWithoutJobNestedInput
+  embedding?: Prisma.EmbeddingUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateWithoutCareerPathInput = {
@@ -1004,6 +1151,7 @@ export type JobUncheckedUpdateWithoutCareerPathInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookmarks?: Prisma.JobBookmarkUncheckedUpdateManyWithoutJobNestedInput
+  embedding?: Prisma.EmbeddingUncheckedUpdateOneWithoutJobNestedInput
 }
 
 export type JobUncheckedUpdateManyWithoutCareerPathInput = {
@@ -1082,6 +1230,7 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   updatedAt?: boolean
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
   bookmarks?: boolean | Prisma.Job$bookmarksArgs<ExtArgs>
+  embedding?: boolean | Prisma.Job$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
@@ -1160,6 +1309,7 @@ export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
 export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   careerPath?: boolean | Prisma.Job$careerPathArgs<ExtArgs>
   bookmarks?: boolean | Prisma.Job$bookmarksArgs<ExtArgs>
+  embedding?: boolean | Prisma.Job$embeddingArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type JobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1174,6 +1324,7 @@ export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   objects: {
     careerPath: Prisma.$CareerPathPayload<ExtArgs> | null
     bookmarks: Prisma.$JobBookmarkPayload<ExtArgs>[]
+    embedding: Prisma.$EmbeddingPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1592,6 +1743,7 @@ export interface Prisma__JobClient<T, Null = never, ExtArgs extends runtime.Type
   readonly [Symbol.toStringTag]: "PrismaPromise"
   careerPath<T extends Prisma.Job$careerPathArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$careerPathArgs<ExtArgs>>): Prisma.Prisma__CareerPathClient<runtime.Types.Result.GetResult<Prisma.$CareerPathPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   bookmarks<T extends Prisma.Job$bookmarksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$bookmarksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobBookmarkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  embedding<T extends Prisma.Job$embeddingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$embeddingArgs<ExtArgs>>): Prisma.Prisma__EmbeddingClient<runtime.Types.Result.GetResult<Prisma.$EmbeddingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2082,6 +2234,25 @@ export type Job$bookmarksArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.JobBookmarkScalarFieldEnum | Prisma.JobBookmarkScalarFieldEnum[]
+}
+
+/**
+ * Job.embedding
+ */
+export type Job$embeddingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Embedding
+   */
+  select?: Prisma.EmbeddingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Embedding
+   */
+  omit?: Prisma.EmbeddingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmbeddingInclude<ExtArgs> | null
+  where?: Prisma.EmbeddingWhereInput
 }
 
 /**

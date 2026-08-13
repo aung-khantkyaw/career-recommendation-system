@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 type CareerPayload = {
   title?: string
@@ -9,15 +9,13 @@ type CareerPayload = {
   description?: string
   requiredSkills?: string[] | string
   softSkills?: string[] | string
-  roadmap?: Record<string, unknown> | null
+  roadmap?: Prisma.InputJsonValue
   averageSalary?: string
-  jobOpenings?: number | string
-  growthRate?: number | string
   active?: boolean
 }
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions)
+  const session = await auth()
   return Boolean(session?.user && session.user.role === 'admin')
 }
 
@@ -34,13 +32,6 @@ function toStringArray(value: string[] | string | undefined) {
   }
 
   return []
-}
-
-function toNumber(value: number | string | undefined, fallback = 0) {
-  if (value === undefined || value === '') return fallback
-
-  const number = Number(value)
-  return Number.isFinite(number) ? number : fallback
 }
 
 function validateCareerPayload(body: CareerPayload) {
@@ -70,8 +61,6 @@ function validateCareerPayload(body: CareerPayload) {
       softSkills,
       roadmap: body.roadmap,
       averageSalary,
-      jobOpenings: Math.max(0, Math.round(toNumber(body.jobOpenings))),
-      growthRate: toNumber(body.growthRate),
       active: body.active ?? true,
     },
   }
@@ -125,7 +114,7 @@ export async function PATCH(
 
     const career = await prisma.careerPath.update({
       where: { id },
-      data: result.data as any,
+      data: result.data,
     })
 
     return NextResponse.json({

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Search, Plus, Edit, Trash2, RefreshCw, Key, X, Clock, CheckCircle2 } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, RefreshCw, Key, X, Clock, CheckCircle2, ToggleLeft, ToggleRight } from 'lucide-react'
 
 interface ApiKey {
   id: string
@@ -52,8 +53,6 @@ export default function ApiKeysPage() {
   const [editingKey, setEditingKey] = useState<ApiKey | null>(null)
   const [form, setForm] = useState<ApiKeyForm>(emptyForm)
   const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
 
   const fetchApiKeys = async () => {
     setIsLoading(true)
@@ -87,8 +86,6 @@ export default function ApiKeysPage() {
     setEditingKey(null)
     setForm(emptyForm)
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
   }
 
   const openEditForm = (apiKey: ApiKey) => {
@@ -102,8 +99,6 @@ export default function ApiKeysPage() {
       expiresAt: apiKey.expiresAt ? new Date(apiKey.expiresAt).toISOString().split('T')[0] : '',
     })
     setIsFormOpen(true)
-    setError('')
-    setSuccess('')
   }
 
   const closeForm = () => {
@@ -122,8 +117,6 @@ export default function ApiKeysPage() {
   const saveApiKey = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setIsSaving(true)
-    setError('')
-    setSuccess('')
 
     const payload = {
       ...form,
@@ -148,7 +141,7 @@ export default function ApiKeysPage() {
         throw new Error(data.error || 'Failed to save API key')
       }
 
-      setSuccess(
+      toast.success(
         editingKey
           ? 'API key updated successfully.'
           : 'API key created successfully.'
@@ -156,7 +149,7 @@ export default function ApiKeysPage() {
       closeForm()
       fetchApiKeys()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save API key')
+      toast.error(err instanceof Error ? err.message : 'Failed to save API key')
     } finally {
       setIsSaving(false)
     }
@@ -170,9 +163,6 @@ export default function ApiKeysPage() {
 
     if (!confirmed) return
 
-    setError('')
-    setSuccess('')
-
     try {
       const response = await fetch(`/api/admin/api-keys/${apiKey.id}`, {
         method: 'DELETE',
@@ -183,10 +173,28 @@ export default function ApiKeysPage() {
         throw new Error(data.error || 'Failed to delete API key')
       }
 
-      setSuccess('API key deleted successfully.')
+      toast.success('API key deleted successfully.')
       fetchApiKeys()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete API key')
+      toast.error(err instanceof Error ? err.message : 'Failed to delete API key')
+    }
+  }
+
+  const toggleActive = async (apiKey: ApiKey) => {
+    try {
+      const response = await fetch(`/api/admin/api-keys/${apiKey.id}/toggle-active`, {
+        method: 'PATCH',
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to toggle API key status')
+      }
+
+      toast.success('API key status updated successfully.')
+      fetchApiKeys()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to toggle API key status')
     }
   }
 
@@ -247,12 +255,6 @@ export default function ApiKeysPage() {
           </Button>
         </div>
       </div>
-
-      {error ? (
-        <Notice tone="error" message={error} />
-      ) : success ? (
-        <Notice tone="success" message={success} />
-      ) : null}
 
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="shadow-sm">
@@ -413,7 +415,7 @@ export default function ApiKeysPage() {
                   placeholder="Search keys..."
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  className="pl-9 sm:w-72"
+                  className="pl-9 sm:w-72 h-12"
                 />
               </div>
               <div className="flex rounded-lg border bg-background p-1">
@@ -487,9 +489,24 @@ export default function ApiKeysPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={key.active ? 'default' : 'secondary'}>
-                        {key.active ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleActive(key)}
+                        className="flex items-center gap-2"
+                      >
+                        {key.active ? (
+                          <>
+                            <ToggleRight className="size-5 text-green-600" />
+                            <span className="text-green-600">Active</span>
+                          </>
+                        ) : (
+                          <>
+                            <ToggleLeft className="size-5 text-muted-foreground" />
+                            <span className="text-muted-foreground">Inactive</span>
+                          </>
+                        )}
+                      </Button>
                     </TableCell>
                     <TableCell className="text-sm">{new Date(key.createdAt).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
@@ -529,35 +546,6 @@ export default function ApiKeysPage() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function Notice({ tone, message }: { tone: 'error' | 'success'; message: string }) {
-  return (
-    <Card
-      className={
-        tone === 'error'
-          ? 'border-destructive/40 bg-destructive/10 shadow-sm'
-          : 'shadow-sm'
-      }
-    >
-      <CardContent className="flex items-center gap-3 py-4">
-        {tone === 'error' ? (
-          <X className="size-4 text-destructive" aria-hidden="true" />
-        ) : (
-          <CheckCircle2 className="size-4" aria-hidden="true" />
-        )}
-        <p
-          className={
-            tone === 'error'
-              ? 'text-sm font-medium text-destructive'
-              : 'text-sm font-medium'
-          }
-        >
-          {message}
-        </p>
-      </CardContent>
-    </Card>
   )
 }
 

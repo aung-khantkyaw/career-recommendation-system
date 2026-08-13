@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Search, Plus, Edit, Trash2, ArrowLeft, Loader2, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
+import { useStatusUpdates } from '@/hooks/use-status-updates'
 
 interface Skill {
   id: string
@@ -20,6 +21,8 @@ interface Skill {
   description: string | null
   difficulty: string
   active: boolean
+  processingStatus: string
+  processedAt: string | null
   createdAt: string
   updatedAt: string
 }
@@ -42,6 +45,9 @@ export default function AdminSkillsPage() {
     active: true,
   })
   const [isSaving, setIsSaving] = useState(false)
+  
+  // Real-time status updates
+  const { getStatusForEntity } = useStatusUpdates()
 
   const fetchSkills = async (page = 1) => {
     setIsLoading(true)
@@ -100,6 +106,20 @@ export default function AdminSkillsPage() {
       EXPERT: 'destructive',
     }
     return <Badge variant={variants[difficulty] || 'outline'}>{difficulty}</Badge>
+  }
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, any> = {
+      PENDING: 'secondary',
+      PROCESSING: 'default bg-blue-600',
+      COMPLETED: 'default bg-green-600',
+      FAILED: 'destructive',
+    }
+    return <Badge variant={variants[status] || 'outline'}>{status}</Badge>
+  }
+
+  const getRealTimeStatus = (skill: Skill) => {
+    return getStatusForEntity('SKILL', skill.id) || skill.processingStatus
   }
 
   const openCreateDialog = () => {
@@ -267,7 +287,8 @@ export default function AdminSkillsPage() {
                     <TableHead>Category</TableHead>
                     <TableHead>Difficulty</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Active</TableHead>
+                    <TableHead>Processing Status</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -284,6 +305,9 @@ export default function AdminSkillsPage() {
                         <Badge variant={skill.active ? 'default' : 'secondary'}>
                           {skill.active ? 'Active' : 'Inactive'}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {getStatusBadge(getRealTimeStatus(skill))}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">

@@ -1,5 +1,5 @@
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
@@ -9,13 +9,13 @@ if (!process.env.NEXTAUTH_URL) {
   process.env.NEXTAUTH_URL = fallbackAuthUrl
 }
 
-if (!process.env.NEXTAUTH_SECRET) {
-  process.env.NEXTAUTH_SECRET = 'dev-secret-change-in-production'
+if (!process.env.AUTH_SECRET) {
+  process.env.AUTH_SECRET = 'dev-secret-change-in-production'
 }
 
-export const authOptions: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    CredentialsProvider({
+    Credentials({
       name: 'Credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -86,5 +86,5 @@ export const authOptions: NextAuthOptions = {
       return session
     }
   },
-  secret: process.env.NEXTAUTH_SECRET,
-}
+  secret: process.env.AUTH_SECRET,
+})

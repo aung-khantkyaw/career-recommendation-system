@@ -82,14 +82,14 @@ model Resume {
   minioPath         String
   processingStatus  ProcessingStatus @default(PENDING)
   skills            Json?     // Stores extracted skills as JSON
-  embedding         Unsupported("vector(2048)")? // pgvector embedding
   experience        Json?     // Stores extracted experience as JSON
   education         Json?     // Stores extracted education as JSON
   processedAt       DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
   recommendations   CareerRecommendation[]
-  
+  embedding         Embedding?
+
   @@index([userId])
   @@index([processingStatus])
 }
@@ -98,17 +98,14 @@ model CareerRecommendation {
   id             String   @id @default(uuid())
   resumeId       String
   resume         Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  jobTitle       String
-  company        String?
-  matchScore     Float
-  skillsMatched  String[] // Array of matched skills
-  description    String
-  careerPath     String?  // RAG-based career path
-  category       String?  // Career category
+  careerPath     String?  // Career path name (e.g., "Data Scientist")
+  category       String?  // Career category (e.g., "Tech/Data")
+  matchScore     Float   // Overall match score for this career path
+  skillsMatched  String[] // Skills that matched for this career path
+  jobs           Json     // Array of job objects: [{title, company, matchScore, skillsMatched, description}]
   createdAt      DateTime @default(now())
   
   @@index([resumeId])
-  @@index([matchScore])
 }
 
 model CareerPath {
@@ -120,15 +117,13 @@ model CareerPath {
   softSkills     String[] @default([])
   roadmap        Json?
   averageSalary  String
-  jobOpenings    Int      @default(0)
-  growthRate     Float    @default(0)
   active         Boolean  @default(true)
-  embedding      Unsupported("vector(2048)")?
   processingStatus String @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
   processedAt    DateTime?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   jobs           Job[]
+  embedding      Embedding?
 
   @@index([category])
   @@index([active])
@@ -153,12 +148,12 @@ model Job {
   careerPath      CareerPath? @relation(fields: [careerPathId], references: [id], onDelete: SetNull)
   postedAt        DateTime   @default(now())
   expiresAt       DateTime?
-  embedding       Unsupported("vector(2048)")?
   processingStatus String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
   processedAt     DateTime?
   createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  updatedAt       DateTime @updatedAt
   bookmarks       JobBookmark[]
+  embedding       Embedding?
 
   @@index([status])
   @@index([careerPathId])
@@ -249,17 +244,21 @@ model Feedback {
 }
 
 model Skill {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  category    String   // TECHNICAL, SOFT, LANGUAGE, TOOL
-  description String?
-  difficulty  String   @default("INTERMEDIATE") // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid())
+  name             String   @unique
+  category         String   // TECHNICAL, SOFT, LANGUAGE, TOOL
+  description      String?
+  difficulty       String   @default("INTERMEDIATE") // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
+  active           Boolean  @default(true)
+  processingStatus String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  processedAt      DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  embedding        Embedding?
 
   @@index([category])
   @@index([active])
+  @@index([processingStatus])
 }
 
 model SystemConfig {
@@ -302,4 +301,29 @@ model ApiKey {
 
   @@index([provider])
   @@index([active])
+}
+
+model Embedding {
+  id            String   @id @default(uuid())
+  resumeId      String?  @unique
+  careerPathId  String?  @unique
+  jobId         String?  @unique
+  skillId       String?  @unique
+  vector        Unsupported("vector")?
+  dimension     Int
+  model         String
+  version       Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  resume        Resume?          @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  careerPath    CareerPath?      @relation(fields: [careerPathId], references: [id], onDelete: Cascade)
+  job           Job?             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill         Skill?           @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@index([careerPathId])
+  @@index([jobId])
+  @@index([skillId])
+  @@index([model])
 }
