@@ -13,6 +13,8 @@ import {
   ToggleRight,
   Trash2,
   X,
+  Download,
+  Loader2,
 } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
@@ -95,6 +97,7 @@ export default function CareerDataPage() {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
   
   // Real-time status updates
   const { getStatusForEntity } = useStatusUpdates()
@@ -301,6 +304,41 @@ export default function CareerDataPage() {
     }
   }
 
+  const exportCareers = async () => {
+    setIsExporting(true)
+    try {
+      const csvContent = [
+        ['Title', 'Category', 'Description', 'Required Skills', 'Soft Skills', 'Average Salary', 'Status', 'Created Date', 'Updated Date'].join(','),
+        ...careers.map(c => [
+          c.title,
+          c.category,
+          c.description,
+          c.requiredSkills.join('; '),
+          c.softSkills.join('; '),
+          c.averageSalary,
+          c.active ? 'Active' : 'Inactive',
+          new Date(c.createdAt).toLocaleDateString(),
+          new Date(c.updatedAt).toLocaleDateString()
+        ].map(field => `"${field}"`).join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `careers_export_${new Date().toISOString().split('T')[0]}.csv`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Failed to export careers:', error)
+      toast.error('Failed to export careers')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -324,6 +362,18 @@ export default function CareerDataPage() {
               aria-hidden="true"
             />
             Refresh
+          </Button>
+          <Button
+            variant="outline"
+            onClick={exportCareers}
+            disabled={isExporting || careers.length === 0}
+          >
+            {isExporting ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="size-4 mr-2" />
+            )}
+            Export CSV
           </Button>
           <Button onClick={openCreateForm}>
             <Plus className="size-4" aria-hidden="true" />

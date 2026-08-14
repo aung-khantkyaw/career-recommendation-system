@@ -15,34 +15,56 @@ export async function GET(req: NextRequest) {
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       async start(controller) {
+        let isClosed = false
+        const closeController = () => {
+          if (!isClosed) {
+            isClosed = true
+            controller.close()
+          }
+        }
+
         try {
           // Send initial connection message
-          controller.enqueue(encoder.encode('data: {"type":"connected"}\n\n'))
-          console.log('SSE: Sent connected message')
+          if (!isClosed) {
+            controller.enqueue(encoder.encode('data: {"type":"connected"}\n\n'))
+            console.log('SSE: Sent connected message')
+          }
 
           // Keep connection alive with heartbeat
           const heartbeat = setInterval(() => {
-            controller.enqueue(encoder.encode(': heartbeat\n\n'))
+            if (!isClosed) {
+              try {
+                controller.enqueue(encoder.encode(': heartbeat\n\n'))
+              } catch (e) {
+                // Controller already closed, stop heartbeat
+                clearInterval(heartbeat)
+              }
+            }
           }, 30000)
 
           // Poll for status updates using brpop (similar to embedding jobs)
           const pollQueue = async () => {
             console.log('SSE: Starting to poll queue')
-            while (!req.signal.aborted) {
+            while (!req.signal.aborted && !isClosed) {
               try {
                 // brpop with 5 second timeout
                 const result = await redisClient.brPop('status_updates_queue', 5)
                 
-                if (result) {
+                if (result && !isClosed) {
                   const message = result.element
                   console.log('SSE: Received from queue:', message)
                   const data = `data: ${message}\n\n`
-                  controller.enqueue(encoder.encode(data))
+                  try {
+                    controller.enqueue(encoder.encode(data))
+                  } catch (e) {
+                    // Controller already closed, stop polling
+                    break
+                  }
                 } else {
                   console.log('SSE: No message in queue (timeout)')
                 }
               } catch (error) {
-                if (req.signal.aborted) break
+                if (req.signal.aborted || isClosed) break
                 console.error('SSE: brpop error:', error)
                 // Wait before retry
                 await new Promise(resolve => setTimeout(resolve, 1000))
@@ -53,15 +75,21 @@ export async function GET(req: NextRequest) {
           pollQueue()
 
           // Cleanup on close
-          req.signal.addEventListener('abort', async () => {
+          const abortHandler = async () => {
             console.log('SSE: Connection aborted')
             clearInterval(heartbeat)
-            await redisClient.quit()
-            controller.close()
-          })
+            closeController()
+            try {
+              await redisClient.quit()
+            } catch (e) {
+              // Ignore quit errors
+            }
+          }
+          
+          req.signal.addEventListener('abort', abortHandler)
         } catch (error) {
           console.error('SSE error:', error)
-          controller.close()
+          closeController()
         }
       },
     })

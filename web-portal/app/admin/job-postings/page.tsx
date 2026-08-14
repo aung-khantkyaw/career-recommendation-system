@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Search, Plus, Edit, Trash2, RefreshCw, Briefcase, MapPin, DollarSign, Clock, X, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, RefreshCw, Briefcase, MapPin, DollarSign, Clock, X, ToggleLeft, ToggleRight, Download, Loader2 } from 'lucide-react'
 import { useStatusUpdates } from '@/hooks/use-status-updates'
 
 interface Job {
@@ -83,6 +83,7 @@ export default function JobPostingsPage() {
   const [careerPaths, setCareerPaths] = useState<any[]>([])
   const [form, setForm] = useState<JobForm>(emptyForm)
   const [isSaving, setIsSaving] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
   
   // Real-time status updates
   const { getStatusForEntity } = useStatusUpdates()
@@ -310,6 +311,46 @@ export default function JobPostingsPage() {
     fetchJobs()
   }
 
+  const exportJobs = async () => {
+    setIsExporting(true)
+    try {
+      const csvContent = [
+        ['Title', 'Company', 'Location', 'Type', 'Status', 'Salary', 'Salary Range', 'Experience Level', 'Posted Date', 'Expires Date', 'Requirements', 'Phone Numbers', 'Emails', 'Career Path'].join(','),
+        ...jobs.map(j => [
+          j.title,
+          j.company,
+          j.location,
+          j.type,
+          j.status,
+          j.salary || '',
+          j.salaryRange || '',
+          j.experienceLevel || '',
+          new Date(j.postedAt).toLocaleDateString(),
+          j.expiresAt ? new Date(j.expiresAt).toLocaleDateString() : '',
+          j.requirements.join('; '),
+          j.phoneNumbers.join('; '),
+          j.emails.join('; '),
+          j.careerPath?.title || ''
+        ].map(field => `"${field}"`).join(','))
+      ].join('\n')
+
+      const blob = new Blob([csvContent], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `jobs_export_${new Date().toISOString().split('T')[0]}.csv`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (error) {
+      console.error('Failed to export jobs:', error)
+      toast.error('Failed to export jobs')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   useEffect(() => {
     handleRefresh()
   }, [])
@@ -336,6 +377,18 @@ export default function JobPostingsPage() {
               aria-hidden="true"
             />
             Refresh
+          </Button>
+          <Button
+            variant="outline"
+            onClick={exportJobs}
+            disabled={isExporting || jobs.length === 0}
+          >
+            {isExporting ? (
+              <Loader2 className="size-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="size-4 mr-2" />
+            )}
+            Export CSV
           </Button>
           <Button onClick={openCreateForm}>
             <Plus className="size-4" aria-hidden="true" />

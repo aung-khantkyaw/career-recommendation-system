@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff, Download, CheckSquare, Square, Loader2 } from 'lucide-react'
 
 interface User {
@@ -27,6 +28,10 @@ export default function UserManagementPage() {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
   const [isBulkUpdating, setIsBulkUpdating] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
+  const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false)
+  const [isAddingUser, setIsAddingUser] = useState(false)
+  const [newUser, setNewUser] = useState({ email: '', password: '', name: '', role: 'USER' })
+  const [addError, setAddError] = useState('')
 
   const fetchUsers = async (query?: string) => {
     try {
@@ -101,9 +106,13 @@ export default function UserManagementPage() {
 
       if (response.ok) {
         setUsers(users.map(u => u.id === userId ? { ...u, isActive: !currentStatus } : u))
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to update user status')
       }
     } catch (error) {
       console.error('Failed to toggle user status:', error)
+      alert('Failed to update user status')
     }
   }
 
@@ -206,6 +215,37 @@ export default function UserManagementPage() {
     }
   }
 
+  const handleAddUser = async () => {
+    setAddError('')
+    if (!newUser.email || !newUser.password) {
+      setAddError('Email and password are required')
+      return
+    }
+
+    setIsAddingUser(true)
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser),
+      })
+
+      if (response.ok) {
+        setIsAddUserDialogOpen(false)
+        setNewUser({ email: '', password: '', name: '', role: 'USER' })
+        fetchUsers()
+      } else {
+        const error = await response.json()
+        setAddError(error.error || 'Failed to create user')
+      }
+    } catch (error) {
+      console.error('Failed to add user:', error)
+      setAddError('Failed to create user')
+    } finally {
+      setIsAddingUser(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -213,10 +253,73 @@ export default function UserManagementPage() {
           <h1 className="text-3xl font-bold">User Management</h1>
           <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
         </div>
-        <Button>
-          <User className="w-4 h-4 mr-2" />
-          Add User
-        </Button>
+        <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
+          <DialogTrigger>
+            <Button>
+              <User className="w-4 h-4 mr-2" />
+              Add User
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New User</DialogTitle>
+              <DialogDescription>Create a new user account with specified role</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  placeholder="user@example.com"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Password</label>
+                <Input
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  placeholder="Enter password"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Name (optional)</label>
+                <Input
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Role</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-md"
+                >
+                  <option value="USER">User</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+              </div>
+              {addError && (
+                <div className="text-sm text-red-500">{addError}</div>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddUser} disabled={isAddingUser}>
+                {isAddingUser ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : null}
+                Create User
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Stats */}

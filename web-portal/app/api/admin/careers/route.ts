@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
-import redis from '@/lib/redis'
+import redis, { ensureRedisConnection } from '@/lib/redis'
 
 type CareerPayload = {
   title?: string
@@ -139,11 +139,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 })
     }
 
-    const career = await prisma.careerPath.create({
-      data: result.data,
+    const career = await prisma.careerPath.upsert({
+      where: { title: result.data.title },
+      update: result.data,
+      create: result.data,
     })
 
     // Queue embedding generation job
+    await ensureRedisConnection()
     await redis.lPush('ai_jobs_queue', JSON.stringify({
       job_id: `career_${career.id}`,
       job_type: 'career_embedding',
@@ -208,6 +211,7 @@ export async function PUT(req: NextRequest) {
 
     // Queue embedding regeneration job only if needed
     if (shouldRegenerate) {
+      await ensureRedisConnection()
       await redis.lPush('ai_jobs_queue', JSON.stringify({
         job_id: `career_${career.id}`,
         job_type: 'career_embedding',
