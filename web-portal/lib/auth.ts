@@ -14,6 +14,7 @@ if (!process.env.AUTH_SECRET) {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -22,12 +23,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        const email = typeof credentials?.email === 'string' ? credentials.email : undefined
+        const password = typeof credentials?.password === 'string' ? credentials.password : undefined
+
+        if (!email || !password) {
           throw new Error('Invalid credentials')
         }
 
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
+          where: { email }
         })
 
         if (!user) {
@@ -38,7 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Account is deactivated. Please contact administrator.')
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+        const isPasswordValid = await bcrypt.compare(password, user.password)
 
         if (!isPasswordValid) {
           throw new Error('Invalid credentials')

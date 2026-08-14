@@ -109,8 +109,12 @@ export async function GET(req: NextRequest) {
         recommendationsWithJobs = recommendations.map(rec => {
           const jobs = rec.jobs as any[] || []
           const enrichedJobs = jobs.map(job => {
-            if (job.job_id && jobMap.has(job.job_id)) {
+            if (job.job_id) {
               const jobDetails = jobMap.get(job.job_id)
+              if (!jobDetails) {
+                return job
+              }
+
               return {
                 ...job,
                 title: jobDetails.title,

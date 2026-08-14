@@ -6,26 +6,22 @@ const redisClient = createClient({
 
 redisClient.on('error', (err) => console.error('Redis Client Error', err));
 
-// Initialize connection on module load
-let isInitialized = false;
+let connectionPromise: Promise<any> | undefined;
 
-async function ensureConnected() {
-  if (!isInitialized) {
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
-    }
-    isInitialized = true;
-    console.log('✅ Redis connected');
+export async function ensureRedisConnection() {
+  if (redisClient.isOpen) {
+    return;
   }
+
+  connectionPromise ??= redisClient.connect().finally(() => {
+    connectionPromise = undefined;
+  });
+
+  await connectionPromise;
 }
 
-// Auto-connect on first use
-ensureConnected().catch(err => {
-  console.error('Failed to connect to Redis:', err);
-});
-
 export async function addJobToQueue(resumeId: string, minioPath: string, userId: string) {
-  await ensureConnected();
+  await ensureRedisConnection();
 
   const jobPayload = JSON.stringify({
     job_id: resumeId,

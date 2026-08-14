@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -16,11 +16,11 @@ export async function GET(
       )
     }
 
-    const resumeId = params.id
+    const { id } = await params;
 
     // Verify the resume belongs to the user
     const resume = await prisma.resume.findUnique({
-      where: { id: resumeId },
+      where: { id },
       include: {
         recommendations: {
           orderBy: { matchScore: 'desc' }

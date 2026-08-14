@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import redis from '@/lib/redis'
+import redis, { ensureRedisConnection } from '@/lib/redis'
 
 export async function PATCH(
   request: NextRequest,
@@ -45,6 +45,7 @@ export async function PATCH(
     })
 
     // Notify AI processor about the active status change
+    await ensureRedisConnection()
     await redis.publish('api_key_changes', JSON.stringify({
       type: 'active_changed',
       apiKeyId: updatedApiKey.id,

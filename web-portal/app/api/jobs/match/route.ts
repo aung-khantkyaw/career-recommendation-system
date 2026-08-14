@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
       const allJobSkills = [...jobRequirements, ...jobSkills]
 
       let matchScore = 0
-      let matchedSkills: string[] = []
+      const matchedSkills: string[] = []
 
       if (targetSkills.length > 0) {
         targetSkills.forEach(skill => {
