@@ -56,41 +56,41 @@ services:
     networks:
       - career-net
 
-  web-portal:
-    build:
-      context: ./web-portal
-      args:
-        DATABASE_URL: ${DATABASE_URL}
-    restart: unless-stopped
-    env_file:
-      - .env
-    ports:
-      - "3000:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-    networks:
-      - career-net
+  # web-portal:
+  #   build:
+  #     context: ./web-portal
+  #     args:
+  #       DATABASE_URL: ${DATABASE_URL}
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     minio:
+  #       condition: service_healthy
+  #   networks:
+  #     - career-net
 
-  ai-processor:
-    build:
-      context: ./ai-processor
-    restart: unless-stopped
-    env_file:
-      - .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-    networks:
-      - career-net
+  # ai-processor:
+  #   build:
+  #     context: ./ai-processor
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     minio:
+  #       condition: service_healthy
+  #   networks:
+  #     - career-net
 
 volumes:
   postgres_data:

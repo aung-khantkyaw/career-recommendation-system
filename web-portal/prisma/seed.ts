@@ -505,7 +505,6 @@ async function main() {
         name: displayName,
         category: 'TECHNICAL',
         description: `${displayName} - Technical skill`,
-        difficulty: 'INTERMEDIATE',
         active: true,
       },
     })
@@ -529,7 +528,6 @@ async function main() {
         name: displayName,
         category: 'SOFT',
         description: `${displayName} - Soft skill`,
-        difficulty: 'INTERMEDIATE',
         active: true,
       },
     })

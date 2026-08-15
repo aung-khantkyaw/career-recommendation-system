@@ -19,7 +19,6 @@ interface Skill {
   name: string
   category: string
   description: string | null
-  difficulty: string
   active: boolean
   processingStatus: string
   processedAt: string | null
@@ -41,7 +40,6 @@ export default function AdminSkillsPage() {
     name: '',
     category: 'TECHNICAL',
     description: '',
-    difficulty: 'INTERMEDIATE',
     active: true,
   })
   const [isSaving, setIsSaving] = useState(false)
@@ -98,15 +96,6 @@ export default function AdminSkillsPage() {
     return <Badge variant={variants[category] || 'outline'}>{category}</Badge>
   }
 
-  const getDifficultyBadge = (difficulty: string) => {
-    const variants: Record<string, any> = {
-      BEGINNER: 'secondary',
-      INTERMEDIATE: 'default',
-      ADVANCED: 'default bg-yellow-600',
-      EXPERT: 'destructive',
-    }
-    return <Badge variant={variants[difficulty] || 'outline'}>{difficulty}</Badge>
-  }
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, any> = {
@@ -128,7 +117,6 @@ export default function AdminSkillsPage() {
       name: '',
       category: 'TECHNICAL',
       description: '',
-      difficulty: 'INTERMEDIATE',
       active: true,
     })
     setIsDialogOpen(true)
@@ -140,7 +128,6 @@ export default function AdminSkillsPage() {
       name: skill.name,
       category: skill.category,
       description: skill.description || '',
-      difficulty: skill.difficulty,
       active: skill.active,
     })
     setIsDialogOpen(true)
@@ -153,7 +140,6 @@ export default function AdminSkillsPage() {
       name: '',
       category: 'TECHNICAL',
       description: '',
-      difficulty: 'INTERMEDIATE',
       active: true,
     })
   }
@@ -285,7 +271,6 @@ export default function AdminSkillsPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Category</TableHead>
-                    <TableHead>Difficulty</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Active</TableHead>
                     <TableHead>Processing Status</TableHead>
@@ -297,7 +282,6 @@ export default function AdminSkillsPage() {
                     <TableRow key={skill.id}>
                       <TableCell className="font-medium">{skill.name}</TableCell>
                       <TableCell>{getCategoryBadge(skill.category)}</TableCell>
-                      <TableCell>{getDifficultyBadge(skill.difficulty)}</TableCell>
                       <TableCell className="max-w-64 truncate text-sm text-muted-foreground">
                         {skill.description || 'No description'}
                       </TableCell>
@@ -397,23 +381,6 @@ export default function AdminSkillsPage() {
                   <SelectItem value="SOFT">Soft Skills</SelectItem>
                   <SelectItem value="LANGUAGE">Language</SelectItem>
                   <SelectItem value="TOOL">Tool</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="difficulty">Difficulty</Label>
-              <Select
-                value={formData.difficulty}
-                onValueChange={(value) => setFormData({ ...formData, difficulty: value || 'BEGINNER' })}
-              >
-                <SelectTrigger id="difficulty">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BEGINNER">Beginner</SelectItem>
-                  <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
-                  <SelectItem value="ADVANCED">Advanced</SelectItem>
-                  <SelectItem value="EXPERT">Expert</SelectItem>
                 </SelectContent>
               </Select>
             </div>

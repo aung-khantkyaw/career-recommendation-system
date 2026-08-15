@@ -8,6 +8,7 @@ from spacy.matcher import PhraseMatcher
 from openai import OpenAI
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from config import DATABASE_URL
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -26,14 +27,19 @@ class SkillExtractionModel:
         self.llm_provider = llm_provider or 'openai'
         
         # Database connection parameters
-        self.db_url = os.getenv('DATABASE_URL')
+        self.db_url = DATABASE_URL
         
         # Load skills from database or fallback to hardcoded lists
         self.tech_skills, self.soft_skills = self._load_skills_from_db()
         
         # Initialize PhraseMatcher for fast extraction
         if self.nlp:
-            self.matcher = PhraseMatcher(self.nlp.vocab)
+            # Database skills are normalized to lowercase while resume text keeps
+            # its original casing (for example: Python, React, AWS).  The
+            # default PhraseMatcher attribute is ORTH, which is case-sensitive,
+            # so use LOWER to retain the case-insensitive behaviour of the
+            # previous `text.lower()` implementation.
+            self.matcher = PhraseMatcher(self.nlp.vocab, attr="LOWER")
             self._init_phrase_matcher()
     
     def _load_skills_from_db(self):

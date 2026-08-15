@@ -248,7 +248,6 @@ model Skill {
   name             String   @unique
   category         String   // TECHNICAL, SOFT, LANGUAGE, TOOL
   description      String?
-  difficulty       String   @default("INTERMEDIATE") // BEGINNER, INTERMEDIATE, ADVANCED, EXPERT
   active           Boolean  @default(true)
   processingStatus String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
   processedAt      DateTime?

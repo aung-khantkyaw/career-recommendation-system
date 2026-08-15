@@ -260,7 +260,7 @@ class AIProcessor:
             raise ValueError(f"Skill not found: {skill_id}")
 
         # Combine text for embedding
-        text = f"{skill['name']} {skill['category']} {skill['description'] or ''} {skill['difficulty']}"
+        text = f"{skill['name']} {skill['category']} {skill['description'] or ''}"
 
         # Generate embedding
         logger.info("🧠 Generating embedding for skill")

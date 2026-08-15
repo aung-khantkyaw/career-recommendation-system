@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, category, description, difficulty } = body
+    const { name, category, description } = body
 
     if (!name || !category) {
       return NextResponse.json(
@@ -86,7 +86,6 @@ export async function POST(req: NextRequest) {
         name,
         category,
         description,
-        difficulty: difficulty || 'INTERMEDIATE',
       }
     })
 
@@ -119,7 +118,7 @@ export async function PUT(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { name, category, description, difficulty, active } = body
+    const { name, category, description, active } = body
 
     const skill = await prisma.skill.update({
       where: { id },
@@ -127,7 +126,6 @@ export async function PUT(req: NextRequest) {
         ...(name && { name }),
         ...(category && { category }),
         ...(description !== undefined && { description }),
-        ...(difficulty && { difficulty }),
         ...(active !== undefined && { active }),
       }
     })
