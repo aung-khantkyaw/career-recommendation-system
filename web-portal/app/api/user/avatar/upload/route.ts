@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { uploadFile, getFileUrl, deleteFile } from '@/lib/minio'
+import { uploadFile, getFileUrl, deleteFile, getStorageKeyFromUrl } from '@/lib/minio'
 import { randomUUID } from 'crypto'
 
 export async function POST(req: NextRequest) {
@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
 
     // Delete old avatar if exists
     if (user?.avatar) {
-      const endpoint = `http://${process.env.MINIO_HOST || 'localhost'}:${process.env.MINIO_PORT || '9000'}`
-      const oldKey = user.avatar.replace(`${endpoint}/career-resumes/`, '')
+      const oldKey = getStorageKeyFromUrl(user.avatar)
       await deleteFile(oldKey)
     }
 

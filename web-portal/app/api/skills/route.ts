@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
         name: true,
         category: true,
         description: true,
-        difficulty: true,
         active: true,
       }
     })

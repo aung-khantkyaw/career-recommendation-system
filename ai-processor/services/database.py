@@ -1,7 +1,8 @@
 import os
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from config import DATABASE_URL, REDIS_URL
+from config import DATABASE_URL, INFRASTRUCTURE_MODE, REDIS_URL, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
+from services.upstash_redis import UpstashRedis
 import logging
 import uuid
 import json
@@ -28,11 +29,9 @@ class DatabaseService:
     def connect_redis(self):
         """Connect to Redis for pub/sub"""
         try:
-            self.redis_client = redis.Redis.from_url(
-                REDIS_URL,
-                socket_connect_timeout=5,
-                decode_responses=True
-            )
+            self.redis_client = (UpstashRedis(UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN)
+                                 if INFRASTRUCTURE_MODE == 'CLOUD' else redis.Redis.from_url(
+                                     REDIS_URL, socket_connect_timeout=5, decode_responses=True))
             self.redis_client.ping()
             logger.info("Redis connection established for pub/sub")
         except Exception as e:

@@ -7,7 +7,8 @@ import threading
 from datetime import datetime
 from openai import OpenAI
 
-from config import REDIS_URL, OPENROUTER_BASE_URL
+from config import INFRASTRUCTURE_MODE, REDIS_URL, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN, OPENROUTER_BASE_URL
+from services.upstash_redis import UpstashRedis
 from services.database import DatabaseService
 from services.minio_service import MinIOService
 from services.resume_parser import ResumeParser
@@ -25,12 +26,9 @@ QUEUE_NAME = 'ai_jobs_queue'
 
 class AIProcessor:
     def __init__(self):
-        self.redis_client = redis.Redis.from_url(
-            REDIS_URL,
-            socket_connect_timeout=10,
-            socket_timeout=None,
-            decode_responses=True
-        )
+        self.redis_client = (UpstashRedis(UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN)
+                             if INFRASTRUCTURE_MODE == 'CLOUD' else redis.Redis.from_url(
+                                 REDIS_URL, socket_connect_timeout=10, socket_timeout=None, decode_responses=True))
         # Test Redis connection
         try:
             self.redis_client.ping()
@@ -84,10 +82,14 @@ class AIProcessor:
         import google.genai as genai
         
         for key in self.api_keys:
-            provider = key['provider'].lower()
-            llm_model = key.get('llmModelName')
-            embedding_model = key.get('embeddingModelName')
-            api_key = key['apiKey']
+            # Values entered through the admin UI can contain invisible trailing
+            # whitespace. In particular, a newline in an API key makes an HTTP
+            # Authorization header invalid and is reported by the SDK as a
+            # generic connection error.
+            provider = str(key['provider']).strip().lower()
+            llm_model = (key.get('llmModelName') or '').strip() or None
+            embedding_model = (key.get('embeddingModelName') or '').strip() or None
+            api_key = str(key['apiKey']).strip()
 
             if llm_model:
                 logger.info(f"Configuring LLM model: {llm_model} for provider: {provider}")
@@ -348,10 +350,12 @@ class AIProcessor:
         # Create shutdown event for graceful shutdown
         shutdown_event = threading.Event()
 
-        # Start API key change listener in a separate thread
-        listener_thread = threading.Thread(target=self.listen_for_api_key_changes, args=(shutdown_event,), daemon=False)
-        listener_thread.start()
-        logger.info("📡 API key change listener started")
+        # Upstash REST has no long-lived pub/sub subscriptions.
+        listener_thread = None
+        if INFRASTRUCTURE_MODE != 'CLOUD':
+            listener_thread = threading.Thread(target=self.listen_for_api_key_changes, args=(shutdown_event,), daemon=False)
+            listener_thread.start()
+            logger.info("📡 API key change listener started")
 
         try:
             while not shutdown_event.is_set():
@@ -361,6 +365,9 @@ class AIProcessor:
 
                     if result:
                         queue, message = result
+                        if INFRASTRUCTURE_MODE == 'CLOUD':
+                            self.api_keys = self.db_service.get_active_api_keys()
+                            self.update_api_keys()
                         job_data = json.loads(message)
                         self.process_job(job_data)
 
@@ -377,7 +384,8 @@ class AIProcessor:
             # Signal shutdown to listener thread
             shutdown_event.set()
             # Wait for listener thread to finish
-            listener_thread.join(timeout=5.0)
+            if listener_thread:
+                listener_thread.join(timeout=5.0)
             logger.info("👋 Shutting down AI Worker")
 
 if __name__ == "__main__":

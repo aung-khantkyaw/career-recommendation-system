@@ -1,15 +1,19 @@
 import { NextRequest } from 'next/server'
 import { createClient } from 'redis'
+import { upstashCommand } from '@/lib/redis'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
+  const isCloud = process.env.INFRASTRUCTURE_MODE === 'CLOUD'
   const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
   const redisClient = createClient({ url: redisUrl })
 
   try {
-    await redisClient.connect()
-    console.log('Redis connected for SSE')
+    if (!isCloud) {
+      await redisClient.connect()
+      console.log('Redis connected for SSE')
+    }
 
     // Create a readable stream for SSE
     const encoder = new TextEncoder()
@@ -48,10 +52,12 @@ export async function GET(req: NextRequest) {
             while (!req.signal.aborted && !isClosed) {
               try {
                 // brpop with 5 second timeout
-                const result = await redisClient.brPop('status_updates_queue', 5)
+                const result = isCloud
+                  ? await upstashCommand<[string, string] | null>('BRPOP', 'status_updates_queue', '5')
+                  : await redisClient.brPop('status_updates_queue', 5)
                 
                 if (result && !isClosed) {
-                  const message = result.element
+                  const message = Array.isArray(result) ? result[1] : result.element
                   console.log('SSE: Received from queue:', message)
                   const data = `data: ${message}\n\n`
                   try {
@@ -80,7 +86,7 @@ export async function GET(req: NextRequest) {
             clearInterval(heartbeat)
             closeController()
             try {
-              await redisClient.quit()
+              if (!isCloud) await redisClient.quit()
             } catch (e) {
               // Ignore quit errors
             }

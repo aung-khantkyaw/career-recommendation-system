@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { createClient } from 'redis'
 import { Client as MinioClient } from 'minio'
+import { upstashCommand } from '@/lib/redis'
 
 function formatRelativeTime(date: Date) {
   const diffMs = Date.now() - date.getTime()
@@ -50,6 +51,11 @@ async function getPostgresStats() {
 
 async function getRedisStats() {
   try {
+    if (process.env.INFRASTRUCTURE_MODE === 'CLOUD') {
+      const info = await upstashCommand<string>('INFO', 'memory')
+      const usedMemoryMatch = info.match(/used_memory_human:(.+)/)
+      return { usedMemory: usedMemoryMatch?.[1]?.trim() || 'Unknown', connected: true }
+    }
     const redis = createClient({
       socket: {
         host: process.env.REDIS_HOST || 'localhost',
@@ -76,6 +82,10 @@ async function getRedisStats() {
 
 async function getMinioStats() {
   try {
+    if (process.env.INFRASTRUCTURE_MODE === 'CLOUD') {
+      // Supabase Storage does not expose bucket-wide size statistics to this API.
+      return { totalObjects: 0, totalSize: 'Managed by Supabase' }
+    }
     const minioClient = new MinioClient({
       endPoint: process.env.MINIO_HOST || 'localhost',
       port: parseInt(process.env.MINIO_PORT || '9000'),

@@ -6,11 +6,33 @@ import { createClient } from 'redis'
 
 config({ path: '.env.local' })
 
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
-})
+const isCloud = process.env.INFRASTRUCTURE_MODE === 'CLOUD'
+const redisClient = isCloud
+  ? undefined
+  : createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' })
 
-redisClient.on('error', (err) => console.error('Redis Client Error', err))
+redisClient?.on('error', (err) => console.error('Redis Client Error', err))
+
+async function lPush(key: string, value: string) {
+  if (!isCloud) {
+    return redisClient!.lPush(key, value)
+  }
+
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+  if (!url || !token) {
+    throw new Error('CLOUD Redis requires UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN')
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(['LPUSH', key, value]),
+  })
+  if (!response.ok) {
+    throw new Error(`Upstash LPUSH failed: ${await response.text()}`)
+  }
+}
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
 const prisma = new PrismaClient({ adapter })
@@ -19,7 +41,7 @@ async function main() {
   console.log('🌱 Starting database seed...')
 
   // Connect to Redis
-  if (!redisClient.isOpen) {
+  if (redisClient && !redisClient.isOpen) {
     await redisClient.connect()
     console.log('✅ Connected to Redis')
   }
@@ -157,7 +179,7 @@ async function main() {
     console.log(`✅ Created career path: ${careerPath.title}`)
 
     // Queue embedding generation job for career path
-    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+    await lPush('ai_jobs_queue', JSON.stringify({
       job_id: `career_${careerPath.id}`,
       job_type: 'career_embedding',
       career_path_id: careerPath.id,
@@ -314,7 +336,7 @@ async function main() {
     console.log(`✅ Created job posting: ${job.title}`)
 
     // Queue embedding generation job for job posting
-    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+    await lPush('ai_jobs_queue', JSON.stringify({
       job_id: `job_${job.id}`,
       job_type: 'job_embedding',
       job_id_field: job.id,
@@ -510,7 +532,7 @@ async function main() {
     })
 
     // Queue embedding generation job for skill
-    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+    await lPush('ai_jobs_queue', JSON.stringify({
       job_id: `skill_${skill.id}`,
       job_type: 'skill_embedding',
       skill_id: skill.id,
@@ -533,7 +555,7 @@ async function main() {
     })
 
     // Queue embedding generation job for skill
-    await redisClient.lPush('ai_jobs_queue', JSON.stringify({
+    await lPush('ai_jobs_queue', JSON.stringify({
       job_id: `skill_${skill.id}`,
       job_type: 'skill_embedding',
       skill_id: skill.id,
@@ -551,7 +573,7 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect()
-    if (redisClient.isOpen) {
+    if (redisClient?.isOpen) {
       await redisClient.quit()
       console.log('✅ Disconnected from Redis')
     }
