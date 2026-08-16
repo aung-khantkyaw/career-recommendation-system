@@ -1,0 +1,6 @@
+.env
+.env.*
+!.env.example
+*.stackdump
+__pycache__/
+*.py[cod]
