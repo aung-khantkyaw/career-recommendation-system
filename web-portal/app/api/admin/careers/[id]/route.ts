@@ -2,6 +2,29 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
+import { headers } from 'next/headers'
+
+async function createAuditLog(adminId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.auditLog.create({
+      data: {
+        adminId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create audit log:', error)
+  }
+}
 
 type CareerPayload = {
   title?: string
@@ -100,7 +123,8 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await requireAdmin())) {
+    const session = await auth()
+    if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -115,6 +139,13 @@ export async function PATCH(
     const career = await prisma.careerPath.update({
       where: { id },
       data: result.data,
+    })
+
+    // Create UPDATE_CAREER_PATH audit log
+    await createAuditLog(session.user.id, 'UPDATE_CAREER_PATH', 'CAREER_PATH', id, {
+      title: career.title,
+      category: career.category,
+      updatedFields: Object.keys(body),
     })
 
     return NextResponse.json({

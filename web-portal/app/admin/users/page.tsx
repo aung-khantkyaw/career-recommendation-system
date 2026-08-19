@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
-import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff, Download, CheckSquare, Square, Loader2, Eye } from 'lucide-react'
+import { Search, Plus, Power, PowerOff, MoreVertical, Shield, Loader2, Eye, Activity, Calendar, ChevronLeft, ChevronRight, User, Download, CheckSquare, Square } from 'lucide-react'
 
 interface User {
   id: string
@@ -41,8 +41,12 @@ export default function UserManagementPage() {
   const [newUser, setNewUser] = useState({ email: '', password: '', name: '', role: 'USER' })
   const [addError, setAddError] = useState('')
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [selectedUser, setSelectedUser] = useState<any>(null)
   const [isFetchingUserDetail, setIsFetchingUserDetail] = useState(false)
+  const [activityLogs, setActivityLogs] = useState<any[]>([])
+  const [activityLogsPage, setActivityLogsPage] = useState(1)
+  const [activityLogsTotalPages, setActivityLogsTotalPages] = useState(1)
+  const [isFetchingActivityLogs, setIsFetchingActivityLogs] = useState(false)
 
   const fetchUsers = async (query?: string) => {
     try {
@@ -265,8 +269,8 @@ export default function UserManagementPage() {
 
       if (response.ok) {
         setSelectedUser(data.user)
-      } else {
-        console.error('Failed to fetch user detail:', data.error)
+        // Fetch activity logs after user detail is loaded
+        fetchActivityLogs(userId, 1)
       }
     } catch (error) {
       console.error('Failed to fetch user detail:', error)
@@ -275,272 +279,302 @@ export default function UserManagementPage() {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">User Management</h1>
-          <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
-        </div>
-        <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
-          <DialogTrigger>
-            <Button>
-              <User className="w-4 h-4 mr-2" />
-              Add User
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New User</DialogTitle>
-              <DialogDescription>Create a new user account with specified role</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  placeholder="user@example.com"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Password</label>
-                <Input
-                  type="password"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                  placeholder="Enter password"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Name (optional)</label>
-                <Input
-                  value={newUser.name}
-                  onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  placeholder="John Doe"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Role</label>
-                <select
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="USER">User</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
-              {addError && (
-                <div className="text-sm text-red-500">{addError}</div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleAddUser} disabled={isAddingUser}>
-                {isAddingUser ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : null}
-                Create User
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+  const fetchActivityLogs = async (userId: string, page: number) => {
+    setIsFetchingActivityLogs(true)
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/activity-logs?page=${page}&limit=5`)
+      const data = await response.json()
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{users.length}</div>
-            <div className="text-sm text-gray-500">Total Users</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
-            <div className="text-sm text-gray-500">Active Users</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{users.filter(u => u.role === 'ADMIN').length}</div>
-            <div className="text-sm text-gray-500">Admins</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{users.reduce((acc, u) => acc + u._count.resumes, 0)}</div>
-            <div className="text-sm text-gray-500">Total Resumes</div>
-          </CardContent>
-        </Card>
-      </div>
+      if (response.ok) {
+        setActivityLogs(data.logs)
+        setActivityLogsTotalPages(data.pagination.totalPages)
+        setActivityLogsPage(data.pagination.page)
+      }
+    } catch (error) {
+      console.error('Failed to fetch activity logs:', error)
+    } finally {
+      setIsFetchingActivityLogs(false)
+    }
+  }
 
-      {/* Users Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+  const getActionBadge = (action: string) => {
+    const variants: Record<string, any> = {
+      LOGIN: 'default',
+      LOGOUT: 'secondary',
+      UPLOAD_RESUME: 'default',
+      BOOKMARK_JOB: 'outline',
+      VIEW_JOB: 'outline',
+      UPDATE_PROFILE: 'secondary',
+    }
+    return <Badge variant={variants[action] || 'outline'}>{action}</Badge>
+  }
+
+return (
+  <div className="space-y-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-3xl font-bold">User Management</h1>
+        <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
+      </div>
+      <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
+        <DialogTrigger asChild>
+          <Button>
+            <User className="w-4 h-4 mr-2" />
+            Add User
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New User</DialogTitle>
+            <DialogDescription>Create a new user account with specified role</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
             <div>
-              <CardTitle>All Users</CardTitle>
-              <CardDescription>View and manage all registered users</CardDescription>
+              <label className="text-sm font-medium">Email</label>
+              <Input
+                type="email"
+                value={newUser.email}
+                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                placeholder="user@example.com"
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Search users..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-64"
-                />
-              </div>
-              <Button
-                variant="outline"
-                onClick={exportUsers}
-                disabled={isExporting || users.length === 0}
+            <div>
+              <label className="text-sm font-medium">Password</label>
+              <Input
+                type="password"
+                value={newUser.password}
+                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                placeholder="Enter password"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Name (optional)</label>
+              <Input
+                value={newUser.name}
+                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                placeholder="John Doe"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium">Role</label>
+              <select
+                value={newUser.role}
+                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                className="w-full px-3 py-2 border rounded-md"
               >
-                {isExporting ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Download className="w-4 h-4 mr-2" />
-                )}
-                Export CSV
-              </Button>
+                <option value="USER">User</option>
+                <option value="ADMIN">Admin</option>
+              </select>
             </div>
+            {addError && (
+              <div className="text-sm text-red-500">{addError}</div>
+            )}
           </div>
-          {selectedUsers.size > 0 && (
-            <div className="flex items-center gap-2 mt-4 p-3 bg-muted rounded-lg">
-              <span className="text-sm font-medium">{selectedUsers.size} user(s) selected</span>
-              <Button
-                variant="default"
-                size="sm"
-                onClick={bulkActivate}
-                disabled={isBulkUpdating}
-              >
-                {isBulkUpdating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <PowerOff className="w-4 h-4 mr-2" />
-                )}
-                Activate All
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={bulkDeactivate}
-                disabled={isBulkUpdating}
-              >
-                {isBulkUpdating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Power className="w-4 h-4 mr-2" />
-                )}
-                Deactivate All
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedUsers(new Set())}
-              >
-                Clear Selection
-              </Button>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsAddUserDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddUser} disabled={isAddingUser}>
+              {isAddingUser ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : null}
+              Create User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+
+    {/* Stats */}
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold">{users.length}</div>
+          <div className="text-sm text-gray-500">Total Users</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold">{users.filter(u => u.isActive).length}</div>
+          <div className="text-sm text-gray-500">Active Users</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold">{users.filter(u => u.role === 'ADMIN').length}</div>
+          <div className="text-sm text-gray-500">Admins</div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold">{users.reduce((acc, u) => acc + u._count.resumes, 0)}</div>
+          <div className="text-sm text-gray-500">Total Resumes</div>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Users Table */}
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>All Users</CardTitle>
+            <CardDescription>View and manage all registered users</CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-64"
+              />
             </div>
-          )}
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
+            <Button
+              variant="outline"
+              onClick={exportUsers}
+              disabled={isExporting || users.length === 0}
+            >
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Download className="w-4 h-4 mr-2" />
+              )}
+              Export CSV
+            </Button>
+          </div>
+        </div>
+        {selectedUsers.size > 0 && (
+          <div className="flex items-center gap-2 mt-4 p-3 bg-muted rounded-lg">
+            <span className="text-sm font-medium">{selectedUsers.size} user(s) selected</span>
+            <Button
+              variant="default"
+              size="sm"
+              onClick={bulkActivate}
+              disabled={isBulkUpdating}
+            >
+              {isBulkUpdating ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <PowerOff className="w-4 h-4 mr-2" />
+              )}
+              Activate All
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={bulkDeactivate}
+              disabled={isBulkUpdating}
+            >
+              {isBulkUpdating ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Power className="w-4 h-4 mr-2" />
+              )}
+              Deactivate All
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedUsers(new Set())}
+            >
+              Clear Selection
+            </Button>
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                  disabled={users.length === 0}
+                >
+                  {selectedUsers.size === users.length && users.length > 0 ? (
+                    <CheckSquare className="w-4 h-4" />
+                  ) : (
+                    <Square className="w-4 h-4" />
+                  )}
+                </Button>
+              </TableHead>
+              <TableHead>User</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Resumes</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredUsers.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={toggleSelectAll}
-                    disabled={users.length === 0}
+                    onClick={() => toggleSelectUser(user.id)}
                   >
-                    {selectedUsers.size === users.length && users.length > 0 ? (
+                    {selectedUsers.has(user.id) ? (
                       <CheckSquare className="w-4 h-4" />
                     ) : (
                       <Square className="w-4 h-4" />
                     )}
                   </Button>
-                </TableHead>
-                <TableHead>User</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Resumes</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <div className="font-medium">{user.name || 'No name'}</div>
+                    <div className="text-sm text-gray-500">{user.email}</div>
+                  </div>
+                </TableCell>
+                <TableCell>{getRoleBadge(user.role.toLowerCase())}</TableCell>
+                <TableCell>{user._count.resumes}</TableCell>
+                <TableCell>{getStatusBadge(user.isActive)}</TableCell>
+                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                <TableCell className="text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={<Button variant="ghost" size="sm"><MoreVertical className="w-4 h-4" /></Button>} />
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => {
+                        setSelectedUser(user)
+                        setIsDetailDialogOpen(true)
+                        fetchUserDetail(user.id)
+                      }}>
+                        <Eye className="w-4 h-4 mr-2" />
+                        See Detail
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => toggleUserStatus(user.id, user.isActive)}>
+                        {user.isActive ? (
+                          <>
+                            <Power className="w-4 h-4 mr-2 text-red-500" />
+                            Deactivate
+                          </>
+                        ) : (
+                          <>
+                            <PowerOff className="w-4 h-4 mr-2 text-green-500" />
+                            Activate
+                          </>
+                        )}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleSelectUser(user.id)}
-                    >
-                      {selectedUsers.has(user.id) ? (
-                        <CheckSquare className="w-4 h-4" />
-                      ) : (
-                        <Square className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{user.name || 'No name'}</div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{getRoleBadge(user.role.toLowerCase())}</TableCell>
-                  <TableCell>{user._count.resumes}</TableCell>
-                  <TableCell>{getStatusBadge(user.isActive)}</TableCell>
-                  <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="sm"><MoreVertical className="w-4 h-4" /></Button>} />
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => {
-                          setSelectedUser(user)
-                          setIsDetailDialogOpen(true)
-                          fetchUserDetail(user.id)
-                        }}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          See Detail
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => toggleUserStatus(user.id, user.isActive)}>
-                          {user.isActive ? (
-                            <>
-                              <Power className="w-4 h-4 mr-2 text-red-500" />
-                              Deactivate
-                            </>
-                          ) : (
-                            <>
-                              <PowerOff className="w-4 h-4 mr-2 text-green-500" />
-                              Activate
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
 
       {/* User Detail Dialog */}
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>User Details</DialogTitle>
             <DialogDescription>Complete information about the selected user</DialogDescription>
@@ -590,6 +624,63 @@ export default function UserManagementPage() {
                 </div>
               </div>
 
+              {/* System Usage / Activity Logs */}
+              <div className="p-4 bg-muted rounded-lg">
+                <h4 className="font-medium mb-3 flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  System Usage
+                </h4>
+                {isFetchingActivityLogs ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  </div>
+                ) : activityLogs.length === 0 ? (
+                  <div className="text-center text-gray-500 py-4">
+                    No activity logs available
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {activityLogs.map((log) => (
+                      <div key={log.id} className="flex items-center justify-between p-2 bg-background rounded border">
+                        <div className="flex items-center gap-2">
+                          {getActionBadge(log.action)}
+                          {log.entityType && (
+                            <Badge variant="outline" className="text-xs">{log.entityType}</Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Calendar className="w-3 h-3" />
+                          {new Date(log.createdAt).toLocaleString()}
+                        </div>
+                      </div>
+                    ))}
+                    {activityLogsTotalPages > 1 && (
+                      <div className="flex items-center justify-between pt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fetchActivityLogs(selectedUser.id, activityLogsPage - 1)}
+                          disabled={activityLogsPage === 1}
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </Button>
+                        <span className="text-sm text-muted-foreground">
+                          Page {activityLogsPage} of {activityLogsTotalPages}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fetchActivityLogs(selectedUser.id, activityLogsPage + 1)}
+                          disabled={activityLogsPage === activityLogsTotalPages}
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {/* Top Career Recommendation */}
               {selectedUser.topRecommendation ? (
                 <div className="p-4 bg-muted rounded-lg">
@@ -613,7 +704,7 @@ export default function UserManagementPage() {
                     <div>
                       <label className="text-sm text-gray-500">Matched Skills</label>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {selectedUser.topRecommendation.skillsMatched.map((skill, index) => (
+                        {selectedUser.topRecommendation.skillsMatched.map((skill: string, index: number) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {skill}
                           </Badge>

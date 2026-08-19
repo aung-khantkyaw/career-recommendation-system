@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { headers } from 'next/headers'
+
+async function createActivityLog(userId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.activityLog.create({
+      data: {
+        userId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create activity log:', error)
+  }
+}
 
 // GET - Fetch user profile
 export async function GET(req: NextRequest) {
@@ -96,6 +119,11 @@ export async function PUT(req: NextRequest) {
         isActive: true,
         lastLoginAt: true,
       }
+    })
+
+    // Create UPDATE_PROFILE activity log
+    await createActivityLog(session.user.id, 'UPDATE_PROFILE', 'PROFILE', session.user.id, {
+      updatedFields: Object.keys(body),
     })
 
     return NextResponse.json({ user: updatedUser })

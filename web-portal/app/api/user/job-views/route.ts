@@ -25,36 +25,6 @@ async function createActivityLog(userId: string, action: string, entityType?: st
   }
 }
 
-export async function GET(req: NextRequest) {
-  try {
-    const session = await auth()
-
-    if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const bookmarks = await prisma.jobBookmark.findMany({
-      where: { userId: session.user.id },
-      include: {
-        job: {
-          include: {
-            careerPath: true
-          }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
-
-    return NextResponse.json({ bookmarks })
-  } catch (error) {
-    console.error('Bookmarks fetch error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
     const session = await auth()
@@ -85,42 +55,15 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Check if already bookmarked
-    const existingBookmark = await prisma.jobBookmark.findUnique({
-      where: {
-        userId_jobId: {
-          userId: session.user.id,
-          jobId
-        }
-      }
-    })
-
-    if (existingBookmark) {
-      return NextResponse.json(
-        { error: 'Job already bookmarked' },
-        { status: 400 }
-      )
-    }
-
-    const bookmark = await prisma.jobBookmark.create({
-      data: {
-        userId: session.user.id,
-        jobId
-      },
-      include: {
-        job: true
-      }
-    })
-
-    // Create BOOKMARK_JOB activity log
-    await createActivityLog(session.user.id, 'BOOKMARK_JOB', 'JOB', jobId, {
+    // Create VIEW_JOB activity log
+    await createActivityLog(session.user.id, 'VIEW_JOB', 'JOB', jobId, {
       jobTitle: job.title,
       company: job.company,
     })
 
-    return NextResponse.json({ bookmark }, { status: 201 })
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Bookmark create error:', error)
+    console.error('Job view log error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

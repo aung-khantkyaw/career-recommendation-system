@@ -141,7 +141,7 @@ export default function AdminAnalyticsPage() {
       bgColor: 'bg-green-100',
     },
     {
-      title: 'Active Jobs',
+      title: 'Active Job Postings',
       value: analytics?.metrics.jobs.active || 0,
       change: analytics?.metrics.jobs.new || 0,
       changeLabel: 'new',
@@ -297,7 +297,7 @@ export default function AdminAnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Briefcase className="h-5 w-5" />
-                  Job Metrics
+                  Job Postings Metrics
                 </CardTitle>
               </CardHeader>
               <CardContent>

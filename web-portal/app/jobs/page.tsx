@@ -82,6 +82,18 @@ export default function JobsPage() {
     }
   }
 
+  const logJobView = async (jobId: string) => {
+    try {
+      await fetch('/api/user/job-views', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId })
+      })
+    } catch (error) {
+      console.error('Failed to log job view:', error)
+    }
+  }
+
   const toggleBookmark = async (jobId: string) => {
     try {
       if (bookmarkedJobs.has(jobId)) {
@@ -269,7 +281,10 @@ export default function JobsPage() {
             </Card>
           ) : (
             jobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedJob(job)}>
+              <Card key={job.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => {
+                setSelectedJob(job)
+                logJobView(job.id)
+              }}>
                 <CardHeader>
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1">

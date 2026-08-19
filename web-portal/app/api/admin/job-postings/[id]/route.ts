@@ -2,6 +2,29 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import redis from '@/lib/redis'
+import { headers } from 'next/headers'
+
+async function createAuditLog(adminId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.auditLog.create({
+      data: {
+        adminId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create audit log:', error)
+  }
+}
 
 async function requireAdmin() {
   const session = await auth()
@@ -140,14 +163,34 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await requireAdmin())) {
+    const session = await auth()
+    if (!session?.user || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { id } = await params
+    
+    // Get job details before deletion for audit log
+    const job = await prisma.job.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        company: true,
+      }
+    })
+
     await prisma.job.delete({
       where: { id },
     })
+
+    // Create DELETE_JOB audit log
+    if (job) {
+      await createAuditLog(session.user.id, 'DELETE_JOB', 'JOB', id, {
+        title: job.title,
+        company: job.company,
+      })
+    }
 
     return NextResponse.json({ message: 'Job deleted successfully' })
   } catch (error) {

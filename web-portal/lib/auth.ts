@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
+import { headers } from 'next/headers'
 
 const fallbackAuthUrl = 'http://localhost:3000'
 
@@ -11,6 +12,28 @@ if (!process.env.NEXTAUTH_URL) {
 
 if (!process.env.AUTH_SECRET) {
   process.env.AUTH_SECRET = 'dev-secret-change-in-production'
+}
+
+async function createActivityLog(userId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.activityLog.create({
+      data: {
+        userId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create activity log:', error)
+  }
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -48,6 +71,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error('Invalid credentials')
         }
 
+        // Create LOGIN activity log
+        await createActivityLog(user.id, 'LOGIN')
+
         return {
           id: user.id,
           email: user.email,
@@ -76,18 +102,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as 'user' | 'admin'
-        
+
         // Check if user is still active
         const user = await prisma.user.findUnique({
           where: { id: token.id as string },
           select: { isActive: true }
         })
-        
+
         if (!user || !user.isActive) {
           session.user = null as any
         }
       }
       return session
+    },
+    async signOut({ token }) {
+      // Create LOGOUT activity log
+      if (token?.id) {
+        await createActivityLog(token.id as string, 'LOGOUT')
+      }
+      return true
     }
   },
   secret: process.env.AUTH_SECRET,

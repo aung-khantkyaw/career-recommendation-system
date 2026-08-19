@@ -2,6 +2,29 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { getFileUrl, deleteFile } from '@/lib/minio'
+import { headers } from 'next/headers'
+
+async function createAuditLog(adminId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.auditLog.create({
+      data: {
+        adminId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create audit log:', error)
+  }
+}
 
 export async function DELETE(
   req: NextRequest,
@@ -41,6 +64,13 @@ export async function DELETE(
     // Delete resume from database
     await prisma.resume.delete({
       where: { id }
+    })
+
+    // Create DELETE_RESUME audit log
+    await createAuditLog(session.user.id, 'DELETE_RESUME', 'RESUME', id, {
+      fileName: resume.fileName,
+      originalName: resume.originalName,
+      userId: resume.userId,
     })
 
     return NextResponse.json({ message: 'Resume deleted successfully' })

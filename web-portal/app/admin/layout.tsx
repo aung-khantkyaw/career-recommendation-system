@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
   Users,
@@ -144,7 +145,7 @@ export default function AdminLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton 
                   tooltip="Logout"
-                  render={<Link href="/login" />}
+                  onClick={() => signOut({ callbackUrl: '/login' })}
                 >
                   <LogOut />
                   <span>Logout</span>

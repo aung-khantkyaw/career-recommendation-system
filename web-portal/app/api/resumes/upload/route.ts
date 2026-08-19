@@ -4,6 +4,29 @@ import { prisma } from '@/lib/prisma'
 import { uploadFile } from '@/lib/minio'
 import { addJobToQueue } from '@/lib/redis'
 import { randomUUID } from 'crypto'
+import { headers } from 'next/headers'
+
+async function createActivityLog(userId: string, action: string, entityType?: string, entityId?: string, metadata?: any) {
+  try {
+    const headersList = await headers()
+    const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown'
+    const userAgent = headersList.get('user-agent') || 'unknown'
+
+    await prisma.activityLog.create({
+      data: {
+        userId,
+        action,
+        entityType,
+        entityId,
+        metadata,
+        ipAddress,
+        userAgent,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to create activity log:', error)
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -71,6 +94,13 @@ export async function POST(req: NextRequest) {
         minioPath,
         processingStatus: 'PENDING',
       }
+    })
+
+    // Create UPLOAD_RESUME activity log
+    await createActivityLog(session.user.id, 'UPLOAD_RESUME', 'RESUME', resume.id, {
+      fileName: resume.fileName,
+      originalName: resume.originalName,
+      fileSize: resume.fileSize,
     })
 
     // Add job to Redis queue for AI processing
