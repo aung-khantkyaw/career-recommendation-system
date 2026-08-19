@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff, Download, CheckSquare, Square, Loader2 } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { Search, MoreVertical, Edit, Trash2, Shield, User, Power, PowerOff, Download, CheckSquare, Square, Loader2, Eye } from 'lucide-react'
 
 interface User {
   id: string
@@ -16,9 +17,16 @@ interface User {
   role: string
   isActive: boolean
   createdAt: string
+  avatar?: string | null
   _count: {
     resumes: number
   }
+  topRecommendation?: {
+    careerPath: string | null
+    category: string | null
+    matchScore: number
+    skillsMatched: string[]
+  } | null
 }
 
 export default function UserManagementPage() {
@@ -32,6 +40,9 @@ export default function UserManagementPage() {
   const [isAddingUser, setIsAddingUser] = useState(false)
   const [newUser, setNewUser] = useState({ email: '', password: '', name: '', role: 'USER' })
   const [addError, setAddError] = useState('')
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [isFetchingUserDetail, setIsFetchingUserDetail] = useState(false)
 
   const fetchUsers = async (query?: string) => {
     try {
@@ -243,6 +254,24 @@ export default function UserManagementPage() {
       setAddError('Failed to create user')
     } finally {
       setIsAddingUser(false)
+    }
+  }
+
+  const fetchUserDetail = async (userId: string) => {
+    setIsFetchingUserDetail(true)
+    try {
+      const response = await fetch(`/api/admin/users/${userId}/detail`)
+      const data = await response.json()
+
+      if (response.ok) {
+        setSelectedUser(data.user)
+      } else {
+        console.error('Failed to fetch user detail:', data.error)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user detail:', error)
+    } finally {
+      setIsFetchingUserDetail(false)
     }
   }
 
@@ -474,23 +503,33 @@ export default function UserManagementPage() {
                   <TableCell>{getStatusBadge(user.isActive)}</TableCell>
                   <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleUserStatus(user.id, user.isActive)}
-                        title={user.isActive ? 'Deactivate user' : 'Activate user'}
-                      >
-                        {user.isActive ? (
-                          <Power className="w-4 h-4 text-red-500" />
-                        ) : (
-                          <PowerOff className="w-4 h-4 text-green-500" />
-                        )}
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger render={<Button variant="ghost" size="sm"><MoreVertical className="w-4 h-4" /></Button>} />
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => {
+                          setSelectedUser(user)
+                          setIsDetailDialogOpen(true)
+                          fetchUserDetail(user.id)
+                        }}>
+                          <Eye className="w-4 h-4 mr-2" />
+                          See Detail
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => toggleUserStatus(user.id, user.isActive)}>
+                          {user.isActive ? (
+                            <>
+                              <Power className="w-4 h-4 mr-2 text-red-500" />
+                              Deactivate
+                            </>
+                          ) : (
+                            <>
+                              <PowerOff className="w-4 h-4 mr-2 text-green-500" />
+                              Activate
+                            </>
+                          )}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
@@ -498,6 +537,105 @@ export default function UserManagementPage() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* User Detail Dialog */}
+      <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>Complete information about the selected user</DialogDescription>
+          </DialogHeader>
+          {isFetchingUserDetail ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin" />
+            </div>
+          ) : selectedUser ? (
+            <div className="space-y-6">
+              {/* Avatar Section */}
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                  {selectedUser.avatar ? (
+                    <img src={selectedUser.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-10 h-10 text-muted-foreground" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">{selectedUser.name || 'No name'}</h3>
+                  <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                </div>
+              </div>
+
+              {/* User Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Role</label>
+                  <div className="mt-1">{getRoleBadge(selectedUser.role.toLowerCase())}</div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Status</label>
+                  <div className="mt-1">{getStatusBadge(selectedUser.isActive)}</div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Resumes</label>
+                  <div className="mt-1 font-medium">{selectedUser._count.resumes}</div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-500">Created At</label>
+                  <div className="mt-1 font-medium">{new Date(selectedUser.createdAt).toLocaleString()}</div>
+                </div>
+                <div className="col-span-2">
+                  <label className="text-sm font-medium text-gray-500">User ID</label>
+                  <div className="mt-1 font-mono text-sm">{selectedUser.id}</div>
+                </div>
+              </div>
+
+              {/* Top Career Recommendation */}
+              {selectedUser.topRecommendation ? (
+                <div className="p-4 bg-muted rounded-lg">
+                  <h4 className="font-medium mb-3 flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Top Career Recommendation
+                  </h4>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-sm text-gray-500">Career Path</label>
+                      <div className="font-medium">{selectedUser.topRecommendation.careerPath || 'N/A'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Category</label>
+                      <div className="font-medium">{selectedUser.topRecommendation.category || 'N/A'}</div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Match Score</label>
+                      <div className="font-medium">{(selectedUser.topRecommendation.matchScore).toFixed(1)}%</div>
+                    </div>
+                    <div>
+                      <label className="text-sm text-gray-500">Matched Skills</label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {selectedUser.topRecommendation.skillsMatched.map((skill, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 bg-muted rounded-lg text-center text-gray-500">
+                  No career recommendations available
+                </div>
+              )}
+            </div>
+          ) : null}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDetailDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -26,6 +26,12 @@ QUEUE_NAME = 'ai_jobs_queue'
 
 class AIProcessor:
     def __init__(self):
+        logger.info(f"INFRASTRUCTURE_MODE: {INFRASTRUCTURE_MODE}")
+        logger.info(f"Using Upstash: {INFRASTRUCTURE_MODE == 'CLOUD'}")
+        if INFRASTRUCTURE_MODE == 'CLOUD':
+            logger.info(f"Upstash URL: {UPSTASH_REDIS_REST_URL}")
+            logger.info(f"Upstash Token: {'***' if UPSTASH_REDIS_REST_TOKEN else 'NOT SET'}")
+        
         self.redis_client = (UpstashRedis(UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN)
                              if INFRASTRUCTURE_MODE == 'CLOUD' else redis.Redis.from_url(
                                  REDIS_URL, socket_connect_timeout=10, socket_timeout=None, decode_responses=True))
@@ -360,16 +366,24 @@ class AIProcessor:
         try:
             while not shutdown_event.is_set():
                 try:
-                    # Blocking pop from queue with timeout to allow checking shutdown flag
-                    result = self.redis_client.brpop(QUEUE_NAME, timeout=1.0)
-
-                    if result:
-                        queue, message = result
-                        if INFRASTRUCTURE_MODE == 'CLOUD':
+                    # For Upstash (CLOUD mode), use polling since REST API doesn't support blocking
+                    if INFRASTRUCTURE_MODE == 'CLOUD':
+                        result = self.redis_client.rpop(QUEUE_NAME)
+                        if result:
                             self.api_keys = self.db_service.get_active_api_keys()
                             self.update_api_keys()
-                        job_data = json.loads(message)
-                        self.process_job(job_data)
+                            job_data = json.loads(result)
+                            self.process_job(job_data)
+                        else:
+                            # No job in queue, sleep briefly before polling again
+                            time.sleep(0.5)
+                    else:
+                        # For local Redis, use blocking pop with timeout
+                        result = self.redis_client.brpop(QUEUE_NAME, timeout=1.0)
+                        if result:
+                            queue, message = result
+                            job_data = json.loads(message)
+                            self.process_job(job_data)
 
                 except json.JSONDecodeError as e:
                     logger.error(f"Invalid JSON in queue message: {e}")

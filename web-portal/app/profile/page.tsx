@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, MapPin, Globe, Clock, Phone, Mail, LayoutDashboard, Briefcase } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { UserRound, BriefcaseBusiness, Save, ArrowLeft, Camera, MapPin, Globe, Clock, Phone, Mail, LayoutDashboard, Briefcase, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { signOut } from 'next-auth/react'
 import { NotificationBell } from '@/components/notification-bell'
@@ -18,6 +19,14 @@ export default function ProfilePage() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [passwordData, setPasswordData] = useState({ currentPassword: '', newPassword: '' })
+  const [deleteData, setDeleteData] = useState({ confirmationText: '', password: '' })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [deleteError, setDeleteError] = useState('')
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -143,6 +152,61 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' })
+  }
+
+  const handlePasswordChange = async () => {
+    setIsChangingPassword(true)
+    setPasswordError('')
+    try {
+      const response = await fetch('/api/user/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsPasswordDialogOpen(false)
+        setPasswordData({ currentPassword: '', newPassword: '' })
+      } else {
+        setPasswordError(data.error || 'Failed to change password')
+      }
+    } catch (error) {
+      setPasswordError('Failed to change password')
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
+  const handleAccountDelete = async () => {
+    setIsDeletingAccount(true)
+    setDeleteError('')
+    try {
+      const response = await fetch('/api/user/account', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          confirmationText: deleteData.confirmationText,
+          password: deleteData.password
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        await signOut({ callbackUrl: '/login' })
+      } else {
+        setDeleteError(data.error || 'Failed to delete account')
+      }
+    } catch (error) {
+      setDeleteError('Failed to delete account')
+    } finally {
+      setIsDeletingAccount(false)
+    }
   }
 
   return (
@@ -393,9 +457,52 @@ export default function ProfilePage() {
                     <h4 className="font-medium">Change Password</h4>
                     <p className="text-sm text-muted-foreground">Update your password</p>
                   </div>
-                  <Button variant="outline" size="sm">
-                    Change
-                  </Button>
+                  <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                    <DialogTrigger render={<Button variant="outline" size="sm">Change</Button>} />
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Change Password</DialogTitle>
+                        <DialogDescription>Enter your current password and a new password to update your account.</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="current-password">Current Password</Label>
+                          <Input
+                            id="current-password"
+                            type="password"
+                            value={passwordData.currentPassword}
+                            onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                            placeholder="Enter current password"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="new-password">New Password</Label>
+                          <Input
+                            id="new-password"
+                            type="password"
+                            value={passwordData.newPassword}
+                            onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                            placeholder="Enter new password (min 6 characters)"
+                          />
+                        </div>
+                        {passwordError && (
+                          <p className="text-sm text-destructive">{passwordError}</p>
+                        )}
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => {
+                          setIsPasswordDialogOpen(false)
+                          setPasswordData({ currentPassword: '', newPassword: '' })
+                          setPasswordError('')
+                        }}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handlePasswordChange} disabled={isChangingPassword}>
+                          {isChangingPassword ? 'Changing...' : 'Change Password'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
@@ -411,9 +518,56 @@ export default function ProfilePage() {
                     <h4 className="font-medium">Delete Account</h4>
                     <p className="text-sm text-muted-foreground">Permanently delete your account</p>
                   </div>
-                  <Button variant="destructive" size="sm">
-                    Delete
-                  </Button>
+                  <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                    <DialogTrigger render={<Button variant="destructive" size="sm">Delete</Button>} />
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5 text-destructive" />
+                          Delete Account
+                        </DialogTitle>
+                        <DialogDescription>
+                          This action cannot be undone. This will permanently delete your account and all associated data.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="confirmation-text">Type "delete my account {formData.name}" to confirm</Label>
+                          <Input
+                            id="confirmation-text"
+                            value={deleteData.confirmationText}
+                            onChange={(e) => setDeleteData({ ...deleteData, confirmationText: e.target.value })}
+                            placeholder={`delete my account ${formData.name}`}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="delete-password">Password</Label>
+                          <Input
+                            id="delete-password"
+                            type="password"
+                            value={deleteData.password}
+                            onChange={(e) => setDeleteData({ ...deleteData, password: e.target.value })}
+                            placeholder="Enter your password"
+                          />
+                        </div>
+                        {deleteError && (
+                          <p className="text-sm text-destructive">{deleteError}</p>
+                        )}
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => {
+                          setIsDeleteDialogOpen(false)
+                          setDeleteData({ confirmationText: '', password: '' })
+                          setDeleteError('')
+                        }}>
+                          Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleAccountDelete} disabled={isDeletingAccount}>
+                          {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardContent>
             </Card>

@@ -8,6 +8,7 @@ from config import (
     STORAGE_BUCKET, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
 )
 import logging
+import time
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,22 +37,28 @@ class MinIOService:
     def _cloud_url(self, object_name):
         return f"{self.base_url}/{'/'.join(quote(part, safe='') for part in object_name.split('/'))}"
 
-    def download_file(self, object_name, local_path):
-        try:
-            if self.is_cloud:
-                response = requests.get(self._cloud_url(object_name), headers=self.headers, stream=True, timeout=60)
-                response.raise_for_status()
-                with open(local_path, 'wb') as output:
-                    for chunk in response.iter_content(chunk_size=1024 * 1024):
-                        if chunk:
-                            output.write(chunk)
-            else:
-                self.client.download_file(self.bucket_name, object_name, local_path)
-            logger.info(f"Downloaded {object_name} to {local_path}")
-            return local_path
-        except Exception as e:
-            logger.error(f"File download failed: {e}")
-            raise
+    def download_file(self, object_name, local_path, max_retries=3):
+        for attempt in range(max_retries):
+            try:
+                if self.is_cloud:
+                    response = requests.get(self._cloud_url(object_name), headers=self.headers, stream=True, timeout=120)
+                    response.raise_for_status()
+                    with open(local_path, 'wb') as output:
+                        for chunk in response.iter_content(chunk_size=1024 * 1024):
+                            if chunk:
+                                output.write(chunk)
+                else:
+                    self.client.download_file(self.bucket_name, object_name, local_path)
+                logger.info(f"Downloaded {object_name} to {local_path}")
+                return local_path
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = (attempt + 1) * 5
+                    logger.warning(f"Download failed (attempt {attempt + 1}/{max_retries}): {e}, retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                else:
+                    logger.error(f"File download failed after {max_retries} attempts: {e}")
+                    raise
 
     def upload_file(self, file_path, object_name):
         try:

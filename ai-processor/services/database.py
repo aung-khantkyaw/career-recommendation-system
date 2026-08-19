@@ -68,6 +68,10 @@ class DatabaseService:
         except Exception as e:
             self.conn.rollback()
             logger.error(f"Query execution failed: {e}")
+            # Try to reconnect if connection is closed
+            if 'closed' in str(e).lower() or 'terminated' in str(e).lower():
+                logger.info("Attempting to reconnect to database...")
+                self.connect()
             raise
     
     def update_resume_status(self, resume_id, status, processed_data=None):

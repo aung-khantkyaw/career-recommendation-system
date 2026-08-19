@@ -108,7 +108,7 @@ export default function AdminLayout({
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-semibold tracking-tight">Career AI</span>
-                <span className="text-xs text-muted-foreground">Admin Panel</span>
+                <span className="text-xs text-muted-foreground">Admin</span>
               </div>
             </div>
           </SidebarHeader>
