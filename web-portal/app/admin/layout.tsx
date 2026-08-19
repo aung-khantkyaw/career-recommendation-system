@@ -143,9 +143,16 @@ export default function AdminLayout({
           <SidebarFooter>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
+                <SidebarMenuButton
                   tooltip="Logout"
-                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  onClick={async () => {
+                    try {
+                      await fetch('/api/auth/logout', { method: 'POST' })
+                    } catch (error) {
+                      console.error('Failed to log logout activity:', error)
+                    }
+                    signOut({ callbackUrl: '/login' })
+                  }}
                 >
                   <LogOut />
                   <span>Logout</span>

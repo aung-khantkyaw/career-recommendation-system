@@ -175,6 +175,11 @@ export default function DashboardPage() {
   }
 
   const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch (error) {
+      console.error('Failed to log logout activity:', error)
+    }
     await signOut({ callbackUrl: '/login' })
   }
 

@@ -114,13 +114,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
       return session
-    },
-    async signOut({ token }) {
-      // Create LOGOUT activity log
-      if (token?.id) {
-        await createActivityLog(token.id as string, 'LOGOUT')
-      }
-      return true
     }
   },
   secret: process.env.AUTH_SECRET,
