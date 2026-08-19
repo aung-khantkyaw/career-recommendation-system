@@ -10,6 +10,7 @@ import {
   Brain,
   BriefcaseBusiness,
   CheckCircle2,
+  Cpu,
   FileText,
   GraduationCap,
   LayoutDashboard,
@@ -21,6 +22,8 @@ import {
   ShieldCheck,
   Target,
   Upload,
+  UploadCloud,
+  User,
   UserRound,
 } from "lucide-react"
 
@@ -181,10 +184,29 @@ export default function Home() {
       <main>
         <section
           id="home"
-          className="mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_0.95fr] lg:px-8 lg:py-24"
+          className="relative w-full grid max-w-7xl mx-auto items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[1fr_0.95fr] lg:px-8 lg:py-24"
         >
-          <div className="max-w-3xl">
-            <Badge variant="outline" className="mb-5">
+          <div className="absolute inset-0 pointer-events-none overflow-visible">
+
+            <div className="absolute top-[-5%] left-[-5%] w-80 h-80 bg-cyan-400/40 rounded-full blur-3xl" />
+            <div className="absolute top-[-5%] right-[-5%] w-80 h-80 bg-violet-400/40 rounded-full blur-3xl" />
+
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(to right, rgba(203, 213, 225, 0.4) 1px, transparent 1px),
+                  linear-gradient(to bottom, rgba(203, 213, 225, 0.4) 1px, transparent 1px)
+                `,
+                backgroundSize: '32px 32px',
+                WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)',
+                maskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)',
+              }}
+            />
+          </div>
+
+          <div className="max-w-3xl relative z-10">
+            <Badge variant="outline" className="mb-5 bg-white/60 backdrop-blur-sm">
               AI guidance for university students
             </Badge>
             <h1 className="text-4xl font-semibold tracking-normal text-balance sm:text-5xl lg:text-6xl">
@@ -205,7 +227,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto bg-white/60 backdrop-blur-sm"
                 >
                   Learn More
                 </Button>
@@ -213,11 +235,15 @@ export default function Home() {
             </div>
           </div>
 
-          <HeroIllustration />
+          <img
+            src="/Hero.jpg"
+            alt="Career AI Hero Illustration"
+            className="w-full h-auto rounded-xl border bg-card shadow-lg relative z-10"
+          />
         </section>
 
         <Section id="features" title="Features" eyebrow="What students can do">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
               <FeatureCard key={feature.title} {...feature} />
             ))}
@@ -229,15 +255,94 @@ export default function Home() {
           title="How It Works"
           eyebrow="A simple path from resume to roadmap"
         >
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {steps.map((step, index) => (
-              <TimelineItem
-                key={step.title}
-                step={step}
-                index={index}
-                showArrow={index < steps.length - 1}
-              />
-            ))}
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+            {/* Card 1 */}
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+              {/* Top Section */}
+              <div className="flex items-center justify-between p-4">
+                <span className="text-sm font-medium text-gray-400">01</span>
+                <User className="size-5 text-gray-400" aria-hidden="true" />
+              </div>
+              {/* Middle Section - Image Area */}
+              <div className="h-40 mx-4 rounded-lg overflow-hidden">
+                <img
+                  src="/1.jpg"
+                  alt="Profile Setup Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Bottom Section */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Create Account</h3>
+                <p className="text-sm text-slate-600">Register and complete your student profile.</p>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+              {/* Top Section */}
+              <div className="flex items-center justify-between p-4">
+                <span className="text-sm font-medium text-gray-400">02</span>
+                <UploadCloud className="size-5 text-gray-400" aria-hidden="true" />
+              </div>
+              {/* Middle Section - Image Area */}
+              <div className="h-40 mx-4 rounded-lg overflow-hidden">
+                <img
+                  src="/2.jpg"
+                  alt="Resume Upload Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Bottom Section */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-slate-900 mb-2">Upload Resume</h3>
+                <p className="text-sm text-slate-600">Securely upload your PDF resume for analysis.</p>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+              {/* Top Section */}
+              <div className="flex items-center justify-between p-4">
+                <span className="text-sm font-medium text-gray-400">03</span>
+                <Cpu className="size-5 text-gray-400" aria-hidden="true" />
+              </div>
+              {/* Middle Section - Image Area */}
+              <div className="h-40 mx-4 rounded-lg overflow-hidden">
+                <img
+                  src="/3.jpg"
+                  alt="AI Processing Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Bottom Section */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-slate-900 mb-2">AI Analysis</h3>
+                <p className="text-sm text-slate-600">Our AI extracts your skills and parses data instantly.</p>
+              </div>
+            </div>
+
+            {/* Card 4 */}
+            <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+              {/* Top Section */}
+              <div className="flex items-center justify-between p-4">
+                <span className="text-sm font-medium text-gray-400">04</span>
+                <LayoutDashboard className="size-5 text-gray-400" aria-hidden="true" />
+              </div>
+              {/* Middle Section - Image Area */}
+              <div className="h-40 mx-4 rounded-lg overflow-hidden">
+                <img
+                  src="/4.jpg"
+                  alt="Dashboard Matches Illustration"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Bottom Section */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-slate-900 mb-2">View Matches</h3>
+                <p className="text-sm text-slate-600">Get personalized career paths on your dashboard.</p>
+              </div>
+            </div>
           </div>
         </Section>
 
@@ -352,15 +457,17 @@ function FeatureCard({
   icon: React.ComponentType<{ className?: string }>
 }) {
   return (
-    <Card className="shadow-sm transition-transform hover:-translate-y-1 hover:shadow-md">
-      <CardHeader>
-        <div className="mb-3 flex size-10 items-center justify-center rounded-lg border bg-muted">
-          <Icon className="size-5" aria-hidden="true" />
-        </div>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-    </Card>
+    <div className="bg-white border border-gray-200 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:shadow-blue-900/5 hover:border-blue-200">
+      <div className="mb-4 flex size-14 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+        <Icon className="size-7" aria-hidden="true" />
+      </div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+        {title}
+      </h3>
+      <p className="text-slate-500 text-sm leading-relaxed">
+        {description}
+      </p>
+    </div>
   )
 }
 
@@ -408,165 +515,100 @@ function TimelineItem({
   )
 }
 
-function HeroIllustration() {
-  return (
-    <div
-      className="relative rounded-xl border bg-card p-4 shadow-lg"
-      aria-label="Student career recommendation workflow illustration"
-    >
-      <div className="grid gap-4 sm:grid-cols-[0.8fr_1.2fr]">
-        <div className="rounded-lg border bg-muted/40 p-4">
-          <div className="mx-auto flex aspect-square max-w-44 flex-col items-center justify-center rounded-full border bg-background">
-            <GraduationCap className="mb-2 size-9" aria-hidden="true" />
-            <UserRound className="size-14" aria-hidden="true" />
-          </div>
-          <div className="mt-4 space-y-2">
-            <div className="h-2 rounded-full bg-foreground/20" />
-            <div className="h-2 w-2/3 rounded-full bg-foreground/10" />
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="rounded-lg border bg-background p-4 shadow-xs">
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex items-center gap-2 font-medium">
-                <FileText className="size-4" aria-hidden="true" />
-                Student Resume.pdf
-              </div>
-              <Badge variant="secondary">Ready</Badge>
-            </div>
-            <div className="space-y-2">
-              <div className="h-2 rounded-full bg-muted" />
-              <div className="h-2 w-4/5 rounded-full bg-muted" />
-              <div className="h-2 w-3/5 rounded-full bg-muted" />
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-lg border bg-background p-4 shadow-xs">
-              <div className="mb-3 flex items-center gap-2 font-medium">
-                <Brain className="size-4" aria-hidden="true" />
-                AI Analysis
-              </div>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center justify-between">
-                  <span>Skills</span>
-                  <span>16</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Match</span>
-                  <span>94%</span>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg border bg-background p-4 shadow-xs">
-              <div className="mb-3 flex items-center gap-2 font-medium">
-                <Map className="size-4" aria-hidden="true" />
-                Roadmap
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <span className="size-2 rounded-full bg-foreground/30" />
-                <span className="h-px flex-1 bg-border" />
-                <span className="size-2 rounded-full bg-foreground/40" />
-                <span className="h-px flex-1 bg-border" />
-                <Target className="size-4" aria-hidden="true" />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-lg border bg-background p-4 shadow-xs">
-            <div className="mb-3 flex items-center gap-2 font-medium">
-              <LayoutDashboard className="size-4" aria-hidden="true" />
-              Dashboard Preview
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="h-16 rounded-md bg-muted" />
-              <div className="h-16 rounded-md bg-muted" />
-              <div className="h-16 rounded-md bg-muted" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function DashboardPreview() {
   return (
-    <div className="rounded-xl border bg-card p-4 shadow-lg sm:p-6">
-      <div className="mb-6 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-xl font-semibold">Student Career Dashboard</h3>
-          <p className="text-sm text-muted-foreground">
-            Resume analysis updated just now
-          </p>
+    <div className="rounded-xl border bg-card shadow-lg overflow-hidden">
+      {/* Browser Window Header */}
+      <div className="flex items-center gap-2 border-b bg-muted/50 px-4 py-3">
+        <div className="flex gap-2">
+          <div className="size-3 rounded-full bg-red-500" />
+          <div className="size-3 rounded-full bg-yellow-500" />
+          <div className="size-3 rounded-full bg-green-500" />
         </div>
-        <Badge variant="outline">
-          <LockKeyhole className="size-3" aria-hidden="true" />
-          Secure
-        </Badge>
+        <div className="flex-1 mx-4">
+          <div className="flex items-center gap-2 rounded-md bg-background px-3 py-1.5 text-sm text-muted-foreground">
+            <LockKeyhole className="size-3" aria-hidden="true" />
+            <span>career-ai.com/dashboard</span>
+          </div>
+        </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>Career Match Score</CardTitle>
-            <CardDescription>Based on resume skills and profile</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-end gap-2">
-              <span className="text-5xl font-semibold">94</span>
-              <span className="pb-2 text-muted-foreground">/ 100</span>
-            </div>
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-muted">
-              <div className="h-full w-[94%] rounded-full bg-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-sm">
-          <CardHeader>
-            <CardTitle>Recommended Careers</CardTitle>
-            <CardDescription>Best-fit paths for this student</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recommendedCareers.map((career) => (
-              <div
-                key={career.role}
-                className="flex items-center justify-between rounded-lg border bg-background px-3 py-2"
-              >
-                <span className="font-medium">{career.role}</span>
-                <Badge variant="secondary">{career.score}</Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <DashboardPanel title="Top Skills">
-          <SkillList items={topSkills} />
-        </DashboardPanel>
-        <DashboardPanel title="Missing Skills">
-          <SkillList items={missingSkills} variant="outline" />
-        </DashboardPanel>
-        <DashboardPanel title="AI Summary">
-          <p className="text-sm leading-6 text-muted-foreground">
-            Strong analytical profile with clear fit for data-focused roles.
-            Add cloud basics and a portfolio project to improve readiness.
-          </p>
-        </DashboardPanel>
-        <DashboardPanel title="Resume Status">
-          <div className="space-y-3">
-            <Badge>
-              <CheckCircle2 className="size-3" aria-hidden="true" />
-              Analyzed
-            </Badge>
+      {/* Browser Content */}
+      <div className="p-4 sm:p-6">
+        <div className="mb-6 flex flex-col gap-3 border-b pb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-xl font-semibold">Student Career Dashboard</h3>
             <p className="text-sm text-muted-foreground">
-              PDF uploaded, parsed, and stored securely.
+              Resume analysis updated just now
             </p>
           </div>
-        </DashboardPanel>
+          <Badge variant="outline">
+            <LockKeyhole className="size-3" aria-hidden="true" />
+            Secure
+          </Badge>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle>Career Match Score</CardTitle>
+              <CardDescription>Based on resume skills and profile</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-end gap-2">
+                <span className="text-5xl font-semibold">94</span>
+                <span className="pb-2 text-muted-foreground">/ 100</span>
+              </div>
+              <div className="mt-5 h-2 overflow-hidden rounded-full bg-muted">
+                <div className="h-full w-[94%] rounded-full bg-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-sm">
+            <CardHeader>
+              <CardTitle>Recommended Careers</CardTitle>
+              <CardDescription>Best-fit paths for this student</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {recommendedCareers.map((career) => (
+                <div
+                  key={career.role}
+                  className="flex items-center justify-between rounded-lg border bg-background px-3 py-2"
+                >
+                  <span className="font-medium">{career.role}</span>
+                  <Badge variant="secondary">{career.score}</Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <DashboardPanel title="Top Skills">
+            <SkillList items={topSkills} />
+          </DashboardPanel>
+          <DashboardPanel title="Missing Skills">
+            <SkillList items={missingSkills} variant="outline" />
+          </DashboardPanel>
+          <DashboardPanel title="AI Summary">
+            <p className="text-sm leading-6 text-muted-foreground">
+              Strong analytical profile with clear fit for data-focused roles.
+              Add cloud basics and a portfolio project to improve readiness.
+            </p>
+          </DashboardPanel>
+          <DashboardPanel title="Resume Status">
+            <div className="space-y-3">
+              <Badge>
+                <CheckCircle2 className="size-3" aria-hidden="true" />
+                Analyzed
+              </Badge>
+              <p className="text-sm text-muted-foreground">
+                PDF uploaded, parsed, and stored securely.
+              </p>
+            </div>
+          </DashboardPanel>
+        </div>
       </div>
     </div>
   )

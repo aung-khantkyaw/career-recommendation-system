@@ -317,7 +317,7 @@ return (
         <p className="text-gray-600 mt-2">Manage user accounts and permissions</p>
       </div>
       <Dialog open={isAddUserDialogOpen} onOpenChange={setIsAddUserDialogOpen}>
-        <DialogTrigger asChild>
+        <DialogTrigger>
           <Button>
             <User className="w-4 h-4 mr-2" />
             Add User
