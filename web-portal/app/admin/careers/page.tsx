@@ -444,7 +444,7 @@ export default function CareerDataPage() {
                   label="Average salary"
                   value={form.averageSalary}
                   onChange={(value) => updateForm('averageSalary', value)}
-                  placeholder="$85,000"
+                  placeholder="85,000 MMK"
                   required
                 />
               </div>
